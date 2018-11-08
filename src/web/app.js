@@ -3,6 +3,12 @@ const express= require('express');
 const http = require('http');
 const morgan = require('morgan');
 
+const xray = require('aws-xray-sdk-core');
+const xrayExpress = require('aws-xray-sdk-express');
+xray.middleware.disableCentralizedSampling();
+
+const captureAxios = require('./xray-axios');
+
 const port = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
@@ -15,11 +21,17 @@ let reportsAPI = axios.create({
     baseURL: process.env.REPORTS_URI || 'http://reports:3000/'
 });
 
+captureAxios(votesAPI);
+captureAxios(reportsAPI);
+
 // install route logging middleware
 app.use(morgan('dev'));
 
 // install json body parsing middleware
 app.use(express.json());
+
+// install x-ray tracing
+app.use(xrayExpress.openSegment('defaultName'));
 
 // root route handler
 app.get('/', (req, res) => {
@@ -54,6 +66,8 @@ app.get('/results', async (req, res) => {
     res.status(500).send({ success: false, reason: 'internal error' });
   }
 });
+
+app.use(xrayExpress.closeSegment());
 
 // initialize and start running
 (async () => {
