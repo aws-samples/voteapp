@@ -16,6 +16,8 @@
     "node": ">=v8.0.0"
   },
   "dependencies": {
+    "aws-xray-sdk-core": "^2.0.0",
+    "aws-xray-sdk-express": "^2.0.0",
     "axios": "^0.18.0",
     "body-parser": "~1.18.3",
     "debug": "~4.1.0",
