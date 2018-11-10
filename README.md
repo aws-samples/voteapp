@@ -6,6 +6,8 @@ For an orientation to this version of the Voting App, see [this presentation](ht
 
 ## Build Status
 
+** NOTE: build status ("repo not found") will go away when the repo is public again **
+
 | Service  | Docker Image           | Build Status |
 |:---------|:-----------------------|:-------------|
 | API      | subfuzion/vote-api     | [![Docker build](https://img.shields.io/docker/build/aws-samples/vote-api.svg)](https://hub.docker.com/r/aws-samples/vote-api/)
@@ -62,7 +64,7 @@ Deploy to [AWS ECS with Fargate](https://read.acloud.guru/deploy-the-voting-app-
 
 ## About the Voting App
 
-![Voting app architecture](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/voting-app-arch-1.1.png)
+![Voting app architecture](https://raw.githubusercontent.com/subfuzion/voting-app/master/images/voting-app-arch-1.1.png)
 
 This app is based on the original [Docker](https://docker.com) [Example Voting App](https://github.com/dockersamples/example-voting-app).
 
