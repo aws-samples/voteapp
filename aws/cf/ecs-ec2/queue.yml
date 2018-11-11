@@ -22,7 +22,7 @@ Parameters:
                  handle the traffic for this service
   ContainerPort:
     Type: Number
-    Default: 8050
+    Default: 6379
     Description: What port number the application inside the docker container is binding to
 
   TaskCpu:
@@ -156,7 +156,7 @@ Resources:
                 - "NET_ADMIN"
           Environment:
             - Name: "LATTICE_APP_PORTS"
-              Value: "8050"
+              Value: "6379"
             - Name: "LATTICE_ENVOY_EGRESS_PORT"
               Value: "15001"
             - Name: "LATTICE_ENVOY_INGRESS_PORT"

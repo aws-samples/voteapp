@@ -7,6 +7,7 @@ MESH_ARN=""
 
 #TODO: Replace 'mesh' with actual CLI commands
 
+
 echo ":: Creating Service Mesh ::"
 {
     CMD='mesh create-mesh --cli-input-json file://config/create-mesh-voteapp.json'

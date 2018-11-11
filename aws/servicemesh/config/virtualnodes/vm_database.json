@@ -8,7 +8,7 @@
       {
         "portMapping": {
           "name": "ingress",
-          "port": 8060,
+          "port": 27017,
           "protocol": "http"
       }
     }
