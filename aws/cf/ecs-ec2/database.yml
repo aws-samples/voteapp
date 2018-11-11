@@ -8,16 +8,16 @@ Parameters:
                  Used to locate other resources in the same environment.
   ServiceName:
     Type: String
-    Default: mongo 
+    Default: mongo
     Description: A name for the service
   ImageUrl:
     Type: String
-    Default: mongo
+    Default: mongo:3.6
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
   XRayImageUrl:
     Type: String
-    Default: nithmu/nithish:xray
+    Default: subfuzion/vote-xray:1
     Description: The url of a docker image that contains the X-Ray daemon that will
                  handle the traffic for this service
   ContainerPort:
@@ -190,7 +190,7 @@ Resources:
 
 Outputs:
   MongoURI:
-    Description: The url of the external load balancer
+    Description: The url of the internal load balancer
     Value: !Join ['', [ 'mongodb://', !GetAtt 'MongoLoadBalancer.DNSName', ':27017' ]]
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'MongoURI' ] ]

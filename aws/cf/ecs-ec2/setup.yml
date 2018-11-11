@@ -11,13 +11,13 @@ Parameters:
     Description: >
       Specifies the ECS Cluster Name with which the resources would be
       associated
-    Default: votepp-demo
+    Default: votingapp
   EcsInstanceType:
     Type: CommaDelimitedList
     Description: >
       Specifies the EC2 instance type for your container instances.
-      Defaults to m4.large
-    Default: m4.large
+      Defaults to t2.medium
+    Default: t2.medium
     ConstraintDescription: must be a valid EC2 instance type.
   KeyName:
     Type: String
@@ -29,8 +29,8 @@ Parameters:
     Type: Number
     Description: >
       Specifies the number of instances to launch and register to the cluster.
-      Defaults to 3.
-    Default: '3'
+      Defaults to 4.
+    Default: '4'
   EbsVolumeSize:
     Type: Number
     Description: >
@@ -250,6 +250,13 @@ Resources:
       GroupId: !Ref 'ContainerSecurityGroup'
       IpProtocol: -1
       SourceSecurityGroupId: !Ref 'PublicLoadBalancerSG'
+  EcsSecurityGroupIngressFromPrivateALB:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Ingress from the public ALB
+      GroupId: !Ref 'ContainerSecurityGroup'
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref 'PrivateLoadBalancerSG'
   EcsSecurityGroupIngressFromSelf:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
@@ -257,6 +264,22 @@ Resources:
       GroupId: !Ref 'ContainerSecurityGroup'
       IpProtocol: -1
       SourceSecurityGroupId: !Ref 'ContainerSecurityGroup'
+  EcsSecurityGroupIngressDatabase:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref 'ContainerSecurityGroup'
+      IpProtocol: TCP
+      CidrIp: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
+      FromPort: 27017
+      ToPort: 27017
+  EcsSecurityGroupIngressQueue:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref 'ContainerSecurityGroup'
+      IpProtocol: TCP
+      CidrIp: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
+      FromPort: 6379
+      ToPort: 6379
   
   # AutoScaling Group and Launch Configuration
   EcsInstanceLc:
@@ -401,6 +424,72 @@ Resources:
       LoadBalancerArn: !Ref 'PublicLoadBalancer'
       Port: 80
       Protocol: HTTP
+  
+   # An internal load balancer, this would be used for a service that is not
+  # directly accessible to the public, but instead should only receive traffic
+  # from your other services.
+  PrivateLoadBalancerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to the internal load balancer
+      VpcId: !Ref 'VPC'
+  PrivateLoadBalancerIngressFromECS:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Only accept traffic from a container in the container host security group
+      GroupId: !Ref 'PrivateLoadBalancerSG'
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref 'ContainerSecurityGroup'
+  PrivateLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internal
+      LoadBalancerAttributes:
+      - Key: idle_timeout.timeout_seconds
+        Value: '30'
+      Subnets:
+        # This load balancer is put into the private subnet, so that there is no
+        # route for the public to even be able to access the private load balancer.
+        - !Ref PrivateSubnetOne
+        - !Ref PrivateSubnetTwo
+      SecurityGroups: [!Ref 'PrivateLoadBalancerSG']
+  # This dummy target group is used to setup the ALB to just drop traffic
+  # initially, before any real service target groups have been added.
+  DummyTargetGroupPrivate:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 6
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      Name: !Join ['-', [!Ref 'AWS::StackName', 'drop-2']]
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 2
+      VpcId: !Ref 'VPC'
+  PrivateLoadBalancerListenerReports:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn:
+      - PrivateLoadBalancer
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref 'DummyTargetGroupPrivate'
+          Type: 'forward'
+      LoadBalancerArn: !Ref 'PrivateLoadBalancer'
+      Port: 3001
+      Protocol: HTTP
+  PrivateLoadBalancerListenerVotes:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn:
+      - PrivateLoadBalancer
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref 'DummyTargetGroupPrivate'
+          Type: 'forward'
+      LoadBalancerArn: !Ref 'PrivateLoadBalancer'
+      Port: 3002
+      Protocol: HTTP
 
   # This is an IAM role which authorizes ECS to manage resources on your
   # account on your behalf, such as updating your load balancer with the
@@ -533,6 +622,16 @@ Outputs:
     Value: !Join ['', ['http://', !GetAtt 'PublicLoadBalancer.DNSName']]
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ExternalUrl' ] ]
+  ReportsURI:
+    Description: The url of the external load balancer
+    Value: !Join ['', ['http://', !GetAtt 'PrivateLoadBalancer.DNSName', ':3001']]
+    Export:
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ReportsURI' ] ]
+  VotesURI:
+    Description: The url of the external load balancer
+    Value: !Join ['', ['http://', !GetAtt 'PrivateLoadBalancer.DNSName', ':3002']]
+    Export:
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'VotesURI' ] ]
   ECSRole:
     Description: The ARN of the ECS role
     Value: !GetAtt 'ECSRole.Arn'
@@ -553,6 +652,16 @@ Outputs:
     Value: !Ref PublicLoadBalancerListener
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'PublicListener' ] ]
+  PrivateListenerVotes:
+    Description: The ARN of the public load balancer's Listener
+    Value: !Ref PrivateLoadBalancerListenerVotes
+    Export:
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'PrivateListenerVotes' ] ]
+  PrivateListenerReports:
+    Description: The ARN of the public load balancer's Listener
+    Value: !Ref PrivateLoadBalancerListenerReports
+    Export:
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'PrivateListenerReports' ] ]
   VPCId:
     Description: The ID of the VPC that this stack is deployed in
     Value: !Ref 'VPC'
