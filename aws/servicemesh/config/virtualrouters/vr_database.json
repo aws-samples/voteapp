@@ -1,0 +1,10 @@
+{
+  "clientToken": "votemesh_token",
+  "meshName": "votemesh",
+  "spec": {
+    "serviceNames": [
+      "database.votemesh.local"
+    ]
+  },
+  "virtualRouterName": "database_router"
+}

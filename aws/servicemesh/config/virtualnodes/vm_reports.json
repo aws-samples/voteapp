@@ -1,0 +1,24 @@
+{
+  "clientToken": "votemesh_token",
+  "meshName": "votemesh",
+  "spec": {
+    "backends": [
+      "database.votemesh.local"
+    ],
+    "listeners": [
+      {
+        "portMapping": {
+          "name": "ingress",
+          "port": 8030,
+          "protocol": "http"
+      }
+    }
+    ],
+    "serviceDiscovery": {
+      "dns": {
+        "serviceName": "reports.votemesh.local"
+      }
+    }
+  },
+  "virtualNodeName": "reports_node"
+}
