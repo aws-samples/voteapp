@@ -1,4 +1,6 @@
-## Vote API
+## Vote App web service
+
+This service is a gateway to the votes and reports services.
 
 The service can be started with the following environment variable overrides:
 
