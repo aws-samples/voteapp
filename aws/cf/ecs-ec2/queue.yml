@@ -3,7 +3,7 @@ Description: Voting App queue service
 Parameters:
   EnvironmentName:
     Type: String
-    Default: voteapp
+    Default: voteapp2
     Description: A name for the environment that this cloudformation will be part of.
                  Used to locate other resources in the same environment.
   ServiceName:
@@ -228,7 +228,7 @@ Outputs:
         - - 'http://'
           - Fn::Join:
                 - '.'
-                - - !Ref 'ServiceName'
+                - - 'queue'
                   - Fn::ImportValue:
                       Fn::Join:
                         - ':'

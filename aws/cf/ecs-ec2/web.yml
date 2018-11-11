@@ -3,7 +3,7 @@ Description: Voting App vote service
 Parameters:
   EnvironmentName:
     Type: String
-    Default: voteapp
+    Default: voteapp2
     Description: A name for the environment that this cloudformation will be part of.
                  Used to locate other resources in the same environment.
   ServiceName:

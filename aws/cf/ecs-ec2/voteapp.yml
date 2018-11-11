@@ -3,14 +3,14 @@ Description: Voting App base stack (VPC & common resources for ECS/EC2).
 Parameters:
   EnvironmentName:
     Type: String
-    Default: voteapp
+    Default: voteapp2
     Description: A name for the environment that this cloudformation will be part of.
   EcsClusterName:
     Type: String
     Description: >
       Specifies the ECS Cluster Name with which the resources would be
       associated
-    Default: votingapp
+    Default: votingapp2
   EcsInstanceType:
     Type: CommaDelimitedList
     Description: >

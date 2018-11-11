@@ -4,4 +4,4 @@
 | reports | 8030 |
 | worker | 8040 |
 | queue | 6379 |
-| database | 27017 |
+| database | 27017|

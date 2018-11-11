@@ -18,9 +18,9 @@ setup() {
         ((i++))
         printf "\nDeploying $i of $total: $s.yml"
         if [ "$s" == "voteapp" ]; then
-            aws cloudformation deploy --stack-name=voteapp --template-file=$s.yml --capabilities=CAPABILITY_IAM
+            aws cloudformation deploy --stack-name=voteapp2 --template-file=$s.yml --capabilities=CAPABILITY_IAM
         else
-            aws cloudformation deploy --stack-name=voteapp-$s --template-file=$s.yml
+            aws cloudformation deploy --stack-name=voteapp2-$s --template-file=$s.yml
         fi
 
         if [ $? -gt 0 ]; then ((errors++)); fi
