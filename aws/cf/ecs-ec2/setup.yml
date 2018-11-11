@@ -268,7 +268,7 @@ Resources:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !Ref 'ContainerSecurityGroup'
-      IpProtocol: -1
+      IpProtocol: TCP
       CidrIp: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
       FromPort: 27017
       ToPort: 27017
@@ -276,7 +276,7 @@ Resources:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !Ref 'ContainerSecurityGroup'
-      IpProtocol: -1
+      IpProtocol: TCP
       CidrIp: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
       FromPort: 6379
       ToPort: 6379
