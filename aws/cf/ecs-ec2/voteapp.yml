@@ -56,6 +56,10 @@ Parameters:
     Description: AMI ID
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
+
+  ServicesDomain:
+    Type: String
+    Default: votemesh.local
 Conditions:
   CreateEC2LCWithKeyPair:
     !Not [!Equals [!Ref KeyName, '']]
@@ -85,6 +89,13 @@ Mappings:
     PrivateTwo:
       CIDR: '10.0.3.0/24'
 Resources:
+
+  ServiceDiscoveryNamespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+      Vpc: !Ref VPC
+      Name: !Ref ServicesDomain
+
   # VPC in which containers will be networked.
   # It has one public subnet and 2 private subnets
   # We distribute the subnets across the first three available subnets
@@ -691,3 +702,13 @@ Outputs:
     Value: !Ref 'ContainerSecurityGroup'
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ContainerSecurityGroup' ] ]
+  ServiceDiscoveryNamespace:
+    Description: Namespace used for internal services to do service discovery
+    Value: !Ref 'ServiceDiscoveryNamespace'
+    Export:
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ServiceDiscoveryNamespace' ] ]
+  ServicesDomain:
+    Description: Services domain used by service discovery
+    Value: !Ref ServicesDomain
+    Export:
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ServicesDomain' ] ]

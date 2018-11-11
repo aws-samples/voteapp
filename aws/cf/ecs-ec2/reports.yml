@@ -10,44 +10,57 @@ Parameters:
     Type: String
     Default: reports
     Description: A name for the service
+
   ImageUrl:
     Type: String
     Default: subfuzion/vote-reports:1.0.3
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
+
   ContainerPort:
     Type: Number
     Default: 3000
     Description: What port number the application inside the docker container is binding to
+
   TaskCpu:
     Type: Number
     Default: 512
     Description: How much CPU to give the container. 1024 is 1 CPU
+
   TaskMemory:
     Type: Number
     Default: 512
     Description: How much memory in megabytes to give the container
+
   Path:
     Type: String
     Default: "*"
     Description: A path on the public load balancer that this service
                  should be connected to. Use * to send all load balancer
                  traffic to this service.
+
   Priority:
     Type: Number
     Default: 1
     Description: The priority for the routing rule added to the load balancer.
                  This only applies if your have multiple services which have been
                  assigned to different paths on the load balancer.
+
   DesiredCount:
     Type: Number
     Default: 1
     Description: How many copies of the service task to run
+
   Role:
     Type: String
     Default: ""
     Description: (Optional) An IAM role to give the service's containers if the code within needs to
                  access other AWS resources like S3 buckets, DynamoDB tables, etc
+
+  LatticeServiceEndpointIdentifier:
+    Description: Placeholder for the future
+    Type: String
+    Default: ""
 
 Conditions:
   HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
@@ -96,6 +109,61 @@ Resources:
               awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
+        - Name: "envoy"
+          Image: "envoyproxy/envoy"
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: LogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
+          Environment:
+            - Name: "ENVOY_CONFIG_FILE"
+              Value: "/etc/envoy/reports_node.yaml"
+            - Name: "ENVOY_SERVICE_CLUSTER"
+              Value:
+                  Fn::Join:
+                      - '.'
+                      - - !Ref 'ServiceName'
+                        - Fn::ImportValue:
+                            Fn::Join:
+                              - ':'
+                              - - !Ref 'EnvironmentName'
+                                - 'ServicesDomain'
+            - Name: "ENVOY_SERVICE_NODE_ID"
+              Value: { Ref: LatticeServiceEndpointIdentifier }
+            - Name: "LOG_LEVEL"
+              Value: "debug"
+          User: "1337"
+          VolumesFrom:
+            - SourceContainer: !Ref 'ServiceName'
+        - Name: "proxyinit"
+          Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: LogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName',"router"]]
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_APP_PORTS"
+              Value: "8030"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
