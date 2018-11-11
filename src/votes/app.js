@@ -8,7 +8,7 @@ const app = express();
 const server = http.createServer(app);
 
 let queueConfig = Producer.createStdConfig();
-let producer, db;
+let producer;
 
 // route logging middleware
 app.use(morgan('dev'));
