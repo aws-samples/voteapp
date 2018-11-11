@@ -317,14 +317,3 @@ Resources:
       ComparisonOperator: GreaterThanOrEqualToThreshold
       AlarmActions:
         - !Ref ScaleUpPolicy
-
-# These are the values output by the CloudFormation template. Be careful
-# about changing any of them, because of them are exported with specific
-# names so that the other task related CF templates can use them.
-
-Outputs:
-  ReportsURI:
-    Description: The url of the internal load balancer
-    Value: !Join ['', [ 'https://', !GetAtt 'ReportsLoadBalancer.DNSName', !Ref 'ContainerPort' ]]
-    Export:
-      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ReportsURI' ]]
