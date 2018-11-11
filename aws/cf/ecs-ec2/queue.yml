@@ -111,30 +111,27 @@ Resources:
             -
               ContainerPort: 2000
               Protocol: udp
-        -
-          ContainerPort: 2000
-          Protocol: udp
-            - Name: "envoy"
-              Image: "envoyproxy/envoy"
-              Essential: true
-              LogConfiguration:
-                LogDriver: "awslogs"
-                Options:
-                  awslogs-group: { Ref: ServiceLogGroup }
-                  awslogs-region: { Ref: "AWS::Region" }
-                  awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
-              Environment:
-                - Name: "ENVOY_CONFIG_FILE"
-                  Value: "/etc/envoy/queue.yaml"
-                - Name: "ENVOY_SERVICE_CLUSTER"
-                  Value: !Join ['.', [!Ref 'ServiceName', Fn::ImportValue: !Join [':', [!Ref 'EnvironmentName', 'ServicesDomain']]]]
-                - Name: "ENVOY_SERVICE_NODE_ID"
-                  Value: { Ref: LatticeServiceEndpointIdentifier }
-                - Name: "LOG_LEVEL"
-                  Value: "debug"
-              User: "1337"
-              VolumesFrom:
-                - SourceContainer: "app"
+        - Name: "envoy"
+          Image: "envoyproxy/envoy"
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: ServiceLogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
+          Environment:
+            - Name: "ENVOY_CONFIG_FILE"
+              Value: "/etc/envoy/queue.yaml"
+            - Name: "ENVOY_SERVICE_CLUSTER"
+              Value: !Join ['.', [!Ref 'ServiceName', Fn::ImportValue: !Join [':', [!Ref 'EnvironmentName', 'ServicesDomain']]]]
+            - Name: "ENVOY_SERVICE_NODE_ID"
+              Value: { Ref: LatticeServiceEndpointIdentifier }
+            - Name: "LOG_LEVEL"
+              Value: "debug"
+          User: "1337"
+          VolumesFrom:
+            - SourceContainer: "app"
         - Name: "proxyinit"
           Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
           Essential: false

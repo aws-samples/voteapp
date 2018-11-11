@@ -89,7 +89,7 @@ Mappings:
       CIDR: '10.0.3.0/24'
 Resources:
 
-  ServiceDiscoveryNameSpace:
+  ServiceDiscoveryNamespace:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
     Properties:
       Vpc: !Ref VPC
