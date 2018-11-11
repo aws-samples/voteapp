@@ -1,4 +1,4 @@
-## Vote App web service
+## Voting App web service
 
 This service is a gateway to the votes and reports services.
 
