@@ -1,56 +1,42 @@
-The following steps assume you have this repo cloned or at least have the CloudFormation files in this directory.
+## Deploy the Voting App
 
-### Step 1: Setup
-Create resources such as the VPC, subnets and security groups. Wait for it to finish before the next step.
-```
-aws cloudformation deploy --stack-name=voteapp --template-file=setup.yml --capabilities=CAPABILITY_IAM
-aws cloudformation wait stack-create-complete --stack-name=voteapp
-```
+Run `deploy.sh` from this directory. It uses the CloudFormation stack templates
+in this directory to create the top level global stack and all the service stacks.
 
-### Step 2: Database and Queue
-Run database and queue:
+When the script is finished, it will display the Voting App public URL.
+
+### Manual deployment
+
+If you want to deploy the stacks manually, here is the order:
+
 ```
-aws cloudformation deploy --stack-name=voteapp-database --template-file=database.yml --capabilities=CAPABILITY_IAM
-aws cloudformation deploy --stack-name=voteapp-queue --template-file=queue.yml --capabilities=CAPABILITY_IAM
-```
-In two windows, run watch to wait for them to finish:
-```
-aws cloudformation wait stack-create-complete --stack-name=voteapp-database
-```
-```
-aws cloudformation wait stack-create-complete --stack-name=voteapp-queue
+aws cloudformation deploy --stack-name=voteapp --template-file=voteapp.yml --capabilities=CAPABILITY_IAM
+aws cloudformation deploy --stack-name=voteapp-database --template-file=database.yml
+aws cloudformation deploy --stack-name=voteapp-queue --template-file=queue.ymlM
+aws cloudformation deploy --stack-name=voteapp-votes --template-file=votes.yml
+aws cloudformation deploy --stack-name=voteapp-reports --template-file=reports.yml
+aws cloudformation deploy --stack-name=voteapp-api --template-file=web.yml
 ```
 
-### Step 3: Votes and Reports
-Run votes and reports:
-```
-aws cloudformation deploy --stack-name=voteapp-votes --template-file=votes.yml --capabilities=CAPABILITY_IAM
-aws cloudformation deploy --stack-name=voteapp-reports --template-file=reports.yml --capabilities=CAPABILITY_IAM
-```
-In two windows, run watch to wait for them to finish:
-```
-aws cloudformation wait stack-create-complete --stack-name=voteapp-votes
-```
-```
-aws cloudformation wait stack-create-complete --stack-name=voteapp-reports
+## Vote and view results
+
+```sh
+WEB_URI=$(aws cloudformation describe-stacks --stack-name voteapp \
+    --query 'Stacks[0].Outputs[?OutputKey==`ExternalUrl`].OutputValue' --output text)
+docker run -it --rm -e WEB_URI=$WEB_URI subfuzion/voter CMD
 ```
 
-### Step 4: API
-Run API:
-```
-aws cloudformation deploy --stack-name=voteapp-api --template-file=api.yml --capabilities=CAPABILITY_IAM
-aws cloudformation wait stack-create-complete --stack-name=voteapp-api
-```
-
-### Step 5: Vote!
-VOTE_API_URI=$(aws cloudformation describe-stacks --stack-name voteapp \
---query 'Stacks[0].Outputs[?OutputKey==`ExternalUrl`].OutputValue' --output text)
+where CMD is either `vote` or `results`.
 
 Vote
+
+```sh
+docker run -it --rm -e WEB_URI=$WEB_URI subfuzion/voter vote
 ```
-docker run -it --rm -e VOTE_API_URI=${VOTE_API_URI} subfuzion/voter vote
-```
+
 See results
+
+```sh
+docker run -it --rm -e WEB_URI=$WEB_URI subfuzion/voter results
 ```
-docker run -it --rm -e VOTE_API_URI=${VOTE_API_URI} subfuzion/voter results
-```
+
