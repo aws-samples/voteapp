@@ -52,6 +52,7 @@ Parameters:
 
   LatticeServiceEndpointIdentifier:
     Type: String
+    Default: "a8d25bfe-fe2d-41e0-b2b6-14572560f98b"
 
 Conditions:
   HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
@@ -83,7 +84,7 @@ Resources:
           - !Ref 'Role'
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
-        - Name: 'app'
+        - Name: !Ref 'ServiceName'
           Cpu: !Ref 'TaskCpu'
           Memory: !Ref 'TaskMemory'
           Image: !Ref 'ImageUrl'
@@ -128,7 +129,7 @@ Resources:
               Value: "debug"
           User: "1337"
           VolumesFrom:
-            - SourceContainer: "app"
+            - SourceContainer: !Ref 'ServiceName'
         - Name: "proxyinit"
           Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
           Essential: false

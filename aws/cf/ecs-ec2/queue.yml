@@ -57,6 +57,7 @@ Parameters:
 
   LatticeServiceEndpointIdentifier:
     Type: String
+    Default: "04943440-09e9-4e87-b9b4-2fa6f6a5eb56"
 
 Conditions:
   HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
@@ -89,7 +90,7 @@ Resources:
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
         - 
-          Name: 'app'
+          Name: !Ref 'ServiceName'
           Cpu: 440
           Memory: 440
           Image: !Ref 'ImageUrl'
@@ -139,7 +140,7 @@ Resources:
               Value: "debug"
           User: "1337"
           VolumesFrom:
-            - SourceContainer: "app"
+            - SourceContainer: !Ref 'ServiceName'
         - Name: "proxyinit"
           Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
           Essential: false
@@ -216,8 +217,8 @@ Resources:
         DnsRecords:
         - Type: A
           TTL: 300
-        HealthCheckCustomConfig:
-          FailureThreshold: 1
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
 
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup

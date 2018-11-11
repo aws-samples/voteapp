@@ -52,6 +52,7 @@ Parameters:
 
   LatticeServiceEndpointIdentifier:
     Type: String
+    Default: "f49fa281-c27a-4bee-80ec-d12c765b1417"
 
 Conditions:
   HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
@@ -83,7 +84,7 @@ Resources:
           - !Ref 'Role'
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
-        - Name: 'app'
+        - Name: !Ref 'ServiceName'
           Cpu: !Ref 'TaskCpu'
           Memory: !Ref 'TaskMemory'
           Image: !Ref 'ImageUrl'
@@ -130,7 +131,7 @@ Resources:
               Value: "debug"
           User: "1337"
           VolumesFrom:
-            - SourceContainer: "app"
+            - SourceContainer: !Ref 'ServiceName'
         - Name: "proxyinit"
           Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
           Essential: false
@@ -203,8 +204,8 @@ Resources:
         DnsRecords:
         - Type: A
           TTL: 300
-        HealthCheckCustomConfig:
-          FailureThreshold: 1
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
 
   # A target group. This is used for keeping track of all the tasks, and
   # what IP addresses / port numbers they have. You can query it yourself,
