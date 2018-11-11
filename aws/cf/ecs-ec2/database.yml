@@ -221,7 +221,20 @@ Resources:
 
 Outputs:
   MongoURI:
-    Description: The url of the internal load balancer
-    Value: !Join ['', [ 'mongodb://', 'database.votemesh.local', ':8060' ]]
+    Description: The url of the external load balancer
+    Value:
+      Fn::Join:
+        - ''
+        - - 'mongodb://'
+          - Fn::Join:
+                - '.'
+                - - !Ref 'ServiceName'
+                  - Fn::ImportValue:
+                      Fn::Join:
+                        - ':'
+                        - - !Ref 'EnvironmentName'
+                          - 'ServicesDomain'
+          - ':'
+          - !Ref ContainerPort
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'MongoURI' ] ]

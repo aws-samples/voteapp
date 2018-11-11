@@ -93,6 +93,8 @@ Resources:
               Value:
                 Fn::ImportValue:
                   !Join [':', [!Ref 'EnvironmentName', 'MongoURI']]
+            - Name: PORT
+              Value: !Ref ContainerPort
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:
@@ -348,3 +350,22 @@ Resources:
       ComparisonOperator: GreaterThanOrEqualToThreshold
       AlarmActions:
         - !Ref ScaleUpPolicy
+Outputs:
+  ReportsURI
+    Description: The url of the external load balancer
+    Value:
+      Fn::Join:
+        - ''
+        - - 'http://'
+          - Fn::Join:
+                - '.'
+                - - !Ref 'ServiceName'
+                  - Fn::ImportValue:
+                      Fn::Join:
+                        - ':'
+                        - - !Ref 'EnvironmentName'
+                          - 'ServicesDomain'
+          - ':'
+          - !Ref ContainerPort
+    Export:
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ReportsURI' ] ]

@@ -221,7 +221,18 @@ Resources:
 
 Outputs:
   RedisEndpoint:
-    Description: The url of the internal load balancer
-    Value: !Join ['', [ 'queue.votemesh.local' ]]
+    Description: The url of the external load balancer
+    Value:
+      Fn::Join:
+        - ''
+        - - 'http://'
+          - Fn::Join:
+                - '.'
+                - - !Ref 'ServiceName'
+                  - Fn::ImportValue:
+                      Fn::Join:
+                        - ':'
+                        - - !Ref 'EnvironmentName'
+                          - 'ServicesDomain'
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'RedisEndpoint' ] ]

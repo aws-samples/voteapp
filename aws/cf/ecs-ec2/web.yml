@@ -98,6 +98,8 @@ Resources:
               Value:
                 Fn::ImportValue:
                   !Join [':', [!Ref 'EnvironmentName', 'ReportsURI']]
+            - Name: PORT
+              Value: !Ref ContainerPort
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:

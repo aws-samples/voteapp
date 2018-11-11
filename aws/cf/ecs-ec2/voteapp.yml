@@ -631,16 +631,6 @@ Outputs:
     Value: !Join ['', ['http://', !GetAtt 'PublicLoadBalancer.DNSName']]
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ExternalUrl' ] ]
-  ReportsURI:
-    Description: The url of the external load balancer
-    Value: !Join ['', ['http://', !GetAtt 'PrivateLoadBalancer.DNSName', ':3001']]
-    Export:
-      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ReportsURI' ] ]
-  VotesURI:
-    Description: The url of the external load balancer
-    Value: !Join ['', ['http://', !GetAtt 'PrivateLoadBalancer.DNSName', ':3002']]
-    Export:
-      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'VotesURI' ] ]
   ECSRole:
     Description: The ARN of the ECS role
     Value: !GetAtt 'ECSRole.Arn'

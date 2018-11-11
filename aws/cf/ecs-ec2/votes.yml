@@ -94,7 +94,9 @@ Resources:
                 Fn::ImportValue:
                   !Join [':', [!Ref 'EnvironmentName', 'RedisEndpoint']]
             - Name: QUEUE_PORT
-              Value: 6379
+              Value: 8050
+            - Name: PORT
+              Value: !Ref ContainerPort
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:
@@ -350,3 +352,22 @@ Resources:
       ComparisonOperator: GreaterThanOrEqualToThreshold
       AlarmActions:
         - !Ref ScaleUpPolicy
+Outputs:
+  VotesURI:
+    Description: The url of the external load balancer
+    Value:
+      Fn::Join:
+        - ''
+        - - 'http://'
+          - Fn::Join:
+                - '.'
+                - - !Ref 'ServiceName'
+                  - Fn::ImportValue:
+                      Fn::Join:
+                        - ':'
+                        - - !Ref 'EnvironmentName'
+                          - 'ServicesDomain'
+          - ':'
+          - !Ref ContainerPort
+    Export:
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'VotesURI' ] ]
