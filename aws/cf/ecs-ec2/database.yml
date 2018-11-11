@@ -22,8 +22,9 @@ Parameters:
                  handle the traffic for this service
   ContainerPort:
     Type: Number
-    Default: 27017
+    Default: 8060
     Description: What port number the application inside the docker container is binding to
+
   TaskCpu:
     Type: Number
     Default: 512 
@@ -48,11 +49,17 @@ Parameters:
     Type: Number
     Default: 1
     Description: How many copies of the service task to run
+
   Role:
     Type: String
     Default: ""
     Description: (Optional) An IAM role to give the service's containers if the code within needs to
                  access other AWS resources like S3 buckets, DynamoDB tables, etc
+
+  LatticeServiceEndpointIdentifier:
+    Type: String
+
+
 
 Conditions:
   HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
@@ -85,7 +92,7 @@ Resources:
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
         - 
-          Name: !Ref 'ServiceName'
+          Name: "app"
           Cpu: 440
           Memory: 440
           Image: !Ref 'ImageUrl'
@@ -104,9 +111,57 @@ Resources:
           Memory: 64
           Image: !Ref 'XRayImageUrl'
           PortMappings:
-            -
-              ContainerPort: 2000
-              Protocol: udp
+        -
+          ContainerPort: 2000
+          Protocol: udp
+            - Name: "envoy"
+              Image: "envoyproxy/envoy"
+              Essential: true
+              LogConfiguration:
+                LogDriver: "awslogs"
+                Options:
+                  awslogs-group: { Ref: ServiceLogGroup }
+                  awslogs-region: { Ref: "AWS::Region" }
+                  awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
+              Environment:
+                - Name: "ENVOY_CONFIG_FILE"
+                  Value: "/etc/envoy/database_node.yaml"
+                - Name: "ENVOY_SERVICE_CLUSTER"
+                  Value: !Join ['.', [!Ref 'ServiceName', Fn::ImportValue: !Join [':', [!Ref 'EnvironmentName', 'ServicesDomain']]]]
+                - Name: "ENVOY_SERVICE_NODE_ID"
+                  Value: { Ref: LatticeServiceEndpointIdentifier }
+                - Name: "LOG_LEVEL"
+                  Value: "debug"
+              User: "1337"
+              VolumesFrom:
+                - SourceContainer: "app"
+        - Name: "proxyinit"
+          Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: ServiceLogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName',"router"]]
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_APP_PORTS"
+              Value: "8060"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+
   
   # copies of a type of task, and gather up their logs and metrics, as well
   # as monitor the number of running tasks and replace any that have crashed
@@ -114,6 +169,9 @@ Resources:
     Type: AWS::ECS::Service
     DependsOn: MongoListener
     Properties:
+      ServiceRegistries:
+        - RegistryArn:
+          'Fn::GetAtt': ServiceDiscoveryRecord.Arn
       ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:
@@ -139,8 +197,21 @@ Resources:
         - ContainerName: !Ref 'ServiceName'
           ContainerPort: !Ref 'ContainerPort'
           TargetGroupArn: !Ref 'TargetGroup'
-      
-  
+
+  ServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: 'database'
+      DnsConfig:
+        NamespaceId:
+          Fn::ImportValue:
+            !Join [':', [!Ref 'EnvironmentName', 'ServiceDiscoveryNamespace']]
+            DnsRecords:
+            - Type: A
+            TTL: 300
+        HealthCheckCustomConfig:
+          FailureThreshold: 1
+
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
