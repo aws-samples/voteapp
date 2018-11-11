@@ -108,14 +108,22 @@ Resources:
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: { Ref: ServiceLogGroup }
+              awslogs-group: { Ref: LogGroup }
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
           Environment:
             - Name: "ENVOY_CONFIG_FILE"
               Value: "/etc/envoy/votes_node.yaml"
             - Name: "ENVOY_SERVICE_CLUSTER"
-              Value: !Join ['.', [!Ref 'ServiceName', Fn::ImportValue: !Join [':', [!Ref 'EnvironmentName', 'ServicesDomain']]]]
+              Value:
+                  Fn::Join:
+                      - '.'
+                      - - !Ref 'ServiceName'
+                        - Fn::ImportValue:
+                            Fn::Join:
+                              - ':'
+                              - - !Ref 'EnvironmentName'
+                                - 'ServicesDomain'
             - Name: "ENVOY_SERVICE_NODE_ID"
               Value: { Ref: LatticeServiceEndpointIdentifier }
             - Name: "LOG_LEVEL"
@@ -129,7 +137,7 @@ Resources:
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: { Ref: ServiceLogGroup }
+              awslogs-group: { Ref: LogGroup }
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName',"router"]]
           LinuxParameters:
@@ -157,8 +165,7 @@ Resources:
     Type: AWS::ECS::Service
     Properties:
       ServiceRegistries:
-        - RegistryArn:
-          'Fn::GetAtt': ServiceDiscoveryRecord.Arn
+        - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
       ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:
@@ -193,9 +200,9 @@ Resources:
         NamespaceId:
           Fn::ImportValue:
             !Join [':', [!Ref 'EnvironmentName', 'ServiceDiscoveryNamespace']]
-            DnsRecords:
-            - Type: A
-            TTL: 300
+        DnsRecords:
+        - Type: A
+          TTL: 300
         HealthCheckCustomConfig:
           FailureThreshold: 1
 
