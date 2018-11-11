@@ -38,8 +38,8 @@ services:
     depends_on:
       - queue
 
-  vote:
-    build: src/vote
+  web:
+    build: src/web
     networks:
       - bridge_net
     ports:

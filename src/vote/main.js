@@ -5,11 +5,11 @@ const inquirer = require('inquirer');
 const pkg = require('./package.json');
 
 let apiOptions = {
-  host: process.env.VOTE_API_HOST || 'localhost',
-  port: process.env.VOTE_API_PORT || 3000
+  host: process.env.WEB_HOST || 'localhost',
+  port: process.env.WEB_PORT || 3000
 };
 
-let uri = process.env.VOTE_API_URI;
+let uri = process.env.WEB_URI;
 if (uri && !uri.endsWith('/')) {
   uri += '/';
 }
@@ -147,4 +147,3 @@ function main() {
 }
 
 main();
-

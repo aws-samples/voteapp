@@ -12,4 +12,5 @@ ARG NODE_ENV
 ENV NODE_ENV ${NODE_ENV:-development}
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app .
-ENTRYPOINT [ "node", "main.js" ]
+EXPOSE 3000
+ENTRYPOINT [ "node", "app.js" ]

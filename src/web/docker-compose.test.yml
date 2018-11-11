@@ -20,9 +20,9 @@ services:
       - test_net
       - db_net
     depends_on:
-      - vote
+      - web
 
-  vote:
+  web:
     build: .
     image: vote
     environment:
@@ -76,4 +76,3 @@ services:
     image: redis:3.2
     networks:
       - votes_net
-

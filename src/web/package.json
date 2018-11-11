@@ -1,7 +1,7 @@
 {
-  "name": "@subfuzion/reports",
+  "name": "@subfuzion/vote-web",
   "version": "1.0.6",
-  "description": "Voting app reports service",
+  "description": "Voting app for Docker Demo",
   "author": "Tony Pujals <tony@subfuzion.com> (https://twitter.com/subfuzion)",
   "license": "MIT",
   "repository": {
@@ -17,13 +17,14 @@
   },
   "dependencies": {
     "@subfuzion/database": "1.2.2",
+    "@subfuzion/queue": "1.5.6",
+    "axios": "^0.18.0",
     "body-parser": "~1.18.3",
     "debug": "~4.1.0",
     "express": "~4.16.4",
     "morgan": "~1.9.1"
   },
   "devDependencies": {
-    "axios": "^0.18.0",
     "mocha": "^5.2.0"
   }
 }

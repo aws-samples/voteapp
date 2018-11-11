@@ -1,53 +1,24 @@
-## Vote API
+## Voting App terminal client.
 
-The service can be started with the following environment variable overrides:
+This is a client for the Voting App that runs in a terminal.
 
-`PORT`: the vote service listening port (defaults to port `3000`)
-`VOTES_API_URI`: the **votes** API backend microservice (defaults to: http://votes:3000/)
-`REPORTS_API_URI`: the **reports** API backend microservice (defaults to: http://reports:3000/)
+## Build the image
 
-### POST /vote
+    $ docker build -t subfuzion/vote .
 
-This endpoint is used to cast a vote.
+## Run the client
 
-#### Request Body
+If the Voting Application is running locally (i.e., `localhost:3000`):
 
-`application/json`
+    $ docker run -it --rm --network=host subfuzion/vote CMD
 
-##### Schema
+where CMD is either `vote` or `results` (missing command will print help).
 
-* `vote` - `string`; currently restricted to either "a" or "b"
+If you need to specify the host and port for the Voting App, then omit the
+`--network` option and specify environment variables like this:
 
-##### Example
+    $ docker run -it --rm -e WEB_URI=<host>:<port> subfuzion/vote CMD
 
-```
-{
-  "vote": "a"
-}
-```
+or
 
-### GET /results
-
-This endpoint is used to query the voting results.
-
-#### Response
-
-`application/json`
-
-* `success` - `boolean`
-
-* `result` - `object`; present only if success. The object has a property named for each vote ("a", "b"); the value of the property is a `number` corresponding to the number of votes cast.
-
-* `reason` - `string`; present only if success is false.
-
-#### Example:
-
-```
-{
-  "success": true,
-  "result": {
-    "a": 5,
-    "b": 3
-  }
-}
-```
+    $ docker run -it --rm -e WEB_HOST=<host> -e WEB_PORT=<port> subfuzion/vote CMD

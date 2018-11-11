@@ -1,0 +1,32 @@
+#!/bin/sh -e
+
+TAG=$(git describe --abbrev=0 --tags)
+
+packages=(
+    "worker"
+    "votes"
+    "reports"
+    "web"
+    "vote"
+)
+
+i=0
+total=${#packages[@]}
+for pkg in ${packages[@]}; do
+    ((i++))
+    image=subfuzion/vote
+
+    # naming 'vote' pkg => 'subfuzion/vote-vote' would be weird
+    # it's the client, so just want "subfuzion/vote"
+    if [ $pkg != "vote" ]; then
+        image=$image-$pkg
+    fi
+    printf "\nBuilding image $i of $total: $image ...\n"
+    docker build -t $image src/$pkg
+
+    docker tag $image $image:$TAG
+    printf "Successfully tagged $image:$TAG\n"
+    
+    docker push $image
+    docker push $image:$TAG
+done
