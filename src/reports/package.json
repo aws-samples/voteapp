@@ -1,6 +1,6 @@
 {
   "name": "@subfuzion/reports",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Voting app reports service",
   "author": "Tony Pujals <tony@subfuzion.com> (https://twitter.com/subfuzion)",
   "license": "MIT",
@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@subfuzion/database": "1.2.2",
-    "@subfuzion/queue": "1.5.6",
     "body-parser": "~1.18.3",
     "debug": "~4.1.0",
     "express": "~4.16.4",

@@ -5,8 +5,8 @@ This service is a gateway to the votes and reports services.
 The service can be started with the following environment variable overrides:
 
 `PORT`: the vote service listening port (defaults to port `3000`)
-`VOTES_API_URI`: the **votes** API backend microservice (defaults to: http://votes:3000/)
-`REPORTS_API_URI`: the **reports** API backend microservice (defaults to: http://reports:3000/)
+`VOTES_URI`: the **votes** API backend microservice (defaults to: http://votes:3000/)
+`REPORTS_URI`: the **reports** API backend microservice (defaults to: http://reports:3000/)
 
 ### POST /vote
 
