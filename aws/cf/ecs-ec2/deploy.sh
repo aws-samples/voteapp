@@ -36,7 +36,7 @@ printinfo() {
     fi
 
     ep=$(aws cloudformation describe-stacks --stack-name voteapp \
-        --query 'stacks[0].outputs[?outputkey==`externalurl`].outputvalue' --output text)
+        --query 'Stacks[0].Outputs[?OutputKey==ExternalUrl].OutputValue' --output text)
     printf "\nSuccess: voteapp deployed, public endpoint:\n%s\n" "$ep"
 
     printf "\nTo vote, run:\n%s\n" "docker run -it --rm -e VOTE_API_URI=\"${ep}\" subfuzion/voter vote"
