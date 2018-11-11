@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Docker Voting App Redis Queuing service
+Description: Voting App queue service
 Parameters:
   EnvironmentName:
     Type: String

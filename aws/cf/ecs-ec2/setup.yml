@@ -1,6 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Docker Voting App - the baseline resources used to create a ECS EC2 environment
-             to launch containerized applications in.
+Description: Voting App base stack (VPC & common resources for ECS/EC2).
 Parameters:
   EnvironmentName:
     Type: String

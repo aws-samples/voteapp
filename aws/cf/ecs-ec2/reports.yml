@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Docker Voting Reports service
+Description: Voting App reports service
 Parameters:
   EnvironmentName:
     Type: String
