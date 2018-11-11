@@ -4,9 +4,10 @@ stacks=(
     "setup"
     "database"
     "queue"
+    "worker"
     "reports"
     "votes"
-    "voteapp"
+    "api"
 )
 
 setup() {
