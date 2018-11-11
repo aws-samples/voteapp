@@ -202,8 +202,8 @@ Resources:
         DnsRecords:
           - Type: A
             TTL: 300
-        HealthCheckCustomConfig:
-          FailureThreshold: 1
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
 
   # A target group. This is used for keeping track of all the tasks, and
   # what IP addresses / port numbers they have. You can query it yourself,
