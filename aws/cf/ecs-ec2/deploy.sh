@@ -1,12 +1,13 @@
 #!/bin/sh
 
 stacks=(
-    "setup"
+    "voteapp"
     "database"
     "queue"
+    "worker"
     "reports"
     "votes"
-    "voteapp"
+    "web"
 )
 
 setup() {
@@ -16,7 +17,7 @@ setup() {
     for s in ${stacks[@]}; do
         ((i++))
         printf "\nDeploying $i of $total: $s.yml"
-        if [ "$s" == "setup" ]; then
+        if [ "$s" == "voteapp" ]; then
             aws cloudformation deploy --stack-name=voteapp --template-file=$s.yml --capabilities=CAPABILITY_IAM
         else
             aws cloudformation deploy --stack-name=voteapp-$s --template-file=$s.yml
