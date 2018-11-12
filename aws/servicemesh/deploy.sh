@@ -40,7 +40,7 @@ create_virtual_node() {
 create_virtual_nodes() {
     print "Creating virtual nodes"
     print "======================"
-    for service in $(ls $DIR/config/virtualnodes); do
+    for service in $DIR/config/virtualnodes/*.json; do
         create_virtual_node $service
     done
 }
@@ -56,7 +56,7 @@ create_virtual_router() {
 create_virtual_routers() {
     print "Creating virtual routers"
     print "========================"
-    for service in $(ls $DIR/config/virtualrouters); do
+    for service in $DIR/config/virtualrouters/*.json; do
         create_virtual_router $service
     done
 }
@@ -72,7 +72,7 @@ create_virtual_route() {
 create_virtual_routes() {
     print "Creating virtual routes"
     print "======================="
-    for service in $(ls $DIR/config/virtualrouters); do
+    for service in $DIR/config/virtualrouters/*.json; do
         create_virtual_route $service
     done
 }
