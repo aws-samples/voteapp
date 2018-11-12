@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# vim:syn=sh:ts=4:sw=4:et:ai
+
+# Only us-west-2 is supported right now.
+: ${AWS_DEFAULT_REGION:=us-west-2}
 
 stacks=(
     "voteapp"
@@ -9,6 +13,12 @@ stacks=(
     "votes"
     "web"
 )
+
+sanity_check() {
+    if [ "$AWS_DEFAULT_REGION" != "us-west-2" ]; then
+        err "Only us-west-2 is supported at this time.  (Current default region: $AWS_DEFAULT_REGION)"
+    fi
+}
 
 setup() {
     errors=0
@@ -44,6 +54,7 @@ printinfo() {
 }
 
 # deploy stacks and print results
+sanity_check
 setup
 errors=$?
 printinfo $errors
