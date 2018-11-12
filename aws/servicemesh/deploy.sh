@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
+# vim:syn=sh:ts=4:sw=4:et:ai
 
 shopt -s nullglob
 
-# Ensure your AWS profile (specified in meshvars.sh) sets the default region
+# Optional pre-load script
 if [ -f meshvars.sh ]; then
     source meshvars.sh
 fi
+
+# Only us-west-2 is supported right now.
+: ${AWS_DEFAULT_REGION:=us-west-2}
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
@@ -18,6 +22,12 @@ err() {
     print $msg
     code=${2:-"1"}
     exit $code
+}
+
+sanity_check() {
+    if [ "$AWS_DEFAULT_REGION" != "us-west-2" ]; then
+        err "Only us-west-2 is supported at this time.  (Current default region: $AWS_DEFAULT_REGION)"
+    fi
 }
 
 create_mesh() {
@@ -78,6 +88,7 @@ create_virtual_routes() {
 }
 
 main() {
+    sanity_check
     create_mesh
     create_virtual_nodes
     create_virtual_routers
