@@ -1,0 +1,21 @@
+{
+  "clientToken": "votemesh_token",
+  "meshName": "votemesh",
+  "routeName": "database",
+  "spec": {
+    "httpRoute": {
+      "action": {
+        "targets": [
+          {
+            "virtualNode": "database_node",
+            "weight": 1
+          }
+        ]
+      },
+      "match": {
+        "prefix": "*"
+      }
+    }
+  },
+  "virtualRouterName": "database_router"
+}

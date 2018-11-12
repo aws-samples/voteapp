@@ -1,0 +1,21 @@
+{
+  "clientToken": "votemesh_token",
+  "meshName": "votemesh",
+  "routeName": "queue",
+  "spec": {
+    "httpRoute": {
+      "action": {
+        "targets": [
+          {
+            "virtualNode": "queue_node",
+            "weight": 1
+          }
+        ]
+      },
+      "match": {
+        "prefix": "*"
+      }
+    }
+  },
+  "virtualRouterName": "queue_router"
+}
