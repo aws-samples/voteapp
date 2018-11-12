@@ -1,5 +1,7 @@
 #!/bin/sh
 
+shopt -s nullglob
+
 # Ensure your AWS profile (specified in meshvars.sh) sets the default region
 if [ -f meshvars.sh ]; then
     source meshvars.sh
@@ -21,19 +23,17 @@ err() {
 create_mesh() {
     print "Creating service mesh"
     print "====================="
-    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-mesh --cli-input-json file:///$DIR/config/mesh/mesh.json )
+    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-mesh --cli-input-json file:///$DIR/config/mesh/mesh.json --query mesh.metadata.arn --output text )
     print "${cmd[@]}"
-    out=$("${cmd[@]}") || err "Unable to create service mesh" "$?"
-    arn=$(echo $out | jq -r '.mesh.metadata.arn')
+    arn=$("${cmd[@]}") || err "Unable to create service mesh" "$?"
     print "--> $arn"
 }
 
 create_virtual_node() {
     service=$1
-    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-virtual-node --cli-input-json file:///$DIR/config/virtualnodes/$service )
+    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-virtual-node --cli-input-json file:///$DIR/config/virtualnodes/$service --query virtualNode.metadata.arn --output text )
     print "${cmd[@]}"
-    out=$("${cmd[@]}") || err "Unable to create virtual node" "$?"
-    arn=$(echo $out | jq -r '.virtualNode.metadata.arn')
+    arn=$("${cmd[@]}") || err "Unable to create virtual node" "$?"
     print "--> $arn"
 }
 
@@ -47,10 +47,9 @@ create_virtual_nodes() {
 
 create_virtual_router() {
     service=$1
-    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-virtual-router --cli-input-json file:///$DIR/config/virtualrouters/$service )
+    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-virtual-router --cli-input-json file:///$DIR/config/virtualrouters/$service --query virtualRouter.metadata.arn --output text )
     print "${cmd[@]}"
-    out=$("${cmd[@]}") || err "Unable to create virtual router" "$?"
-    arn=$(echo $out | jq -r '.virtualRouter.metadata.arn')
+    arn=$("${cmd[@]}") || err "Unable to create virtual router" "$?"
     print "--> $arn"
 }
 
@@ -64,10 +63,9 @@ create_virtual_routers() {
 
 create_virtual_route() {
     service=$1
-    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-route --cli-input-json file:///$DIR/config/virtualroutes/$service )
+    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-route --cli-input-json file:///$DIR/config/virtualroutes/$service --query route.metadata.arn --output text )
     print "${cmd[@]}"
-    out=$("${cmd[@]}") || err "Unable to create virtual route" "$?"
-    arn=$(echo $out | jq -r '.route.metadata.arn')
+    arn=$("${cmd[@]}") || err "Unable to create virtual route" "$?"
     print "--> $arn"
 }
 
