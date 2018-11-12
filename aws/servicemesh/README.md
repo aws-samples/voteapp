@@ -40,6 +40,10 @@ export CLIENT_TOKEN="voting-app-token"
 * `meshvars.sh` is automatically sourced by the `deploy.sh` script in the current directory.
 * `meshvars.sh` will not be included in your commits (it's excluded by `.gitignore` for the current directory).
 
+## Apply the service mesh configuration
+
+Run `deploy.sh` under the `servicemesh` directory.
+
 
 ## Current port assignments
 
