@@ -69,10 +69,7 @@ Resources:
       Memory: !Ref 'TaskMemory'
       NetworkMode: awsvpc
       RequiresCompatibilities:
-        - EC2 
-      ExecutionRoleArn:
-        Fn::ImportValue:
-          !Join [':', [!Ref 'EnvironmentName', 'ECSTaskExecutionRole']]
+        - EC2
       TaskRoleArn:
         Fn::If:
           - 'HasCustomRole'
