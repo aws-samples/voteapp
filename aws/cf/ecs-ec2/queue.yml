@@ -111,7 +111,7 @@ Resources:
         -
           Name: xray-daemon
           Cpu: 32
-          Memory: 6
+          Memory: 64
           Image: !Ref 'XRayImageUrl'
           PortMappings:
             -
