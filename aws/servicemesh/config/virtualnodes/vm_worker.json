@@ -3,6 +3,8 @@
   "meshName": "votemesh",
   "spec": {
     "backends": [
+      "database.votemesh.local",
+      "queue.votemesh.local"
     ],
     "listeners": [
       {
