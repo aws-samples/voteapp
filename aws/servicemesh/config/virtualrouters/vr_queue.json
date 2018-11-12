@@ -1,0 +1,10 @@
+{
+  "clientToken": "votemesh_token",
+  "meshName": "votemesh",
+  "spec": {
+    "serviceNames": [
+      "queue.votemesh.local"
+    ]
+  },
+  "virtualRouterName": "queue_router"
+}
