@@ -1,5 +1,14 @@
 ## Applying the Lattice configurations
 
+### Update the AWS CLI
+
+If you haven't updated your AWS CLI for the latest service mesh model, run the following
+command from this directory:
+
+    $ aws configure add-model --service-name lattice --service-model file://aws-cli-model.json
+
+### Update environment
+
 You will need environment variables to be set. It is recommended that you create a shell script
 to export the following variables and then source it into your shell:
 
