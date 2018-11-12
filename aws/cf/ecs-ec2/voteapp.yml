@@ -554,34 +554,6 @@ Resources:
               - 'elasticloadbalancing:RegisterTargets'
             Resource: '*'
 
-  # This is a role which is used by the ECS tasks themselves.
-  ECSTaskExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: [ecs-tasks.amazonaws.com]
-          Action: ['sts:AssumeRole']
-      Path: /
-      Policies:
-        - PolicyName: AmazonECSTaskExecutionRolePolicy
-          PolicyDocument:
-            Statement:
-            - Effect: Allow
-              Action:
-                # Allow the ECS Tasks to download images from ECR
-                - 'ecr:GetAuthorizationToken'
-                - 'ecr:BatchCheckLayerAvailability'
-                - 'ecr:GetDownloadUrlForLayer'
-                - 'ecr:BatchGetImage'
-
-                # Allow the ECS tasks to upload logs to CloudWatch
-                - 'logs:CreateLogStream'
-                - 'logs:PutLogEvents'
-              Resource: '*'
-
   # A role used by AWS Autoscaling to get the stats
   # service, and update it to increase or decrease the number of containers
   AutoscalingRole:
@@ -636,14 +608,9 @@ Outputs:
     Value: !GetAtt 'ECSRole.Arn'
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ECSRole' ] ]
-  ECSTaskExecutionRole:
-    Description: The ARN of the ECS role
-    Value: !GetAtt 'ECSTaskExecutionRole.Arn'
-    Export:
-      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ECSTaskExecutionRole' ] ]
   AutoscalingRole:
     Description: The ARN of the ECS role
-    Value: !GetAtt 'ECSTaskExecutionRole.Arn'
+    Value: !GetAtt 'ECSRole.Arn'
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'AutoscalingRole' ] ]
   PublicListener:

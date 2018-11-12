@@ -70,9 +70,6 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - EC2
-      ExecutionRoleArn:
-        Fn::ImportValue:
-          !Join [':', [!Ref 'EnvironmentName', 'ECSTaskExecutionRole']]
       TaskRoleArn:
         Fn::If:
           - 'HasCustomRole'
