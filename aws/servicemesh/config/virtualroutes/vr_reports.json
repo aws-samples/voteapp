@@ -5,7 +5,7 @@
   "spec": {
     "httpRoute": {
       "action": {
-        "targets": [
+        "weightedTargets": [
           {
             "virtualNode": "reports_node",
             "weight": 1
