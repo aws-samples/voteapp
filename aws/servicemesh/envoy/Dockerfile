@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /envoyconfig
+RUN umask 000 && mkdir /envoyconfig
 ADD startup.sh /envoyconfig
 
 ENTRYPOINT [ "/envoyconfig/startup.sh"]
