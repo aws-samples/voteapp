@@ -1,5 +1,5 @@
 #!/bin/bash
-bootstrap_file_name="envoy-bootstrap.yaml"
+bootstrap_file_name="/envoyconfig/envoy-bootstrap.yaml"
 if [ ! -f $bootstrap_file_name ]; then
   echo "No '$bootstrap_file_name' file found. Creating one!"
   if [ -z "$LATTICE_VIRTUAL_NODE_UID" ]; then
