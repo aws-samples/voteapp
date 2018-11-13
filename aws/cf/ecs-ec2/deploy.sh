@@ -16,7 +16,8 @@ stacks=(
 
 sanity_check() {
     if [ "$AWS_DEFAULT_REGION" != "us-west-2" ]; then
-        err "Only us-west-2 is supported at this time.  (Current default region: $AWS_DEFAULT_REGION)"
+        echo "Only us-west-2 is supported at this time.  (Current default region: $AWS_DEFAULT_REGION)" >&2
+        exit 1
     fi
 }
 
