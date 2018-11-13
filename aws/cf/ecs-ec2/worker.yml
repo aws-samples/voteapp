@@ -18,6 +18,11 @@ Parameters:
     Default: subfuzion/vote-worker:1.0.3
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
+  XRayImageUrl:
+    Type: String
+    Default: subfuzion/vote-xray:1
+    Description: The url of a docker image that contains the X-Ray daemon that will
+                 handle the traffic for this service
   TaskCpu:
     Type: Number
     Default: 512
