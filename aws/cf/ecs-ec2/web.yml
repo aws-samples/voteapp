@@ -97,6 +97,21 @@ Resources:
               awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
+        -
+          Name: xray-daemon
+          Cpu: 32
+          Memory: 64
+          Image: !Ref 'XRayImageUrl'
+          PortMappings:
+            -
+              ContainerPort: 2000
+              Protocol: udp
+          LogConfiguration:
+            LogDriver: 'awslogs'
+            Options:
+              awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'xray'
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
