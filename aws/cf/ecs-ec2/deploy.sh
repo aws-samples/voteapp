@@ -32,17 +32,24 @@ sanity_check() {
     fi
 }
 
+deploy_node() {
+    node=$1
+    print "deploy node: $node ($uid)"
+    uid=$(aws --endpoint-url $LATTICE_FRONTEND lattice describe-virtual-node --mesh-name votemesh --virtual-node-name ${node}_node --query virtualNode.metadata.uid --output text)
+    aws cloudformation deploy --stack-name=voteapp-$node --template-file=$node.yml --parameter-overrides LatticeVirtualNodeUID=$uid
+}
+
 setup() {
     errors=0
     i=0
     total=${#stacks[@]}
     for s in ${stacks[@]}; do
         ((i++))
-        printf "\nDeploying $i of $total: $s.yml"
+        printf "\nDeploying $i of $total: $s.yml\n"
         if [ "$s" == "voteapp" ]; then
             aws cloudformation deploy --stack-name=voteapp --template-file=$s.yml --capabilities=CAPABILITY_IAM
         else
-            aws cloudformation deploy --stack-name=voteapp-$s --template-file=$s.yml
+            deploy_node $s
         fi
 
         if [ $? -gt 0 ]; then ((errors++)); fi
