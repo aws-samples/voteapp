@@ -1,6 +1,13 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Voting App vote service
 Parameters:
+  LatticeVirtualNodeUID:
+    Description: Lattice virtual node UID (required)
+    Type: String
+  Ec2Region:
+    Description: Lattice regional endpoint (currently only us-west-2 is supported)
+    Type: String
+    Default: us-west-2
   EnvironmentName:
     Type: String
     Default: voteapp
@@ -97,14 +104,67 @@ Resources:
               awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
-        -
-          Name: xray-daemon
+        - Name: "envoy"
+          Image: "envoyproxy/envoy"
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: LogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
+          Environment:
+            - Name: "LATTICE_VIRTUAL_NODE_UID"
+              Value: { Ref: LatticeVirtualNodeUID }
+            - Name: "EC2_REGION"
+              Value: { Ref: Ec2Region }
+            - Name: "ENVOY_SERVICE_CLUSTER"
+              Value:
+                  Fn::Join:
+                      - '.'
+                      - - !Ref 'ServiceName'
+                        - Fn::ImportValue:
+                            Fn::Join:
+                              - ':'
+                              - - !Ref 'EnvironmentName'
+                                - 'ServicesDomain'
+            - Name: "LOG_LEVEL"
+              Value: "debug"
+          User: "1337"
+          VolumesFrom:
+            - SourceContainer: !Ref 'ServiceName'
+        - Name: "proxyinit"
+          Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: LogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "router"]]
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_APP_PORTS"
+              Value: "8020"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+        - Name: xray-daemon
           Cpu: 32
           Memory: 64
           Image: !Ref 'XRayImageUrl'
           PortMappings:
-            -
-              ContainerPort: 2000
+            - ContainerPort: 2000
               Protocol: udp
           LogConfiguration:
             LogDriver: 'awslogs'
