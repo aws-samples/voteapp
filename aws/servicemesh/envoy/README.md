@@ -1,6 +1,6 @@
 # Envoy Docker Image for Lattice
 
-This is a Docker file based off of Envoy that has an entrypoint that writes out a config for boostraping the Envoy with Lattice Service Mesh. It has some environment variables that are used in the creation of the bootstrap file.
+This is a Docker file based off of Envoy that has an entrypoint that writes out a config for boostrapping Envoy with Lattice Service Mesh. It has some environment variables that are used in the creation of the bootstrap file.
 
 - ```LATTICE_VIRTUAL_NODE_UID``` - _**Required**_ for Envoy to idetifiy itself to the Lattice control plane. If you do not set this value the startup script will exit. **Example**: ```4af36ad7-18c7-41d0-838a-32a0168deb90```
 
