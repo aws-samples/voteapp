@@ -14,9 +14,20 @@ stacks=(
     "web"
 )
 
+print() {
+    printf "[MESH] %s\n" "$*"
+}
+
+err() {
+    msg="Error: $1"
+    print $msg
+    code=${2:-"1"}
+    exit $code
+}
+
 sanity_check() {
     if [ "$AWS_DEFAULT_REGION" != "us-west-2" ]; then
-        printf "\nOnly us-west-2 is supported at this time. Please export AWS_DEFAULT_REGION=us-west-2. (Current default region: $AWS_DEFAULT_REGION)\n\n"
+        err "Only us-west-2 is supported at this time. Please export AWS_DEFAULT_REGION=us-west-2. (Current default region: $AWS_DEFAULT_REGION)"
         exit
     fi
 }
