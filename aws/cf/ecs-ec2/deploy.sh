@@ -16,7 +16,7 @@ stacks=(
 
 sanity_check() {
     if [ "$AWS_DEFAULT_REGION" != "us-west-2" ]; then
-        printf "\nCurrently Service Mesh is only supported in us-west-2 region.  (Please export AWS_DEFAULT_REGION=us-west-2 variable to override default region config)\n\n"
+        printf "\nOnly us-west-2 is supported at this time. Please export AWS_DEFAULT_REGION=us-west-2. (Current default region: $AWS_DEFAULT_REGION)\n\n"
         exit
     fi
 }
