@@ -4,10 +4,6 @@ Parameters:
   LatticeVirtualNodeUID:
     Description: Lattice virtual node UID (required)
     Type: String
-  Ec2Region:
-    Description: Lattice regional endpoint (currently only us-west-2 is supported)
-    Type: String
-    Default: us-west-2
   EnvironmentName:
     Type: String
     Default: voteapp
@@ -115,7 +111,7 @@ Resources:
             - Name: "LATTICE_VIRTUAL_NODE_UID"
               Value: { Ref: LatticeVirtualNodeUID }
             - Name: "EC2_REGION"
-              Value: { Ref: Ec2Region }
+              Value: { Ref: "AWS::Region" }
             - Name: "ENVOY_SERVICE_CLUSTER"
               Value:
                   Fn::Join:
