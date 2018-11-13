@@ -85,8 +85,8 @@ Resources:
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
         - Name: !Ref 'ServiceName'
-          Cpu: !Ref 'TaskCpu'
-          Memory: !Ref 'TaskMemory'
+          Cpu: 440
+          Memory: 440
           Image: !Ref 'ImageUrl'
           Environment:
             - Name: DATABASE_URI
