@@ -152,6 +152,7 @@ Resources:
             - Name: "LATTICE_USE_TPROXY"
               Value: "0"
         - Name: xray-daemon
+          Essential: false
           Cpu: 32
           Memory: 64
           Image: !Ref 'XRayImageUrl'
