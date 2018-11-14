@@ -1,7 +1,7 @@
 {
   "name": "@subfuzion/database",
-  "version": "1.2.2",
-  "description": "Simple database library package (using MongoDB) for Docker Demo",
+  "version": "1.2.3",
+  "description": "Simple database library package (MongoDB) for demo",
   "main": "index.js",
   "author": "Tony Pujals <tony@subfuzion.com> (https://twitter.com/subfuzion)",
   "license": "MIT",
