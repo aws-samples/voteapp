@@ -71,47 +71,19 @@ create_virtual_routers() {
     done
 }
 
-#
-# BUG: there is a CLI bug prevent this code from working right now
-#
-# create_virtual_route() {
-#     service=$1
-#     cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-route --cli-input-json file:///$DIR/config/routes/$service --query route.metadata.uid --output text )
-#     print "${cmd[@]}"
-#     uid=$("${cmd[@]}") || err "Unable to create virtual route" "$?"
-#     print "--> $uid"
-# }
-
-# create_virtual_routes() {
-#     print "Creating virtual routes"
-#     print "======================="
-#     for service in $(ls $DIR/config/routes); do
-#         create_virtual_route $service
-#     done
-# }
-
-#
-# HACK version
-# BUG: still doesn't do any good...
-#     An error occurred (BadRequestException) when calling the CreateRoute operation: HTTP route action cannot be null/empty.
-#     [MESH] Error: Unable to create virtual route: database
-#
 create_virtual_route() {
-    route=$1
-    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-route --cli-input-json file:///$DIR/config/routes/vr_${route}.json
-        --route-name $route \
-        --virtual-router-name ${route}_router \
-        --query route.metadata.uid --output text )
+    service=$1
+    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-route --cli-input-json file:///$DIR/config/routes/$service --query route.metadata.uid --output text )
     print "${cmd[@]}"
-    uid=$("${cmd[@]}") || err "Unable to create virtual route: $route" "$?"
+    uid=$("${cmd[@]}") || err "Unable to create virtual route" "$?"
     print "--> $uid"
 }
+
 create_virtual_routes() {
     print "Creating virtual routes"
     print "======================="
-    routes=(database queue reports votes)
-    for route in ${routes[@]}; do
-        create_virtual_route $route
+    for service in $(ls $DIR/config/routes); do
+        create_virtual_route $service
     done
 }
 
