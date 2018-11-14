@@ -17,8 +17,6 @@ import (
 )
 
 const (
-	prometheusMetricsEndpoint  = "/stats/prometheus"
-	classicMetricsEndpoint     = "/stats"
 	upstreamResponseMetricName = "envoy_cluster_upstream_rq"
 	upstreamRequestMetricName  = "envoy_cluster_upstream_rq_total"
 
