@@ -15,7 +15,7 @@ Parameters:
     Description: A name for the service
   ImageUrl:
     Type: String
-    Default: subfuzion/vote-worker:1.0.3
+    Default: subfuzion/vote-worker:1.0.4
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
   XRayImageUrl:
