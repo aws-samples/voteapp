@@ -180,6 +180,8 @@ Resources:
   Service:
     Type: AWS::ECS::Service
     Properties:
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
       ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:
@@ -201,6 +203,20 @@ Resources:
             - Fn::ImportValue:
                 !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetTwo']]
       TaskDefinition: !Ref 'TaskDefinition'
+
+  ServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: 'worker'
+      DnsConfig:
+        NamespaceId:
+          Fn::ImportValue:
+            !Join [':', [!Ref 'EnvironmentName', 'ServiceDiscoveryNamespace']]
+        DnsRecords:
+        - Type: A
+          TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
 
   # Enable autoscaling for this service
   ScalableTarget:

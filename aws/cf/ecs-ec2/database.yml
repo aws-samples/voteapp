@@ -169,8 +169,9 @@ Resources:
   # as monitor the number of running tasks and replace any that have crashed
   Service:
     Type: AWS::ECS::Service
-    DependsOn: MongoListener
     Properties:
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
       ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:
@@ -192,54 +193,20 @@ Resources:
             - Fn::ImportValue:
                 !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetTwo']]
       TaskDefinition: !Ref 'TaskDefinition'
-      LoadBalancers:
-        - ContainerName: !Ref 'ServiceName'
-          ContainerPort: !Ref 'ContainerPort'
-          TargetGroupArn: !Ref 'TargetGroup'
-      
-  
-  TargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckProtocol: TCP
-      HealthyThresholdCount: 2
-      TargetType: ip
-      Name: !Ref 'ServiceName'
-      Port: 27017
-      Protocol: TCP
-      UnhealthyThresholdCount: 2
-      VpcId:
-        Fn::ImportValue:
-          !Join [':', [!Ref 'EnvironmentName', 'VPCId']]
 
-  MongoLoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  ServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
     Properties:
-      Type: network
-      Scheme: internal
-      Subnets:
-        # The load balancer is placed into the private subnets, so that traffic
-        # from the internet should not reach the load balancer as this is internal service
-        - 
+      Name: 'database'
+      DnsConfig:
+        NamespaceId:
           Fn::ImportValue:
-            !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetOne']]
-        - 
-          Fn::ImportValue:
-            !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetTwo']]
-
-  MongoListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    DependsOn:
-      - MongoLoadBalancer
-      - TargetGroup
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref 'TargetGroup'
-          Type: 'forward'
-      LoadBalancerArn: !Ref 'MongoLoadBalancer'
-      Port: 27017
-      Protocol: TCP
+            !Join [':', [!Ref 'EnvironmentName', 'ServiceDiscoveryNamespace']]
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
 
 # These are the values output by the CloudFormation template. Be careful
 # about changing any of them, because of them are exported with specific
@@ -247,7 +214,20 @@ Resources:
 
 Outputs:
   MongoURI:
-    Description: The url of the internal load balancer
-    Value: !Join ['', [ 'mongodb://', !GetAtt 'MongoLoadBalancer.DNSName', ':27017' ]]
+    Description: The url of the external load balancer
+    Value:
+      Fn::Join:
+        - ''
+        - - 'mongodb://'
+          - Fn::Join:
+                - '.'
+                - - 'database'
+                  - Fn::ImportValue:
+                      Fn::Join:
+                        - ':'
+                        - - !Ref 'EnvironmentName'
+                          - 'ServicesDomain'
+          - ':'
+          - !Ref ContainerPort
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'MongoURI' ] ]

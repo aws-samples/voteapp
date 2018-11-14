@@ -176,6 +176,8 @@ Resources:
   Service:
     Type: AWS::ECS::Service
     Properties:
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
       ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:
@@ -197,52 +199,20 @@ Resources:
             - Fn::ImportValue:
                 !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetTwo']]
       TaskDefinition: !Ref 'TaskDefinition'
-      LoadBalancers:
-        - ContainerName: !Ref 'ServiceName'
-          ContainerPort: !Ref 'ContainerPort'
-          TargetGroupArn: !Ref 'TargetGroup'
 
-  # A target group. This is used for keeping track of all the tasks, and
-  # what IP addresses / port numbers they have. You can query it yourself,
-  # to use the addresses yourself, but most often this target group is just
-  # connected to an application load balancer, or network load balancer, so
-  # it can automatically distribute traffic across all the targets.
-  TargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  ServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
     Properties:
-      HealthCheckIntervalSeconds: 6
-      HealthCheckPath: /
-      HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 2
-      TargetType: ip
-      Name: !Ref 'ServiceName'
-      Port: 80
-      Protocol: HTTP
-      UnhealthyThresholdCount: 2
-      TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: true
-        - Key: deregistration_delay.timeout_seconds
-          Value: 30
-      VpcId:
-        Fn::ImportValue:
-          !Join [':', [!Ref 'EnvironmentName', 'VPCId']]
-
-  # Create a rule on the load balancer for routing traffic to the target group
-  LoadBalancerRule:
-    Type: AWS::ElasticLoadBalancingV2::ListenerRule
-    Properties:
-      Actions:
-        - TargetGroupArn: !Ref 'TargetGroup'
-          Type: 'forward'
-      Conditions:
-        - Field: path-pattern
-          Values: [!Ref 'Path']
-      ListenerArn:
-        Fn::ImportValue:
-          !Join [':', [!Ref 'EnvironmentName', 'PrivateListenerReports']]
-      Priority: !Ref 'Priority'
+      Name: 'reports'
+      DnsConfig:
+        NamespaceId:
+          Fn::ImportValue:
+            !Join [':', [!Ref 'EnvironmentName', 'ServiceDiscoveryNamespace']]
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
 
   # Enable autoscaling for this service
   ScalableTarget:
@@ -390,3 +360,22 @@ Resources:
       ComparisonOperator: GreaterThanOrEqualToThreshold
       AlarmActions:
         - !Ref ScaleUpPolicy
+Outputs:
+  ReportsURI:
+    Description: The url of the external load balancer
+    Value:
+      Fn::Join:
+        - ''
+        - - 'http://'
+          - Fn::Join:
+                - '.'
+                - - !Ref 'ServiceName'
+                  - Fn::ImportValue:
+                      Fn::Join:
+                        - ':'
+                        - - !Ref 'EnvironmentName'
+                          - 'ServicesDomain'
+          - ':'
+          - !Ref ContainerPort
+    Export:
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ReportsURI' ] ]

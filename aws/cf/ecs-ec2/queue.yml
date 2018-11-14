@@ -169,8 +169,9 @@ Resources:
   # as monitor the number of running tasks and replace any that have crashed
   Service:
     Type: AWS::ECS::Service
-    DependsOn: RedisListener
     Properties:
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
       ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:
@@ -192,62 +193,35 @@ Resources:
             - Fn::ImportValue:
                 !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetTwo']]
       TaskDefinition: !Ref 'TaskDefinition'
-      LoadBalancers:
-        - ContainerName: !Ref 'ServiceName'
-          ContainerPort: !Ref 'ContainerPort'
-          TargetGroupArn: !Ref 'TargetGroup'
-      
-  
-  TargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckProtocol: TCP
-      HealthyThresholdCount: 2
-      TargetType: ip
-      Name: !Ref 'ServiceName'
-      Port: 6379
-      Protocol: TCP
-      UnhealthyThresholdCount: 2
-      VpcId:
-        Fn::ImportValue:
-          !Join [':', [!Ref 'EnvironmentName', 'VPCId']]
 
-  RedisLoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  ServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
     Properties:
-      Type: network
-      Scheme: internal
-      Subnets:
-        # The load balancer is placed into the private subnets, so that traffic
-        # from the internet should not reach the load balancer as this is internal service
-        - 
+      Name: 'queue'
+      DnsConfig:
+        NamespaceId:
           Fn::ImportValue:
-            !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetOne']]
-        - 
-          Fn::ImportValue:
-            !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetTwo']]
-
-  RedisListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    DependsOn:
-      - RedisLoadBalancer
-      - TargetGroup
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref 'TargetGroup'
-          Type: 'forward'
-      LoadBalancerArn: !Ref 'RedisLoadBalancer'
-      Port: 6379
-      Protocol: TCP
-
-# These are the values output by the CloudFormation template. Be careful
-# about changing any of them, because of them are exported with specific
-# names so that the other task related CF templates can use them.
+            !Join [':', [!Ref 'EnvironmentName', 'ServiceDiscoveryNamespace']]
+        DnsRecords:
+        - Type: A
+          TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
 
 Outputs:
   RedisEndpoint:
-    Description: The url of the internal load balancer
-    Value: !Join ['', [ !GetAtt 'RedisLoadBalancer.DNSName' ]]
+    Description: The url of the external load balancer
+    Value:
+      Fn::Join:
+        - ''
+        - - 'http://'
+          - Fn::Join:
+                - '.'
+                - - 'queue'
+                  - Fn::ImportValue:
+                      Fn::Join:
+                        - ':'
+                        - - !Ref 'EnvironmentName'
+                          - 'ServicesDomain'
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'RedisEndpoint' ] ]
