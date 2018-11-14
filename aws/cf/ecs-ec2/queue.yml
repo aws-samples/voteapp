@@ -215,7 +215,7 @@ Outputs:
     Value:
       Fn::Join:
         - ''
-        - - 'http://'
+        - - ''
           - Fn::Join:
                 - '.'
                 - - 'queue'
