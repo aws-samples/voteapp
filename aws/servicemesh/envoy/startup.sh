@@ -7,6 +7,11 @@ if [ ! -f $bootstrap_file_name ]; then
     exit 1;
   fi
 
+  if [ -z "$LATTICE_VIRTUAL_NODE_NAME" ]; then
+    (>&2 echo "LATTICE_VIRTUAL_NODE_NAME environment variable not set. Cannot start")
+    exit 1;
+  fi
+
   if [ -z "$EC2_REGION" ]; then
     EC2_AVAIL_ZONE=`curl --connect-timeout 2 -s http://169.254.169.254/latest/meta-data/placement/availability-zone`
     EC2_REGION="`echo \"$EC2_AVAIL_ZONE\" | sed 's/[a-z]$//'`"
@@ -16,10 +21,14 @@ if [ ! -f $bootstrap_file_name ]; then
     fi
   fi
 
-  if [ ! -z "$ENVOY_STATS_FLUSH_INTERVAL" ]; then
+  if [ -n "$ENVOY_STATS_FLUSH_INTERVAL" ]; then
     flush_interval="stats_flush_interval: $ENVOY_STATS_FLUSH_INTERVAL"
   fi
-  
+
+  echo "EC2_REGION = '$EC2_REGION'"
+  echo "LATTICE_VIRTUAL_NODE_UID = '$LATTICE_VIRTUAL_NODE_UID'"
+  echo "LATTICE_VIRTUAL_NODE_NAME = '$LATTICE_VIRTUAL_NODE_NAME'"
+  echo "ENVOY_STATS_FLUSH_INTERVAL = '$ENVOY_STATS_FLUSH_INTERVAL'"
 
   cat <<BOOTSTRAP  >> $bootstrap_file_name
 admin:
@@ -65,6 +74,8 @@ node:
    #   }
    #  }
    id: $LATTICE_VIRTUAL_NODE_UID
+   cluster: $LATTICE_VIRTUAL_NODE_NAME
+
 dynamic_resources:
   # Configure ADS, then declare that clusters and routes should also come from
   # Lattice. Lattice will inline

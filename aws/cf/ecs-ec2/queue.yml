@@ -110,7 +110,7 @@ Resources:
               Value: { Ref: LatticeVirtualNodeUID }
             - Name: "EC2_REGION"
               Value: { Ref: "AWS::Region" }
-            - Name: "ENVOY_SERVICE_CLUSTER"
+            - Name: "LATTICE_VIRTUAL_NODE_NAME"
               Value:
                   Fn::Join:
                       - '.'
