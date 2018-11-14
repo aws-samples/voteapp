@@ -1,17 +1,18 @@
 // Exponential backoff implementation
 
-const DefaultRetries = 5;
+const DefaultRetries = 6;
+const DefaultTimeFactor = 1000; // ms
 const DefaultStrategy = exponentialStrategy;
 
 /**
  * Create a new instance of Backoff.
  */
 class Backoff {
-  constructor(func, options) {
-    if (typeof func != 'function') throw new Error('arg must be a function: func');
-    this.func = func;
+  constructor(connectFunc, options) {
+    if (typeof connectFunc != 'function') throw new Error('arg must be a function: func');
+    this.connectFunc = connectFunc;
     this.options = Object.assign({
-      timeFactor: 100,
+      timeFactor: DefaultTimeFactor,
       retries: DefaultRetries,
       strategy: DefaultStrategy,
       retryIf: undefined
@@ -21,11 +22,11 @@ class Backoff {
   async connect() {
     let counter = 0;
 
-    let func = this.func;
+    let connectFunc = this.connectFunc;
     let promise = () => {
       return new Promise(async (resolve, reject) => {
         try {
-          resolve(func());
+          resolve(connectFunc());
         } catch (err) {
           reject(err);
         }
@@ -69,7 +70,7 @@ function exponentialStrategy(counter, maxRetries, factor) {
     return -1;
   }
   let jitter = Math.random();
-  return ((2 ^ counter) + jitter) * factor;
+  return ((2 ** counter) + jitter) * factor;
 }
 
 

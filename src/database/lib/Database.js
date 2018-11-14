@@ -111,10 +111,16 @@ class Database {
 
   /**
    * Establish a connection to the database.
+   * @param options - the backoff options
    * @throws {Error} Connection error.
    * @return {Promise<void>}
    */
-  async connect() {
+  async connect(options) {
+    let connectOpts = Object.assign({
+      retryIf: err => err.name === 'MongoNetworkError' 
+
+    }, options);
+
     if (this._isConnected) {
       throw new Error('Already connected');
     }
@@ -125,7 +131,7 @@ class Database {
       that._client = await Client.connect(that.connectionURL, opts);
       that._instance = await that._client.db(that.config.db);
       that._isConnected = true;
-    }, { retryIf: err => err.name === 'MongoNetworkError' });
+    }, connectOpts);
 
     await backoff.connect();
   }
