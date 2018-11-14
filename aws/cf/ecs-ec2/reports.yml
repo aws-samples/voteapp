@@ -102,7 +102,7 @@ Resources:
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
         - Name: "envoy"
-          Image: "envoyproxy/envoy"
+          Image: "subfuzion/lettuce"
           Essential: true
           LogConfiguration:
             LogDriver: "awslogs"
