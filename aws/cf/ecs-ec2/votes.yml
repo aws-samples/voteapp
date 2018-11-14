@@ -56,6 +56,10 @@ Parameters:
     Default: ""
     Description: (Optional) An IAM role to give the service's containers if the code within needs to
                  access other AWS resources like S3 buckets, DynamoDB tables, etc
+  RedisPORT:
+    Type: Number
+    Default: 6379
+    Description: (Optional) Redis Queue port number
 
 Conditions:
   HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
@@ -94,7 +98,7 @@ Resources:
                 Fn::ImportValue:
                   !Join [':', [!Ref 'EnvironmentName', 'RedisEndpoint']]
             - Name: QUEUE_PORT
-              Value: 6379
+              Value: !Ref 'RedisPORT'
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:
