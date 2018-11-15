@@ -4,7 +4,7 @@
   "description": "Simple database library package (MongoDB) for demo",
   "main": "index.js",
   "author": "Tony Pujals <tony@subfuzion.com> (https://twitter.com/subfuzion)",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/subfuzion/node-mongodb-voting.git"

@@ -3,10 +3,10 @@
   "version": "1.0.3",
   "description": "Voting app for Docker Demo",
   "author": "Tony Pujals <tony@subfuzion.com> (https://twitter.com/subfuzion)",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/subfuzion/node-vote.git"
+    "url": "https://github.com/aws-samples/voting-app.git"
   },
   "scripts": {
     "start": "node app.js",

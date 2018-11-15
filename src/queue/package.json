@@ -4,7 +4,7 @@
   "description": "Simple queue based on Redis for Docker Demo",
   "main": "index.js",
   "author": "Tony Pujals <tony@subfuzion.com> (https://twitter.com/subfuzion)",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/subfuzion/node-redis-queue.git"
