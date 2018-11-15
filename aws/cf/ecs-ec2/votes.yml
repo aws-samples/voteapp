@@ -114,7 +114,7 @@ Resources:
             LogDriver: "awslogs"
             Options:
               awslogs-group: !Ref 'LogGroup'
-              awslogs-region: !Ref: 'AWS::Region'
+              awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: 'envoy'
           Environment:
             - Name: "LATTICE_VIRTUAL_NODE_UID"
