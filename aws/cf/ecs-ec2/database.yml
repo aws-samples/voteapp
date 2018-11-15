@@ -127,7 +127,7 @@ Resources:
               Value:
                   Fn::Join:
                       - '.'
-                      - - !Ref 'ServiceName'
+                      - - 'database'
                         - Fn::ImportValue:
                             Fn::Join:
                               - ':'
@@ -235,7 +235,7 @@ Outputs:
         - - 'http://'
           - Fn::Join:
                 - '.'
-                - - 'mongo'
+                - - 'database'
                   - Fn::ImportValue:
                       Fn::Join:
                         - ':'
