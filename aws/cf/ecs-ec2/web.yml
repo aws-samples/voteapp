@@ -175,8 +175,6 @@ Resources:
   Service:
     Type: AWS::ECS::Service
     DependsOn: LoadBalancerRule
-    ServiceRegistries:
-      - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
     Properties:
       ServiceName: !Ref 'ServiceName'
       Cluster:
