@@ -6,11 +6,11 @@
 
 stacks=(
     "voteapp"
-    "database"
-    "queue"
-    "worker"
+    # "database"
+    # "queue"
+    # "worker"
     "reports"
-    "votes"
+    # "votes"
     "web"
 )
 
