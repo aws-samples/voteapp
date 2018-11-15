@@ -74,8 +74,11 @@ func (coll *Collector) collectHistograms(upstreamClusters []string) (HistogramsB
 				for _, quantiles := range stat.Histograms.ComputedQuantiles {
 					if quantiles.Name == "cluster."+string(cluster)+".upstream_rq_time" {
 						for i, valPair := range quantiles.Values {
-							q := fmt.Sprintf("%g", stat.Histograms.SupportedQuantiles[i])
-							h[cluster][q] = valPair.Interval
+							qName := fmt.Sprintf("%g", stat.Histograms.SupportedQuantiles[i])
+							if _, ok := h[cluster]; !ok {
+								h[cluster] = make(Histogram)
+							}
+							h[cluster][qName] = valPair.Interval
 						}
 					}
 				}

@@ -1,4 +1,4 @@
-package cloudwatch
+package internal
 
 import (
 	"github.com/aws/aws-sdk-go/aws/client"
@@ -9,13 +9,13 @@ import (
 
 const cloudwatchMetricNamespace = "Lattice"
 
-type Client struct {
+type CloudwatchSubmitter struct {
 	Session           client.ConfigProvider
 	DownstreamService string
 	TaskID            string
 }
 
-func (c *Client) Submit(counters envoy.CountersByUpstream, histograms envoy.HistogramsByUpstream) error {
+func (c *CloudwatchSubmitter) Submit(counters envoy.CountersByUpstream, histograms envoy.HistogramsByUpstream) error {
 	cwClient := cloudwatch.New(c.Session)
 
 	for upstreamCluster, ctrs := range counters {
@@ -33,29 +33,24 @@ func (c *Client) Submit(counters envoy.CountersByUpstream, histograms envoy.Hist
 		data := []*cloudwatch.MetricDatum{
 			new(cloudwatch.MetricDatum).
 				SetMetricName("UpstreamRequests").
+				SetStorageResolution(1).
 				SetDimensions(dimensions).
-				SetValue(ctrs.UpstreamReq).
-				SetStorageResolution(1),
+				SetValue(ctrs.UpstreamReq),
 			new(cloudwatch.MetricDatum).
 				SetMetricName("Upstream2xxResponses").
+				SetStorageResolution(1).
 				SetDimensions(dimensions).
-				SetValue(ctrs.UpstreamResp2xx).
-				SetStorageResolution(1),
+				SetValue(ctrs.UpstreamResp2xx),
 			new(cloudwatch.MetricDatum).
 				SetMetricName("Upstream4xxResponses").
+				SetStorageResolution(1).
 				SetDimensions(dimensions).
-				SetValue(ctrs.UpstreamResp4xx).
-				SetStorageResolution(1),
+				SetValue(ctrs.UpstreamResp4xx),
 			new(cloudwatch.MetricDatum).
 				SetMetricName("Upstream5xxResponses").
+				SetStorageResolution(1).
 				SetDimensions(dimensions).
-				SetValue(ctrs.UpstreamResp5xx).
-				SetStorageResolution(1),
-			new(cloudwatch.MetricDatum).
-				SetMetricName("Upstream4xxResponses").
-				SetDimensions(dimensions).
-				SetValue(ctrs.UpstreamResp4xx).
-				SetStorageResolution(1),
+				SetValue(ctrs.UpstreamResp5xx),
 		}
 
 		if _, err := cwClient.PutMetricData(
@@ -86,9 +81,9 @@ func (c *Client) Submit(counters envoy.CountersByUpstream, histograms envoy.Hist
 			data = append(data,
 				new(cloudwatch.MetricDatum).
 					SetMetricName("UpstreamResponseTimeP"+quantile).
+					SetStorageResolution(1).
 					SetDimensions(dimensions).
-					SetValue(val).
-					SetStorageResolution(1),
+					SetValue(val),
 			)
 		}
 
