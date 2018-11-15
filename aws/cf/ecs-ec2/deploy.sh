@@ -14,8 +14,8 @@
 #     "web"
 # )
 stacks=(
-    "voteapp"
-    "reports"
+#    "voteapp"
+#    "reports"
     "web"
 )
 
