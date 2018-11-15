@@ -2,7 +2,7 @@ const assert = require('assert');
 const axios = require('axios');
 const Database = require('@subfuzion/database').Database;
 
-suite('vote tests', () => {
+suite('reports tests', () => {
   let ax = axios.create({
     baseURL: 'http://reports:3000/'
   });
@@ -10,15 +10,8 @@ suite('vote tests', () => {
   let votes_a = 3;
   let votes_b = 2;
 
-  let db;
-
   before(async function() {
     this.timeout(10 * 1000);
-
-    // create database using the test environment
-    let dbConfig = Database.createStdConfig();
-    db = new Database(dbConfig);
-    await db.connect();
 
     // initialize test data
     let votes = [];
@@ -29,17 +22,25 @@ suite('vote tests', () => {
       votes.push({ vote: 'b' });
     }
 
-    await Promise.all(votes.map(vote => db.updateVote(vote)));
+    // post votes
+    await Promise.all(votes.map(async (vote) => {
+      let resp = await ax.post('/vote', vote);
+      console.log(resp.data);
+    }));
   });
 
   after(async () => {
+    this.timeout(5 * 1000);
     // for clean up, drop database created using the test environment
+    let dbConfig = Database.createStdConfig();
+    let db = new Database(dbConfig);
+    await db.connect();
     await db.instance.dropDatabase();
     await db.close();
   });
 
   test('tally votes', async () => {
-    // test the reports results api
+    // test the reports /results api
     let resp = await ax.get('/results');
     assert.ok(resp.data.success);
     let tally = resp.data.result;
