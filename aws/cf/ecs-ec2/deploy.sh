@@ -15,7 +15,7 @@
 # )
 stacks=(
 #    "voteapp"
-#    "reports"
+    "reports"
     "web"
 )
 
