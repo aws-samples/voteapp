@@ -34,8 +34,8 @@ sanity_check() {
 
 deploy_node() {
     node=$1
-    print "deploy node: $node ($uid)"
     uid=$(aws --endpoint-url $LATTICE_FRONTEND lattice describe-virtual-node --mesh-name votemesh --virtual-node-name ${node}_node --query virtualNode.metadata.uid --output text)
+    print "deploy node: $node ($uid)"
     aws cloudformation deploy --stack-name=voteapp-$node --template-file=$node.yml --parameter-overrides LatticeVirtualNodeUID=$uid
 }
 
