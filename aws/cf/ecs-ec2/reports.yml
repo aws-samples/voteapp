@@ -88,6 +88,9 @@ Resources:
           Cpu: 440
           Memory: 440
           Image: !Ref 'ImageUrl'
+          Environment:
+            - Name: PORT
+              Value: !Ref 'ContainerPort'
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:

@@ -73,8 +73,8 @@ printinfo() {
         --query 'Stacks[0].Outputs[?OutputKey==ExternalUrl].OutputValue' --output text)
     printf "\nSuccess: voteapp deployed, public endpoint:\n%s\n" "$ep"
 
-    printf "\nTo vote, run:\n%s\n" "docker run -it --rm -e VOTE_API_URI=\"${ep}\" subfuzion/voter vote"
-    printf "\nTo get vote results, run:\n%s\n" "docker run -it --rm -e VOTE_API_URI=\"${ep}\" subfuzion/voter results"
+    printf "\nTo vote, run:\n%s\n" "docker run -it --rm -e WEB_URI=\"${ep}\" subfuzion/vote vote"
+    printf "\nTo get vote results, run:\n%s\n" "docker run -it --rm -e WEB_URI=\"${ep}\" subfuzion/vote results"
 }
 
 # deploy stacks and print results
