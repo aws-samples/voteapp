@@ -1,5 +1,8 @@
 node_modules/
-*error.log
 vendor/
+*error.log
 *~
 *.sw[a-z]
+
+# binaries
+envoy_cloudwatch_agent

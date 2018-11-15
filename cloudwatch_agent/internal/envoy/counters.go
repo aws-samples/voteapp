@@ -51,11 +51,10 @@ func (coll *Collector) collectCounters() (CountersByUpstream, error) {
 				upstreamCluster = label.GetValue()
 			}
 		}
-		c, ok := counters[upstreamCluster]
-		if !ok {
-			c = new(Counters)
-			counters[upstreamCluster] = c
+		if _, ok := counters[upstreamCluster]; !ok {
+			counters[upstreamCluster] = new(Counters)
 		}
+		c := counters[upstreamCluster]
 
 		// Collect response codes by metric now
 		for _, label := range metric.GetLabel() {
@@ -82,7 +81,12 @@ func (coll *Collector) collectCounters() (CountersByUpstream, error) {
 		for _, label := range metric.GetLabel() {
 			if label.GetName() == "envoy_cluster_name" {
 				upstreamCluster = label.GetValue()
-				counters[upstreamCluster].UpstreamReq = metric.GetCounter().GetValue()
+
+				if _, ok := counters[upstreamCluster]; !ok {
+					counters[upstreamCluster] = new(Counters)
+				}
+				c := counters[upstreamCluster]
+				c.UpstreamReq = metric.GetCounter().GetValue()
 			}
 		}
 	}
