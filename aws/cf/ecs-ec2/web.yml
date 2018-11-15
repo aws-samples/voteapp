@@ -97,6 +97,8 @@ Resources:
               Value:
                 Fn::ImportValue:
                   !Join [':', [!Ref 'EnvironmentName', 'ReportsURI']]
+            - Name: "PORT"
+              Value: { Ref: ContainerPort }
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:
@@ -111,8 +113,8 @@ Resources:
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: !Ref: 'LogGroup'
-              awslogs-region: !Ref: 'AWS::Region'
+              awslogs-group: !Ref  'LogGroup'
+              awslogs-region: !Ref  'AWS::Region'
               awslogs-stream-prefix: 'envoy'
           Environment:
             - Name: "LATTICE_VIRTUAL_NODE_UID"
@@ -141,7 +143,7 @@ Resources:
             LogDriver: "awslogs"
             Options:
               awslogs-group: !Ref 'LogGroup'
-              awslogs-region: !Ref: 'AWS::Region'
+              awslogs-region: !Ref  'AWS::Region'
               awslogs-stream-prefix: 'router'
           LinuxParameters:
             Capabilities:
@@ -181,9 +183,9 @@ Resources:
   Service:
     Type: AWS::ECS::Service
     DependsOn: LoadBalancerRule
-    ServiceRegistries:
-      - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
     Properties:
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
       ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:
