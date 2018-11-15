@@ -1,6 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Voting App vote service
 Parameters:
+  LatticeVirtualNodeUID:
+    Description: Lattice virtual node UID (required)
+    Type: String
   EnvironmentName:
     Type: String
     Default: voteapp
@@ -12,13 +15,18 @@ Parameters:
     Description: A name for the service
   ImageUrl:
     Type: String
-    Default: subfuzion/vote-web:1.0.3
+    Default: subfuzion/vote-web:1.0.4
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
   ContainerPort:
     Type: Number
     Default: 3000
     Description: What port number the application inside the docker container is binding to
+  XRayImageUrl:
+    Type: String
+    Default: subfuzion/vote-xray:1
+    Description: The url of a docker image that contains the X-Ray daemon that will
+                 handle the traffic for this service
   ContainerCpu:
     Type: Number
     Default: 1024
@@ -77,8 +85,8 @@ Resources:
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
         - Name: !Ref 'ServiceName'
-          Cpu: !Ref 'ContainerCpu'
-          Memory: !Ref 'ContainerMemory'
+          Cpu: 440
+          Memory: 440
           Image: !Ref 'ImageUrl'
           Environment:
             - Name: VOTES_API_URI
@@ -97,14 +105,68 @@ Resources:
               awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
-        -
-          Name: xray-daemon
+        - Name: "envoy"
+          Image: "subfuzion/lettuce"
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: LogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
+          Environment:
+            - Name: "LATTICE_VIRTUAL_NODE_UID"
+              Value: { Ref: LatticeVirtualNodeUID }
+            - Name: "EC2_REGION"
+              Value: { Ref: "AWS::Region" }
+            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+              Value:
+                  Fn::Join:
+                      - '.'
+                      - - !Ref 'ServiceName'
+                        - Fn::ImportValue:
+                            Fn::Join:
+                              - ':'
+                              - - !Ref 'EnvironmentName'
+                                - 'ServicesDomain'
+            - Name: "LOG_LEVEL"
+              Value: "debug"
+          User: "1337"
+          VolumesFrom:
+            - SourceContainer: !Ref 'ServiceName'
+        - Name: "proxyinit"
+          Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: LogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "router"]]
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_APP_PORTS"
+              Value: "8020"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+        - Name: xray-daemon
+          Essential: false
           Cpu: 32
           Memory: 64
           Image: !Ref 'XRayImageUrl'
           PortMappings:
-            -
-              ContainerPort: 2000
+            - ContainerPort: 2000
               Protocol: udp
           LogConfiguration:
             LogDriver: 'awslogs'
@@ -119,6 +181,8 @@ Resources:
   Service:
     Type: AWS::ECS::Service
     DependsOn: LoadBalancerRule
+    ServiceRegistries:
+      - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
     Properties:
       ServiceName: !Ref 'ServiceName'
       Cluster:
@@ -145,6 +209,20 @@ Resources:
         - ContainerName: !Ref 'ServiceName'
           ContainerPort: !Ref 'ContainerPort'
           TargetGroupArn: !Ref 'TargetGroup'
+
+  ServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: 'web'
+      DnsConfig:
+        NamespaceId:
+          Fn::ImportValue:
+            !Join [':', [!Ref 'EnvironmentName', 'ServiceDiscoveryNamespace']]
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
 
   # A target group. This is used for keeping track of all the tasks, and
   # what IP addresses / port numbers they have. You can query it yourself,

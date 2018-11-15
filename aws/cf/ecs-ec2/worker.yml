@@ -1,6 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Voting App worker service
 Parameters:
+  LatticeVirtualNodeUID:
+    Description: Lattice virtual node UID (required)
+    Type: String
   EnvironmentName:
     Type: String
     Default: voteapp
@@ -12,9 +15,14 @@ Parameters:
     Description: A name for the service
   ImageUrl:
     Type: String
-    Default: subfuzion/vote-worker:1.0.3
+    Default: subfuzion/vote-worker:1.0.4
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
+  XRayImageUrl:
+    Type: String
+    Default: subfuzion/vote-xray:1
+    Description: The url of a docker image that contains the X-Ray daemon that will
+                 handle the traffic for this service
   TaskCpu:
     Type: Number
     Default: 512
@@ -77,8 +85,8 @@ Resources:
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
         - Name: !Ref 'ServiceName'
-          Cpu: !Ref 'TaskCpu'
-          Memory: !Ref 'TaskMemory'
+          Cpu: 440
+          Memory: 440
           Image: !Ref 'ImageUrl'
           Environment:
             - Name: DATABASE_URI
@@ -97,14 +105,68 @@ Resources:
               awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
-        -
-          Name: xray-daemon
+        - Name: "envoy"
+          Image: "subfuzion/lettuce"
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: LogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
+          Environment:
+            - Name: "LATTICE_VIRTUAL_NODE_UID"
+              Value: { Ref: LatticeVirtualNodeUID }
+            - Name: "EC2_REGION"
+              Value: { Ref: "AWS::Region" }
+            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+              Value:
+                  Fn::Join:
+                      - '.'
+                      - - !Ref 'ServiceName'
+                        - Fn::ImportValue:
+                            Fn::Join:
+                              - ':'
+                              - - !Ref 'EnvironmentName'
+                                - 'ServicesDomain'
+            - Name: "LOG_LEVEL"
+              Value: "debug"
+          User: "1337"
+          VolumesFrom:
+            - SourceContainer: !Ref 'ServiceName'
+        - Name: "proxyinit"
+          Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: LogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "router"]]
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_APP_PORTS"
+              Value: "8020"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+        - Name: xray-daemon
+          Essential: false
           Cpu: 32
           Memory: 64
           Image: !Ref 'XRayImageUrl'
           PortMappings:
-            -
-              ContainerPort: 2000
+            - ContainerPort: 2000
               Protocol: udp
           LogConfiguration:
             LogDriver: 'awslogs'
@@ -119,6 +181,8 @@ Resources:
   Service:
     Type: AWS::ECS::Service
     Properties:
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
       ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:
@@ -140,6 +204,20 @@ Resources:
             - Fn::ImportValue:
                 !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetTwo']]
       TaskDefinition: !Ref 'TaskDefinition'
+
+  ServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: 'worker'
+      DnsConfig:
+        NamespaceId:
+          Fn::ImportValue:
+            !Join [':', [!Ref 'EnvironmentName', 'ServiceDiscoveryNamespace']]
+        DnsRecords:
+        - Type: A
+          TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
 
   # Enable autoscaling for this service
   ScalableTarget:

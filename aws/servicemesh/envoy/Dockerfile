@@ -1,8 +1,11 @@
 FROM envoyproxy/envoy
 
-RUN mkdir /envoyconfig
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN umask 000 && mkdir /envoyconfig
 ADD startup.sh /envoyconfig
 
-ENTRYPOINT [ "/bin/bash", "/envoyconfig/startup.sh"]
-
-CMD [ 'envoy', '-c', '/envoyconfig/envoy-bootstrap.yaml']
+ENTRYPOINT [ "/envoyconfig/startup.sh"]
+CMD [ "envoy", "-c", "/envoyconfig/envoy-bootstrap.yaml" ]

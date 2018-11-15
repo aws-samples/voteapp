@@ -1,9 +1,14 @@
 #!/bin/bash
-bootstrap_file_name="envoy-bootstrap.yaml"
+bootstrap_file_name="/envoyconfig/envoy-bootstrap.yaml"
 if [ ! -f $bootstrap_file_name ]; then
   echo "No '$bootstrap_file_name' file found. Creating one!"
   if [ -z "$LATTICE_VIRTUAL_NODE_UID" ]; then
     (>&2 echo "LATTICE_VIRTUAL_NODE_UID environment variable not set. Cannot start")
+    exit 1;
+  fi
+
+  if [ -z "$LATTICE_VIRTUAL_NODE_NAME" ]; then
+    (>&2 echo "LATTICE_VIRTUAL_NODE_NAME environment variable not set. Cannot start")
     exit 1;
   fi
 
@@ -16,10 +21,14 @@ if [ ! -f $bootstrap_file_name ]; then
     fi
   fi
 
-  if [ ! -z "$ENVOY_STATS_FLUSH_INTERVAL" ]; then
+  if [ -n "$ENVOY_STATS_FLUSH_INTERVAL" ]; then
     flush_interval="stats_flush_interval: $ENVOY_STATS_FLUSH_INTERVAL"
   fi
-  
+
+  echo "EC2_REGION = '$EC2_REGION'"
+  echo "LATTICE_VIRTUAL_NODE_UID = '$LATTICE_VIRTUAL_NODE_UID'"
+  echo "LATTICE_VIRTUAL_NODE_NAME = '$LATTICE_VIRTUAL_NODE_NAME'"
+  echo "ENVOY_STATS_FLUSH_INTERVAL = '$ENVOY_STATS_FLUSH_INTERVAL'"
 
   cat <<BOOTSTRAP  >> $bootstrap_file_name
 admin:
@@ -65,6 +74,8 @@ node:
    #   }
    #  }
    id: $LATTICE_VIRTUAL_NODE_UID
+   cluster: $LATTICE_VIRTUAL_NODE_NAME
+
 dynamic_resources:
   # Configure ADS, then declare that clusters and routes should also come from
   # Lattice. Lattice will inline

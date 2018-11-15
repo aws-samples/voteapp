@@ -1,6 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Voting App queue service
 Parameters:
+  LatticeVirtualNodeUID:
+    Description: Lattice virtual node UID (required)
+    Type: String
   EnvironmentName:
     Type: String
     Default: voteapp
@@ -81,28 +84,80 @@ Resources:
           - !Ref 'Role'
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
-        - 
-          Name: !Ref 'ServiceName'
+        - Name: !Ref 'ServiceName'
           Cpu: 440
           Memory: 440
           Image: !Ref 'ImageUrl'
           PortMappings:
-            - 
-              ContainerPort: !Ref 'ContainerPort'
+            - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
               awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
-        -
-          Name: xray-daemon
+        - Name: "envoy"
+          Image: "subfuzion/lettuce"
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: LogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
+          Environment:
+            - Name: "LATTICE_VIRTUAL_NODE_UID"
+              Value: { Ref: LatticeVirtualNodeUID }
+            - Name: "EC2_REGION"
+              Value: { Ref: "AWS::Region" }
+            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+              Value:
+                  Fn::Join:
+                      - '.'
+                      - - !Ref 'ServiceName'
+                        - Fn::ImportValue:
+                            Fn::Join:
+                              - ':'
+                              - - !Ref 'EnvironmentName'
+                                - 'ServicesDomain'
+            - Name: "LOG_LEVEL"
+              Value: "debug"
+          User: "1337"
+          VolumesFrom:
+            - SourceContainer: !Ref 'ServiceName'
+        - Name: "proxyinit"
+          Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: { Ref: LogGroup }
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "router"]]
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_APP_PORTS"
+              Value: "8020"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+        - Name: xray-daemon
+          Essential: false
           Cpu: 32
           Memory: 64
           Image: !Ref 'XRayImageUrl'
           PortMappings:
-            -
-              ContainerPort: 2000
+            - ContainerPort: 2000
               Protocol: udp
           LogConfiguration:
             LogDriver: 'awslogs'
@@ -115,8 +170,9 @@ Resources:
   # as monitor the number of running tasks and replace any that have crashed
   Service:
     Type: AWS::ECS::Service
-    DependsOn: RedisListener
     Properties:
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
       ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:
@@ -138,62 +194,35 @@ Resources:
             - Fn::ImportValue:
                 !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetTwo']]
       TaskDefinition: !Ref 'TaskDefinition'
-      LoadBalancers:
-        - ContainerName: !Ref 'ServiceName'
-          ContainerPort: !Ref 'ContainerPort'
-          TargetGroupArn: !Ref 'TargetGroup'
-      
-  
-  TargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckIntervalSeconds: 10
-      HealthCheckProtocol: TCP
-      HealthyThresholdCount: 2
-      TargetType: ip
-      Name: !Ref 'ServiceName'
-      Port: 6379
-      Protocol: TCP
-      UnhealthyThresholdCount: 2
-      VpcId:
-        Fn::ImportValue:
-          !Join [':', [!Ref 'EnvironmentName', 'VPCId']]
 
-  RedisLoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  ServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
     Properties:
-      Type: network
-      Scheme: internal
-      Subnets:
-        # The load balancer is placed into the private subnets, so that traffic
-        # from the internet should not reach the load balancer as this is internal service
-        - 
+      Name: 'queue'
+      DnsConfig:
+        NamespaceId:
           Fn::ImportValue:
-            !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetOne']]
-        - 
-          Fn::ImportValue:
-            !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetTwo']]
-
-  RedisListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    DependsOn:
-      - RedisLoadBalancer
-      - TargetGroup
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref 'TargetGroup'
-          Type: 'forward'
-      LoadBalancerArn: !Ref 'RedisLoadBalancer'
-      Port: 6379
-      Protocol: TCP
-
-# These are the values output by the CloudFormation template. Be careful
-# about changing any of them, because of them are exported with specific
-# names so that the other task related CF templates can use them.
+            !Join [':', [!Ref 'EnvironmentName', 'ServiceDiscoveryNamespace']]
+        DnsRecords:
+        - Type: A
+          TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
 
 Outputs:
   RedisEndpoint:
-    Description: The url of the internal load balancer
-    Value: !Join ['', [ !GetAtt 'RedisLoadBalancer.DNSName' ]]
+    Description: The url of the external load balancer
+    Value:
+      Fn::Join:
+        - ''
+        - - ''
+          - Fn::Join:
+                - '.'
+                - - 'queue'
+                  - Fn::ImportValue:
+                      Fn::Join:
+                        - ':'
+                        - - !Ref 'EnvironmentName'
+                          - 'ServicesDomain'
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', 'RedisEndpoint' ] ]

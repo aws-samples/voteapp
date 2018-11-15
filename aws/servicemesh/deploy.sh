@@ -41,48 +41,48 @@ create_mesh() {
 
 create_virtual_node() {
     service=$1
-    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-virtual-node --cli-input-json file:///$DIR/config/virtualnodes/$service --query virtualNode.metadata.arn --output text )
+    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-virtual-node --cli-input-json file:///$DIR/config/virtualnodes/$service --query virtualNode.metadata.uid --output text )
     print "${cmd[@]}"
-    arn=$("${cmd[@]}") || err "Unable to create virtual node" "$?"
-    print "--> $arn"
+    uid=$("${cmd[@]}") || err "Unable to create virtual node" "$?"
+    print "--> $uid"
 }
 
 create_virtual_nodes() {
     print "Creating virtual nodes"
     print "======================"
-    for service in $DIR/config/virtualnodes/*.json; do
+    for service in $(ls $DIR/config/virtualnodes); do
         create_virtual_node $service
     done
 }
 
 create_virtual_router() {
     service=$1
-    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-virtual-router --cli-input-json file:///$DIR/config/virtualrouters/$service --query virtualRouter.metadata.arn --output text )
+    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-virtual-router --cli-input-json file:///$DIR/config/virtualrouters/$service --query virtualRouter.metadata.uid --output text )
     print "${cmd[@]}"
-    arn=$("${cmd[@]}") || err "Unable to create virtual router" "$?"
-    print "--> $arn"
+    uid=$("${cmd[@]}") || err "Unable to create virtual router" "$?"
+    print "--> $uid"
 }
 
 create_virtual_routers() {
     print "Creating virtual routers"
     print "========================"
-    for service in $DIR/config/virtualrouters/*.json; do
+    for service in $(ls $DIR/config/virtualrouters); do
         create_virtual_router $service
     done
 }
 
 create_virtual_route() {
     service=$1
-    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-route --cli-input-json file:///$DIR/config/virtualroutes/$service --query route.metadata.arn --output text )
+    cmd=( aws --endpoint-url $LATTICE_FRONTEND lattice create-route --cli-input-json file:///$DIR/config/routes/$service --query route.metadata.uid --output text )
     print "${cmd[@]}"
-    arn=$("${cmd[@]}") || err "Unable to create virtual route" "$?"
-    print "--> $arn"
+    uid=$("${cmd[@]}") || err "Unable to create virtual route" "$?"
+    print "--> $uid"
 }
 
 create_virtual_routes() {
     print "Creating virtual routes"
     print "======================="
-    for service in $DIR/config/virtualrouters/*.json; do
+    for service in $(ls $DIR/config/routes); do
         create_virtual_route $service
     done
 }
