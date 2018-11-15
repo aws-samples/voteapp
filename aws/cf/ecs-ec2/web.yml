@@ -15,7 +15,7 @@ Parameters:
     Description: The web (frontend) service name
   ImageUrl:
     Type: String
-    Default: subfuzion/vote-web:1.0.8
+    Default: subfuzion/vote-web:1.0.9
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
   ContainerPort:
@@ -105,6 +105,12 @@ Resources:
         - Name: "envoy"
           Image: "subfuzion/lettuce"
           Essential: true
+          Command:
+            - "envoy"
+            - "-c"
+            - "/envoyconfig/envoy-bootstrap.yaml"
+            - "-l"
+            - "debug"
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
