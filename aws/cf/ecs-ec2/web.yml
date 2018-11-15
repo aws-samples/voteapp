@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Voting App vote service
+Description: Voting App web service
 Parameters:
   LatticeVirtualNodeUID:
     Description: Lattice virtual node UID (required)
@@ -11,8 +11,8 @@ Parameters:
                  Used to locate other resources in the same environment.
   ServiceName:
     Type: String
-    Default: voteapi
-    Description: A name for the service
+    Default: web
+    Description: The web (frontend) service name
   ImageUrl:
     Type: String
     Default: subfuzion/vote-web:1.0.8
