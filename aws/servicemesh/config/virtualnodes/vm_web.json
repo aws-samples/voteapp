@@ -3,7 +3,6 @@
   "meshName": "votemesh",
   "spec": {
     "backends": [
-      "votes.votemesh.local",
       "reports.votemesh.local"
     ],
     "listeners": [
