@@ -20,8 +20,9 @@ Parameters:
                  will handle the traffic for this service
   ContainerPort:
     Type: Number
-    Default: 3000
+    Default: 8010
     Description: What port number the application inside the docker container is binding to
+
   XRayImageUrl:
     Type: String
     Default: subfuzion/vote-xray:1
@@ -176,6 +177,8 @@ Resources:
     Type: AWS::ECS::Service
     DependsOn: LoadBalancerRule
     Properties:
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
       ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:

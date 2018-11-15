@@ -25,7 +25,7 @@ Parameters:
                  handle the traffic for this service
   ContainerPort:
     Type: Number
-    Default: 3000
+    Default: 8030
     Description: What port number the application inside the docker container is binding to
   TaskCpu:
     Type: Number
