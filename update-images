@@ -3,6 +3,8 @@
 TAG=$(git describe --abbrev=0 --tags)
 
 packages=(
+    "database-proxy"
+    "queue-proxy"
     "worker"
     "votes"
     "reports"
