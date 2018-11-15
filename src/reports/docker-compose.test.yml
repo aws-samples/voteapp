@@ -16,7 +16,6 @@ services:
 
   reports:
     build: .
-    image: reports
     networks:
       - test_net
     depends_on:

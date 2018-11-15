@@ -23,20 +23,19 @@ suite('reports tests', () => {
     }
 
     // post votes
-    await Promise.all(votes.map(async (vote) => {
-      let resp = await ax.post('/vote', vote);
-      console.log(resp.data);
-    }));
+    // await Promise.all(votes.map(async (vote) => {
+    //   let resp = await ax.post('/vote', vote);
+    //   console.log(resp.data);
+    // }));
   });
 
   after(async () => {
-    this.timeout(5 * 1000);
     // for clean up, drop database created using the test environment
-    let dbConfig = Database.createStdConfig();
-    let db = new Database(dbConfig);
-    await db.connect();
-    await db.instance.dropDatabase();
-    await db.close();
+    // let dbConfig = Database.createStdConfig();
+    // let db = new Database(dbConfig);
+    // await db.connect();
+    // await db.instance.dropDatabase();
+    // await db.close();
   });
 
   test('tally votes', async () => {

@@ -26,9 +26,29 @@ app.get('/', (_, res) => {
 app.get('/results', async (req, res) => {
   try {
     console.log('GET /results');
-    let result = await ax.get('/results');
+
+//
+// HACK
+//
+//    let result = await ax.get('/results');
+//
+
+    console.log('HACK /results');
+    let result = {
+      data: {
+        success: true,
+        result: {
+          "a": 3,
+          "b": 2
+        }
+      }
+    };
+
+// /HACK
+
     console.log('resp: %j', result.data);
-    // just passing response through
+    // Just passing response through
+    // Expect an object with vote count: { success: true, result: { a: X, b: X } }
     res.send(result.data);
   } catch (err) {
     console.log('ERROR: GET /results: %s', err.message || err.response || err);
