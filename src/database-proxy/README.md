@@ -4,6 +4,17 @@ This is an HTTP proxy for the database service, which otherwise expects
 a connection using the Mongo protocol (`mongodb://`) usually over port
 `27017`.
 
+## Connecting to the database backend
+
+If any of the following environment variables are defined, then the values will override
+default connection values for connecting to the database backend (mongo server):
+
+    DATABASE_URI - valid mongo connection URI (default: `mongodb://database:27017/voting`)
+    If not specified, can override individual URI components:
+      DATABASE_HOST - mongo server hostname (default: `database`)
+      DATABASE_PORT - mongo connection port (default: `27017`)
+      DATABASE_NAME - mongo database name (default: `voting`)
+
 ### POST /vote
 
 This endpoint is used to cast a vote.
@@ -73,4 +84,3 @@ To view logs, run:
 When finished with tests, run:
 
     $ docker-compose -f ./docker-compose.test.yml down
-

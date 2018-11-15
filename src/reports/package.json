@@ -23,7 +23,7 @@
     "morgan": "~1.9.1"
   },
   "devDependencies": {
-    "@subfuzion/database": "1.2.3",
+    "@subfuzion/database": "1.2.4",
     "mocha": "^5.2.0"
   }
 }
