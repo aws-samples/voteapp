@@ -90,6 +90,8 @@ Resources:
           Memory: 440
           Image: !Ref 'ImageUrl'
           Environment:
+            - Name: PORT
+              Value: !Ref 'ContainerPort'
             - Name: REPORTS_URI
               Value: reports.votemesh.local
           PortMappings:
