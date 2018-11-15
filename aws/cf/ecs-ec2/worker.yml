@@ -15,7 +15,7 @@ Parameters:
     Description: A name for the service
   ImageUrl:
     Type: String
-    Default: subfuzion/vote-worker:1.0.4
+    Default: subfuzion/vote-worker:1.0.6
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
   XRayImageUrl:
@@ -75,7 +75,7 @@ Resources:
       Family: !Ref 'ServiceName'
       Cpu: !Ref 'TaskCpu'
       Memory: !Ref 'TaskMemory'
-      NetworkMode: awsvpc
+      NetworkMode: awsvpc 
       RequiresCompatibilities:
         - EC2
       TaskRoleArn:
@@ -92,7 +92,7 @@ Resources:
             - Name: DATABASE_URI
               Value:
                 Fn::ImportValue:
-                  !Join [':', [!Ref 'EnvironmentName', 'MongoURI']]
+                  !Join [':', [!Ref 'EnvironmentName', 'DatabaseProxyURI']]
             - Name: QUEUE_HOST
               Value:
                 Fn::ImportValue:
@@ -102,7 +102,7 @@ Resources:
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
-              awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
+              awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
         - Name: "envoy"
@@ -111,9 +111,9 @@ Resources:
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: { Ref: LogGroup }
-              awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'envoy'
           Environment:
             - Name: "LATTICE_VIRTUAL_NODE_UID"
               Value: { Ref: LatticeVirtualNodeUID }
@@ -140,9 +140,9 @@ Resources:
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: { Ref: LogGroup }
-              awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "router"]]
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'router'
           LinuxParameters:
             Capabilities:
               Add:
@@ -171,7 +171,7 @@ Resources:
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
-              awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
+              awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: 'xray'
 

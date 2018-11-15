@@ -25,15 +25,15 @@ Parameters:
                  handle the traffic for this service
   ContainerPort:
     Type: Number
-    Default: 27017
+    Default: 3000
     Description: What port number the application inside the docker container is binding to
   TaskCpu:
     Type: Number
-    Default: 512 
+    Default: 768
     Description: How much CPU to give the container. 1024 is 1 CPU
   TaskMemory:
     Type: Number
-    Default: 512
+    Default: 768
     Description: How much memory in megabytes to give the container
   Path:
     Type: String
@@ -84,16 +84,29 @@ Resources:
           - !Ref 'Role'
           - !Ref "AWS::NoValue"
       ContainerDefinitions:
-        - Name: !Ref 'ServiceName'
-          Cpu: 440
-          Memory: 440
-          Image: !Ref 'ImageUrl'
+        - Name: 'Http-DB-Proxy'
+          Cpu: 128
+          Memory: 128
+          Image: 'subfuzion/vote-database-proxy:1.0.6'
+          Environment: 
+            - Name: "DATABASE_URI"
+              Value: "mongodb://localhost:27017/voting"
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
-              awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'Http-DB-Proxy'
+        - Name: !Ref 'ServiceName'
+          Cpu: 440
+          Memory: 440
+          Image: !Ref 'ImageUrl'
+          LogConfiguration:
+            LogDriver: 'awslogs'
+            Options:
+              awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
         - Name: "envoy"
@@ -102,9 +115,9 @@ Resources:
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: { Ref: LogGroup }
-              awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'envoy'
           Environment:
             - Name: "LATTICE_VIRTUAL_NODE_UID"
               Value: { Ref: LatticeVirtualNodeUID }
@@ -131,16 +144,16 @@ Resources:
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: { Ref: LogGroup }
-              awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "router"]]
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'router'
           LinuxParameters:
             Capabilities:
               Add:
                 - "NET_ADMIN"
           Environment:
             - Name: "LATTICE_APP_PORTS"
-              Value: "8020"
+              Value: "3000"
             - Name: "LATTICE_ENVOY_EGRESS_PORT"
               Value: "15001"
             - Name: "LATTICE_ENVOY_INGRESS_PORT"
@@ -162,7 +175,7 @@ Resources:
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
-              awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
+              awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: 'xray'
   
@@ -214,15 +227,15 @@ Resources:
 # names so that the other task related CF templates can use them.
 
 Outputs:
-  MongoURI:
+  DatabaseProxyURI:
     Description: The url of the external load balancer
     Value:
       Fn::Join:
         - ''
-        - - 'mongodb://'
+        - - 'http://'
           - Fn::Join:
                 - '.'
-                - - 'database'
+                - - 'mongo'
                   - Fn::ImportValue:
                       Fn::Join:
                         - ':'
@@ -231,4 +244,4 @@ Outputs:
           - ':'
           - !Ref ContainerPort
     Export:
-      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'MongoURI' ] ]
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'DatabaseProxyURI' ] ]
