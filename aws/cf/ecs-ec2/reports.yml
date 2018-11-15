@@ -122,6 +122,8 @@ Resources:
                                 - 'ServicesDomain'
             - Name: "LOG_LEVEL"
               Value: "debug"
+            - Name: "PORT"
+              Value: !Ref 'ContainerPort'
           User: "1337"
           VolumesFrom:
             - SourceContainer: !Ref 'ServiceName'
