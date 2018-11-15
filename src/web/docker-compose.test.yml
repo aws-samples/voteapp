@@ -12,7 +12,7 @@ networks:
 services:
 
   sut:
-    image: vote
+    image: web
     entrypoint: node_modules/mocha/bin/mocha --ui tdd test/test.js 
     environment:
       - DATABASE_NAME=vote_test_db
@@ -24,7 +24,7 @@ services:
 
   web:
     build: .
-    image: vote
+    image: web
     environment:
       - DATABASE_NAME=vote_test_db
     networks:
