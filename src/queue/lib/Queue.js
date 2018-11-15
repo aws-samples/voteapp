@@ -24,6 +24,10 @@ class Queue extends EventEmitter {
     }
 
     // explicitly construct with the uri, if configured, else just pass the entire config
+    // TODO: retry strategies: review the following for auto-reconnect, reconnect on errors
+    // (special attention also to Amazon ElastiCache)
+    // https://github.com/luin/ioredis#auto-reconnect
+    // https://github.com/luin/ioredis#reconnect-on-error
     if (this.config.uri) {
       this._client = new Redis(this.config.uri, this._config);
     } else {
