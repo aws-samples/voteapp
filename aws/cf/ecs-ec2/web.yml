@@ -89,14 +89,8 @@ Resources:
           Memory: 440
           Image: !Ref 'ImageUrl'
           Environment:
-            - Name: VOTES_API_URI
-              Value:
-                Fn::ImportValue:
-                  !Join [':', [!Ref 'EnvironmentName', 'VotesURI']]
-            - Name: REPORTS_API_URI
-              Value:
-                Fn::ImportValue:
-                  !Join [':', [!Ref 'EnvironmentName', 'ReportsURI']]
+            - Name: REPORTS_URI
+              Value: reports.votemesh.local
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:

@@ -89,10 +89,6 @@ Resources:
           Memory: 440
           Image: !Ref 'ImageUrl'
           Environment:
-            - Name: VOTES_URI
-              Value:
-                Fn::ImportValue:
-                  !Join [':', [!Ref 'EnvironmentName', 'DatabaseProxyURI']]
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:
