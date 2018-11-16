@@ -4,19 +4,14 @@
 # Only us-west-2 is supported right now.
 : ${AWS_DEFAULT_REGION:=us-west-2}
 
-# stacks=(
+stacks=(
 #     "voteapp"
 #     "database"
 #     "queue"
 #     "worker"
 #     "reports"
 #     "votes"
-#     "web"
-# )
-stacks=(
-#    "voteapp"
-    "reports"
-    "web"
+     "web"
 )
 
 print() {
