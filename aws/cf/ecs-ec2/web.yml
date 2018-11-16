@@ -190,6 +190,7 @@ Resources:
         Fn::ImportValue:
           !Join [':', [!Ref 'EnvironmentName', 'ClusterName']]
       LaunchType: EC2
+      HealthCheckGracePeriodSeconds: 30
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 75
