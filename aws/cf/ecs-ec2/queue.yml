@@ -96,6 +96,9 @@ Resources:
               awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
+          Environment:
+            - Name: "PORT"
+              Value: { Ref: ContainerPort }
         - Name: "envoy"
           Image: "subfuzion/lettuce"
           Essential: true
