@@ -112,6 +112,10 @@ Resources:
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: 'envoy'
           Environment:
+            - Name: ENVOY_CONFIG_FILE
+              Value: /tmp/envoy.yaml
+            - Name: ENVOY_ADMIN_ACCESS_LOG_FILE
+              Value: /tmp/admin_access.log
             - Name: "LATTICE_VIRTUAL_NODE_UID"
               Value: { Ref: LatticeVirtualNodeUID }
             - Name: "EC2_REGION"
