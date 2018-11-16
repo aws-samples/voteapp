@@ -9,7 +9,7 @@ stacks=(
 #     "database"
 #     "queue"
 #     "worker"
-#     "reports"
+     "reports"
 #     "votes"
      "web"
 )
