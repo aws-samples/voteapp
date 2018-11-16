@@ -105,12 +105,6 @@ Resources:
         - Name: "envoy"
           Image: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-lattice-envoy:v1.8.0.0-beta"
           Essential: true
-          Command:
-            - "envoy"
-            - "-c"
-            - "/envoyconfig/envoy-bootstrap.yaml"
-            - "-l"
-            - "debug"
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
