@@ -30,6 +30,13 @@ sanity_check() {
     fi
 }
 
+#cleanup() {
+#    for service in $(ls $DIR/config/routes); do
+#        aws --endpoint-url $LATTICE_FRONTEND lattice delete-route --mesh-name votemesh --route-name _node 2>/dev/null
+#    done
+#    aws --endpoint-url $LATTICE_FRONTEND lattice delete-virtual-node --mesh-name votemesh --virtual-node-name queue_node 2>/dev/null
+#}
+
 create_mesh() {
     print "Creating service mesh"
     print "====================="
