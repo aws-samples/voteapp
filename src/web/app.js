@@ -50,7 +50,7 @@ app.get('/results', async (req, res) => {
     // just passing response through for now
     res.send(result.data);
   } catch (err) {
-    console.log('ERROR: POST /results: %s', err.message || err.response || err);
+    console.log('ERROR: GET /results: %s', err.message || err.response || err);
     res.status(500).send({ success: false, reason: 'internal error' });
   }
 });

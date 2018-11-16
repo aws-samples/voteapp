@@ -23,7 +23,7 @@ app.get('/', (_, res) => {
 });
 
 // results route handler
-app.get('/results', async (req, res) => {
+app.get('/results', async (_, res) => {
   try {
     console.log('GET /results');
 
