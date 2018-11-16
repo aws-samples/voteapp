@@ -7,12 +7,14 @@ const port = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 
+let votesURI = process.env.VOTES_URI || 'http://votes:3000/';
 let votesAPI = axios.create({
-    baseURL: process.env.VOTES_URI || 'http://votes:3000/'
+    baseURL: votesURI
 });
 
+let reportsURI = process.env.REPORTS_URI || 'http://reports:3000/';
 let reportsAPI = axios.create({
-    baseURL: process.env.REPORTS_URI || 'http://reports:3000/'
+    baseURL: reportsURI
 });
 
 // install route logging middleware
@@ -45,25 +47,8 @@ app.post('/vote', async (req, res) => {
 app.get('/results', async (req, res) => {
   try {
     console.log('GET /results');
-//
-// HACK
-//
-//    let result = await ax.get('/results');
-//
-
-    console.log('HACK /results');
-    let result = {
-      data: {
-        success: true,
-        result: {
-          "a": 3,
-          "b": 2
-        }
-      }
-    };
-
-// /HACK
-
+    console.log(`web -> GET ${reportsURI}/results`);
+    let result = await reportsAPI.get('/results');
     console.log('resp: %j', result.data);
     // Just passing response through
     // Expect an object with vote count: { success: true, result: { a: X, b: X } }
