@@ -150,7 +150,7 @@ Resources:
                 - "NET_ADMIN"
           Environment:
             - Name: "LATTICE_APP_PORTS"
-              Value: "8020"
+              Value: "8030"
             - Name: "LATTICE_ENVOY_EGRESS_PORT"
               Value: "15001"
             - Name: "LATTICE_ENVOY_INGRESS_PORT"
