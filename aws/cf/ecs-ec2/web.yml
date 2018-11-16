@@ -15,7 +15,7 @@ Parameters:
     Description: The web (frontend) service name
   ImageUrl:
     Type: String
-    Default: subfuzion/vote-web:1.0.11
+    Default: subfuzion/vote-web:1.0.12
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
   ContainerPort:
