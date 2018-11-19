@@ -1,10 +1,12 @@
-const Consumer = require('@subfuzion/queue').Consumer;
+process.env.AWS_XRAY_DEBUG_MODE=1;
+
+const Consumer = require('queue').Consumer;
 const Database = require('@subfuzion/database').Database;
+const xray = require('aws-xray-sdk-core');
 
 // set queue connection timeout to 0 since we want the worker queue
 // consumer to block indefinitely while waiting for messages
 let queueConfig = Consumer.createStdConfig({ timeout: 0 });
-
 let databaseConfig = Database.createStdConfig();
 
 let consumer, db, quitting = false;
@@ -95,6 +97,12 @@ async function quit() {
         let json = JSON.parse(msg);
         let res = await db.updateVote(json);
         console.log('message saved: %j', res);
+
+        let segment = xray.getSegment();
+
+        if (segment)
+          xray.getSegment().close();
+
       } catch (err) {
         console.log(err);
       }

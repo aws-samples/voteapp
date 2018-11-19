@@ -1,3 +1,5 @@
+process.env.AWS_XRAY_DEBUG_MODE=1;
+
 const axios = require('axios');
 const express= require('express');
 const http = require('http');
@@ -33,7 +35,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 // install x-ray tracing
-app.use(xrayExpress.openSegment('defaultName'));
+app.use(xrayExpress.openSegment('web.app'));
 
 // root route handler
 app.get('/', (req, res) => {
