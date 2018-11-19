@@ -1,11 +1,16 @@
+process.env.AWS_XRAY_DEBUG_MODE=1;
+
 const express= require('express');
 const http = require('http');
 const morgan = require('morgan');
-const Producer = require('@subfuzion/queue').Producer;
+const Producer = require('queue').Producer;
+
+const xray = require('aws-xray-sdk-core');
+const xrayExpress = require('aws-xray-sdk-express');
+xray.middleware.disableCentralizedSampling();
 
 const port = process.env.PORT || 3000;
 const app = express();
-const server = http.createServer(app);
 
 let queueConfig = Producer.createStdConfig();
 let producer;
@@ -15,6 +20,9 @@ app.use(morgan('dev'));
 
 // json body parsing middleware
 app.use(express.json());
+
+// install x-ray tracing
+app.use(xrayExpress.openSegment('votes.app'));
 
 // root route handler
 app.get('/', (req, res) => {
@@ -26,15 +34,20 @@ app.post('/vote', async (req, res) => {
   try {
     console.log('POST /vote: %j', req.body);
     let v = req.body;
+
     await producer.send(v);
     console.log('queued :', v);
     // for now, just return the request body as the result
     res.send({ success: true, result: req.body });
   } catch (err) {
     console.log('ERROR: POST /vote: %j', err);
-    res.send(500, { success: false, reason: err.message });
+    res.status(500).send({ success: false, reason: err.message })
   }
 });
+
+app.use(xrayExpress.closeSegment());
+
+const server = http.createServer(app);
 
 // initialize and start running
 (async () => {
