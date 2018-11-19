@@ -1,6 +1,7 @@
 node_modules/
 vendor/
 *error.log
+<<<<<<< HEAD
 *~
 *.sw[a-z]
 
