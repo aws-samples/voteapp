@@ -5,7 +5,7 @@ let captureAxios = function(axios) {
 
   //add a request interceptor on POST
   axios.interceptors.request.use(function (config) {
-    var parent = xray.getSegment()
+    var parent = xray.getSegment();
     var subsegment = parent.addNewSubsegment(config.baseURL + config.url.substr(1));
     subsegment.namespace = 'remote';
 
@@ -17,12 +17,9 @@ let captureAxios = function(axios) {
 
     return config;
   }, function (error) {
-    var subsegment = xray.getSegment()
+    var subsegment = xray.getSegment().addNewSubsegment("Intercept request error");
+    subsegment.close(error);
 
-    if (error) {
-      subsegment.addError(error);
-    }
-    subsegment.close();
     return Promise.reject(error);
   });
 
@@ -36,11 +33,8 @@ let captureAxios = function(axios) {
     return response;
   }, function (error) {
     var subsegment = xray.getSegment();
+    subsegment.close(error);
 
-    if (error) {
-      subsegment.addError(error);
-    }
-    subsegment.close();
     return Promise.reject(error);
   });
 };
