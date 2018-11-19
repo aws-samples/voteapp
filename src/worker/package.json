@@ -17,7 +17,8 @@
   },
   "dependencies": {
     "@subfuzion/database": "1.2.4",
-    "@subfuzion/queue": "1.5.6"
+    "aws-xray-sdk-core": "git+http://git@github.com/awssandra/aws-xray-node-sdk-core-experimental",
+    "queue": "git+http://git@github.com/awssandra/subfuzion-queue-xray"
   },
   "devDependencies": {
     "mocha": "^5.2.0"
