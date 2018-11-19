@@ -1,0 +1,9 @@
+{
+    "clientToken": "colorgateway-vr.1",
+    "spec": {
+        "serviceNames": [
+            "colorgateway.default.svc.cluster.local"
+        ]
+    },
+    "virtualRouterName": "colorgateway-vr"
+}

@@ -1,0 +1,9 @@
+{
+    "clientToken": "colorteller-vr.1",
+    "spec": {
+        "serviceNames": [
+            "colorteller.default.svc.cluster.local"
+        ]
+    },
+    "virtualRouterName": "colorteller-vr"
+}
