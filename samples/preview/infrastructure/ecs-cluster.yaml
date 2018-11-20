@@ -76,7 +76,7 @@ Resources:
       InstanceType: t2.medium
       SecurityGroupIds:
       - !Ref BastionSecurityGroup
-      SubnetId: !Ref 'Fn::ImportValue': !Sub "${EnvironmentName}:PublicSubnet1"
+      SubnetId: 'Fn::ImportValue': !Sub "${EnvironmentName}:PublicSubnet1"
       
   # ECS AutoScaling Group.
   ECSAutoScalingGroup:
