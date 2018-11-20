@@ -55,6 +55,29 @@ Resources:
             'Fn::ImportValue': !Sub "${EnvironmentName}:VpcCIDR"
           IpProtocol: -1
 
+  #Bastion host Security group
+  BastionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to client host
+      VpcId: 
+        'Fn::ImportValue': !Sub "${EnvironmentName}:VPC"
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+  #Bastion Host to SSH into the instance
+  BastionHost:
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: "ami-01bbe152bf19d0289"
+      KeyName: !Ref KeyName
+      InstanceType: t2.medium
+      SecurityGroups:
+      - !Ref BastionSecurityGroup
+  
+  # ECS AutoScaling Group.
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
