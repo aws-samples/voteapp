@@ -1,5 +1,5 @@
 {
-    "clientToken": "colorgateway-virtualnode.json-8330",
+    "clientToken": "web-virtualnode.json-8330",
     "spec": {
         "listeners": [
             {
@@ -12,12 +12,12 @@
         ],
         "serviceDiscovery": {
             "dns": {
-                "serviceName": "colorgateway.default.svc.cluster.local"
+                "serviceName": "web.default.svc.cluster.local"
             }
         },
         "backends": [
             "colorteller.default.svc.cluster.local"
         ]
     },
-    "virtualNodeName": "colorgateway-vn"
+    "virtualNodeName": "web-vn"
 }

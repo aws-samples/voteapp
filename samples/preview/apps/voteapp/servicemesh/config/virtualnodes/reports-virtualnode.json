@@ -1,5 +1,5 @@
 {
-    "clientToken": "colorteller-vn.1",
+    "clientToken": "reports-vn.1",
     "spec": {
         "listeners": [
             {
@@ -12,9 +12,9 @@
         ],
         "serviceDiscovery": {
             "dns": {
-                "serviceName": "colorteller.default.svc.cluster.local"
+                "serviceName": "reports.default.svc.cluster.local"
             }
         }
     },
-    "virtualNodeName": "colorteller-vn"
+    "virtualNodeName": "reports-vn"
 }

@@ -1,0 +1,9 @@
+{
+    "clientToken": "web-vr.1",
+    "spec": {
+        "serviceNames": [
+            "web.default.svc.cluster.local"
+        ]
+    },
+    "virtualRouterName": "web-vr"
+}

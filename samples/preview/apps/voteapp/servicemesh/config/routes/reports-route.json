@@ -1,12 +1,12 @@
 {
-    "clientToken": "colorgateway.route.1",
-    "routeName": "colorgateway-route",
+    "clientToken": "reports.route.2",
+    "routeName": "reports-route",
     "spec": {
         "httpRoute": {
             "action": {
                 "weightedTargets": [
                     {
-                        "virtualNode": "colorgateway-vn",
+                        "virtualNode": "web-vn",
                         "weight": 100
                     }
                 ]
@@ -16,5 +16,5 @@
             }
         }
     },
-    "virtualRouterName": "colorgateway-vr"
+    "virtualRouterName": "reports-vr"
 }

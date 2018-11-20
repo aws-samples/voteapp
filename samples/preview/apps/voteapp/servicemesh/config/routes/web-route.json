@@ -1,0 +1,20 @@
+{
+    "clientToken": "web.route.1",
+    "routeName": "web-route",
+    "spec": {
+        "httpRoute": {
+            "action": {
+                "weightedTargets": [
+                    {
+                        "virtualNode": "web-vn",
+                        "weight": 100
+                    }
+                ]
+            },
+            "match": {
+                "prefix": "/"
+            }
+        }
+    },
+    "virtualRouterName": "web-vr"
+}
