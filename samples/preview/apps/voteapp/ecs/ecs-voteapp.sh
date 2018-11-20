@@ -22,21 +22,15 @@ describe_virtual_node() {
     echo ${node_id}
 }
 
-COLOR_GATEWAY_NODE_ID=$(describe_virtual_node "colorgateway-vn")
-COLOR_TELLER_NODE_ID=$(describe_virtual_node "colorteller-vn")
-COLOR_TELLER_BLACK_NODE_ID=$(describe_virtual_node "colorteller-black-vn")
-COLOR_TELLER_BLUE_NODE_ID=$(describe_virtual_node "colorteller-blue-vn")
-COLOR_TELLER_RED_NODE_ID=$(describe_virtual_node "colorteller-red-vn")
+VOTE_WEB_NODE_ID=$(describe_virtual_node "web-vn")
+VOTE_REPORTS_NODE_ID=$(describe_virtual_node "reports-vn")
 
 aws --profile ${AWS_PROFILE} --region ${AWS_REGION} \
     cloudformation ${ACTION} \
-    --stack-name ${ENVIRONMENT_NAME}-ecs-colorapp \
+    --stack-name ${ENVIRONMENT_NAME}-ecs-voteapp \
     --capabilities CAPABILITY_IAM \
-    --template-body file://${DIR}/ecs-colorapp.yaml  \
+    --template-body file://${DIR}/ecs-voteapp.yaml  \
     --parameters \
     ParameterKey=EnvironmentName,ParameterValue=${ENVIRONMENT_NAME} \
-    ParameterKey=ColorGatewayNodeId,ParameterValue="${COLOR_GATEWAY_NODE_ID}" \
-    ParameterKey=ColorTellerNodeId,ParameterValue="${COLOR_TELLER_NODE_ID}" \
-    ParameterKey=ColorTellerBlackNodeId,ParameterValue="${COLOR_TELLER_BLACK_NODE_ID}" \
-    ParameterKey=ColorTellerBlueNodeId,ParameterValue="${COLOR_TELLER_BLUE_NODE_ID}" \
-    ParameterKey=ColorTellerRedNodeId,ParameterValue="${COLOR_TELLER_RED_NODE_ID}"
+    ParameterKey=VoteWebNodeId,ParameterValue="${VOTE_WEB_NODE_ID}" \
+    ParameterKey=VoteReportsNodeId,ParameterValue="${VOTE_REPORTS_NODE_ID}"
