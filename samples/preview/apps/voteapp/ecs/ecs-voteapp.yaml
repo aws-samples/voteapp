@@ -207,7 +207,7 @@ Resources:
             - Name: "PORT"
               Value: "9080"
             - Name: "REPORTS_URI"
-              Value: "reports.default.svc.cluster.local:9080"
+              Value: "http://reports.default.svc.cluster.local:9080"
         - Name: envoy
           Image: { Ref: EnvoyImage }
           Essential: true
