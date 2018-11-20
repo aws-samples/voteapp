@@ -50,7 +50,7 @@ Parameters:
                  assigned to different paths on the load balancer.
   DesiredCount:
     Type: Number
-    Default: 2
+    Default: 1
     Description: How many copies of the service task to run
   Role:
     Type: String
@@ -93,7 +93,7 @@ Resources:
             - Name: PORT
               Value: !Ref 'ContainerPort'
             - Name: REPORTS_URI
-              Value: http://reports.votemesh.local:8030
+              Value: http://reports.votemesh.svc.cluster.local:8030
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:

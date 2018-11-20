@@ -1,5 +1,5 @@
 {
-  "clientToken": "votemesh_token",
+  "clientToken": "reports-vn.1",
   "meshName": "votemesh",
   "spec": {
     "backends": [
@@ -7,7 +7,7 @@
     "listeners": [
       {
         "portMapping": {
-          "name": "ingress",
+          "name": "http-8030",
           "port": 8030,
           "protocol": "http"
       }
@@ -15,9 +15,9 @@
     ],
     "serviceDiscovery": {
       "dns": {
-        "serviceName": "reports.votemesh.local"
+        "serviceName": "reports.votemesh.svc.cluster.local"
       }
     }
   },
-  "virtualNodeName": "reports_node"
+  "virtualNodeName": "reports-vn"
 }

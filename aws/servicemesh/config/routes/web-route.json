@@ -1,14 +1,14 @@
 {
-  "clientToken": "votemesh_token",
+  "clientToken": "web-route.1",
   "meshName": "votemesh",
-  "routeName": "reports",
+  "routeName": "web-route",
   "spec": {
     "httpRoute": {
       "action": {
         "weightedTargets": [
           {
-            "virtualNode": "reports_node",
-            "weight": 1
+            "virtualNode": "web-vn",
+            "weight": 100
           }
         ]
       },
@@ -17,5 +17,5 @@
       }
     }
   },
-  "virtualRouterName": "reports_router"
+  "virtualRouterName": "web-vr"
 }
