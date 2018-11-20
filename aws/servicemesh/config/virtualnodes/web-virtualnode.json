@@ -3,7 +3,7 @@
   "meshName": "votemesh",
   "spec": {
     "backends": [
-      "reports.votemesh.svc.cluster.local"
+      "reports.votemesh.local"
     ],
     "listeners": [
       {
@@ -16,7 +16,7 @@
     ],
     "serviceDiscovery": {
       "dns": {
-        "serviceName": "web.votemesh.svc.cluster.local"
+        "serviceName": "web.votemesh.local"
       }
     }
   },

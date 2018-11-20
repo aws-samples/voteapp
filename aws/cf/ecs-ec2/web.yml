@@ -93,7 +93,7 @@ Resources:
             - Name: PORT
               Value: !Ref 'ContainerPort'
             - Name: REPORTS_URI
-              Value: http://reports.votemesh.svc.cluster.local:8030
+              Value: http://reports.votemesh.local:8030
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:

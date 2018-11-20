@@ -3,7 +3,7 @@
   "meshName": "votemesh",
   "spec": {
     "serviceNames": [
-      "web.votemesh.svc.cluster.local"
+      "web.votemesh.local"
     ]
   },
   "virtualRouterName": "web-vr"

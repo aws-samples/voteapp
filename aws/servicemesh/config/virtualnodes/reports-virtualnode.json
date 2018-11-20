@@ -15,7 +15,7 @@
     ],
     "serviceDiscovery": {
       "dns": {
-        "serviceName": "reports.votemesh.svc.cluster.local"
+        "serviceName": "reports.votemesh.local"
       }
     }
   },
