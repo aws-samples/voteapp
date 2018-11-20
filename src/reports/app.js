@@ -1,4 +1,8 @@
+process.env.AWS_XRAY_DEBUG_MODE=1;
+
 const axios = require('axios');
+
+const Database = require('@subfuzion/database').Database;
 const express= require('express');
 const http = require('http');
 const morgan = require('morgan');
@@ -11,11 +15,18 @@ let ax = axios.create({
     baseURL: process.env.DATABASE_PROXY_URI || 'http://database-proxy:3000/'
 });
 
+const xray = require('aws-xray-sdk-core');
+const xrayExpress = require('aws-xray-sdk-express');
+xray.middleware.disableCentralizedSampling();
+
 // install route logging middleware
 app.use(morgan('dev'));
 
 // install json body parsing middleware
 app.use(express.json());
+
+// install x-ray tracing
+app.use(xrayExpress.openSegment('reports.app'));
 
 // root route handler
 app.get('/', (_, res) => {
@@ -55,6 +66,8 @@ app.get('/results', async (_, res) => {
     res.status(500).send({ success: false, reason: 'internal error' });
   }
 });
+
+app.use(xrayExpress.closeSegment());
 
 // initialize and start running
 (async () => {
