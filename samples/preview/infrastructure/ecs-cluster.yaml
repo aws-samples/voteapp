@@ -30,12 +30,16 @@ Parameters:
     Type: String
     Description: "Domain name registerd under Route-53 that will be used for Service Discovery"
     Default: default.svc.cluster.local
+  
+  ECSAmi:
+    Description: AMI ID
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
 
-Mappings:
-
-  AWSRegionToECSAmi:
-    us-west-2:
-      AMI: ami-09568291a9d6c804c
+  EC2Ami:
+    Description: AMI ID
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
 
 Resources:
 
@@ -71,7 +75,7 @@ Resources:
   BastionHost:
     Type: AWS::EC2::Instance
     Properties: 
-      ImageId: "ami-01bbe152bf19d0289"
+      ImageId: !Ref EC2Ami
       KeyName: !Ref KeyName
       InstanceType: t2.micro
       SecurityGroupIds:
@@ -116,7 +120,7 @@ Resources:
   ECSLaunchConfiguration:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
-      ImageId:  !FindInMap [AWSRegionToECSAmi, !Ref "AWS::Region", AMI]
+      ImageId: !Ref ECSAmi
       InstanceType: !Ref InstanceType
       KeyName: !Ref KeyName
       SecurityGroups:
