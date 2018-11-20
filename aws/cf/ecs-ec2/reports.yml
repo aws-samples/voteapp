@@ -103,7 +103,7 @@ Resources:
             - Name: "PORT"
               Value: { Ref: ContainerPort }
         - Name: "envoy"
-          Image: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-lattice-envoy:v1.8.0.0-beta"
+          Image: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-lattice-envoy:v1.8.0.1-beta"
           Essential: true
           LogConfiguration:
             LogDriver: "awslogs"
@@ -136,7 +136,7 @@ Resources:
           VolumesFrom:
             - SourceContainer: !Ref 'ServiceName'
         - Name: "proxyinit"
-          Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
+          Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyroutemanager:1.0.3.0"
           Essential: false
           LogConfiguration:
             LogDriver: "awslogs"

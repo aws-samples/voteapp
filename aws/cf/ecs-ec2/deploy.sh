@@ -5,7 +5,7 @@
 : ${AWS_DEFAULT_REGION:=us-west-2}
 
 stacks=(
-#     "voteapp"
+     "voteapp"
 #     "database"
 #     "queue"
 #     "worker"
