@@ -74,9 +74,10 @@ Resources:
       ImageId: "ami-01bbe152bf19d0289"
       KeyName: !Ref KeyName
       InstanceType: t2.medium
-      SecurityGroups:
+      SecurityGroupIds:
       - !Ref BastionSecurityGroup
-  
+      SubnetId: !Ref 'Fn::ImportValue': !Sub "${EnvironmentName}:PublicSubnet1"
+      
   # ECS AutoScaling Group.
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
