@@ -93,15 +93,9 @@ Resources:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "reports-app"
-          PortMappings:
-            - ContainerPort: 9080
-              HostPort: 9080
-              Protocol: "tcp"
           Environment:
-            - Name: "SERVER_PORT"
+            - Name: "PORT"
               Value: "9080"
-            - Name: "COLOR"
-              Value: "white"
         - Name: envoy
           Image: { Ref: EnvoyImage }
           Essential: true
@@ -112,10 +106,10 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup" 
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "colorteller-envoy"
+              awslogs-stream-prefix: "reports-envoy"
           Environment:
             - Name: "LATTICE_VIRTUAL_NODE_NAME"
-              Value: "reports"
+              Value: "reports-vn"
             - Name: "LATTICE_VIRTUAL_NODE_UID"
               Value: { Ref: VoteReportsNodeId }
             - Name: "ENVOY_LOG_LEVEL"
@@ -131,7 +125,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "colorteller-proxyinit"
+              awslogs-stream-prefix: "reports-proxyinit"
           LinuxParameters:
             Capabilities:
               Add:
@@ -158,11 +152,11 @@ Resources:
 
 
   
-  ### colorgateway.default.svc.cluster.local
-  ColorGatewayServiceDiscoveryRecord:
+  ### web.default.svc.cluster.local
+  WebServiceDiscoveryRecord:
     Type: 'AWS::ServiceDiscovery::Service'
     Properties:
-      Name: "colorgateway"
+      Name: "web"
       DnsConfig:
         NamespaceId:
           'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceDiscoveryNamespace"
@@ -172,7 +166,7 @@ Resources:
       HealthCheckCustomConfig:
         FailureThreshold: 1
 
-  ColorGatewayService:
+  WebService:
     Type: 'AWS::ECS::Service'
     Properties:
       Cluster:
@@ -184,7 +178,7 @@ Resources:
       LaunchType: EC2
       ServiceRegistries:
         - RegistryArn:
-            'Fn::GetAtt': ColorGatewayServiceDiscoveryRecord.Arn
+            'Fn::GetAtt': WebServiceDiscoveryRecord.Arn
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: DISABLED
@@ -193,9 +187,9 @@ Resources:
           Subnets: 
             - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet1"
             - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet2"
-      TaskDefinition: { Ref: ColorGatewayTaskDefinition }
+      TaskDefinition: { Ref: WebTaskDefinition }
 
-  ColorGatewayTaskDefinition:
+  WebTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
       ContainerDefinitions:
@@ -208,15 +202,11 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "colorgateway-app"
-          PortMappings:
-            - ContainerPort: 9080
-              HostPort: 9080
-              Protocol: "tcp"
+              awslogs-stream-prefix: "web-app"
           Environment:
-            - Name: "SERVER_PORT"
+            - Name: "PORT"
               Value: "9080"
-            - Name: "COLOR_TELLER_ENDPOINT"
+            - Name: "REPORTS_URI"
               Value: "reports.default.svc.cluster.local:9080"
         - Name: envoy
           Image: { Ref: EnvoyImage }
@@ -228,10 +218,10 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "colorgateway-envoy"
+              awslogs-stream-prefix: "web-envoy"
           Environment:
             - Name: "LATTICE_VIRTUAL_NODE_NAME"
-              Value: "colorgateway"
+              Value: "web-vn"
             - Name: "LATTICE_VIRTUAL_NODE_UID"
               Value: { Ref: VoteWebNodeId }
             - Name: "ENVOY_LOG_LEVEL"
@@ -247,7 +237,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "colorgateway-proxyinit"
+              awslogs-stream-prefix: "web-proxyinit"
           LinuxParameters:
             Capabilities:
               Add:
