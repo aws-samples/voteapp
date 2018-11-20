@@ -73,11 +73,14 @@ Resources:
     Properties: 
       ImageId: "ami-01bbe152bf19d0289"
       KeyName: !Ref KeyName
-      InstanceType: t2.medium
+      InstanceType: t2.micro
       SecurityGroupIds:
       - !Ref BastionSecurityGroup
       SubnetId: 
         'Fn::ImportValue': !Sub "${EnvironmentName}:PublicSubnet1"
+      Tags: 
+        - Key: Name
+          Value: 'Bastion-host-Demo'
       
   # ECS AutoScaling Group.
   ECSAutoScalingGroup:
@@ -393,7 +396,10 @@ Outputs:
     Value: !Ref ECSCluster
     Export:
       Name: !Sub "${EnvironmentName}:ECSCluster"
-
+  #Bastion Host IP
+  BastionHostIP:
+    Description: Bastion Host Ip address to SSH 
+    Value: !GetAtt BastionHost.PublicIp
 
   ECSServiceAutoScalingRole:
     Description: A reference to ECS service auto scaling role
