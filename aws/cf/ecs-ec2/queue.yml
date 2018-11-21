@@ -93,18 +93,21 @@ Resources:
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
-              awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
+              awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
+          Environment:
+            - Name: "PORT"
+              Value: { Ref: ContainerPort }
         - Name: "envoy"
           Image: "subfuzion/lettuce"
           Essential: true
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: { Ref: LogGroup }
-              awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'envoy'
           Environment:
             - Name: "LATTICE_VIRTUAL_NODE_UID"
               Value: { Ref: LatticeVirtualNodeUID }
@@ -131,9 +134,9 @@ Resources:
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: { Ref: LogGroup }
-              awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "router"]]
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'router'
           LinuxParameters:
             Capabilities:
               Add:
@@ -162,7 +165,7 @@ Resources:
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
-              awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
+              awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: 'xray'
   

@@ -1,0 +1,21 @@
+{
+  "clientToken": "reports-vr.1",
+  "meshName": "votemesh",
+  "routeName": "reports-route",
+  "spec": {
+    "httpRoute": {
+      "action": {
+        "weightedTargets": [
+          {
+            "virtualNode": "reports-vn",
+            "weight": 100
+          }
+        ]
+      },
+      "match": {
+        "prefix": "/"
+      }
+    }
+  },
+  "virtualRouterName": "reports-vr"
+}

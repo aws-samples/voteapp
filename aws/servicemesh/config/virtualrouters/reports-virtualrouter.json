@@ -1,0 +1,10 @@
+{
+  "clientToken": "reports-vr.1",
+  "meshName": "votemesh",
+  "spec": {
+    "serviceNames": [
+      "reports.votemesh.local"
+    ]
+  },
+  "virtualRouterName": "reports-vr"
+}

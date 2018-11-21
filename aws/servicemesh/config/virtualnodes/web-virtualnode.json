@@ -1,0 +1,24 @@
+{
+  "clientToken": "web-vn.1",
+  "meshName": "votemesh",
+  "spec": {
+    "backends": [
+      "reports.votemesh.local"
+    ],
+    "listeners": [
+      {
+        "portMapping": {
+          "name": "http-8010",
+          "port": 8010,
+          "protocol": "http"
+      }
+    }
+    ],
+    "serviceDiscovery": {
+      "dns": {
+        "serviceName": "web.votemesh.local"
+      }
+    }
+  },
+  "virtualNodeName": "web-vn"
+}

@@ -1,0 +1,625 @@
+---
+Parameters:
+  EnvironmentName:
+    Type: String
+    Description: Environment name that joins all the stacks
+
+  SideCarRouterManagerImage:
+    Type: String
+    Description: Sidecar router manager that sets up networking for transparent proxy
+    Default: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyroutemanager:1.0.3.0"
+
+  EnvoyImage:
+    Type: String
+    Description: Envoy image to use
+    Default: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-lattice-envoy:v1.8.0.1-beta"
+
+  EnvoyLogLevel:
+    Type: String
+    Default: debug 
+
+  ColorTellerImage:
+    Type: String
+    Description: Color Teller app image
+    Default: "733656427674.dkr.ecr.us-west-2.amazonaws.com/color/teller"
+
+  ColorGatewayImage:
+    Type: String
+    Description: Color Gateway app image
+    Default: "733656427674.dkr.ecr.us-west-2.amazonaws.com/color/gateway"
+
+  ColorTellerNodeId:
+    Type: String
+    Description: VirtualNode id of Color Teller that will be used for resolving colorteller's default service-name.
+
+  ColorTellerBlackNodeId:
+    Type: String
+    Description: VirtualNode id of Color Teller that returns black
+
+  ColorTellerBlueNodeId:
+    Type: String
+    Description: VirtualNode id of Color Teller that returns blue
+
+  ColorTellerRedNodeId:
+    Type: String
+    Description: VirtualNode id of Color Teller that returns red
+
+  ColorGatewayNodeId:
+    Type: String
+    Description: VirtualNode id of Color Gateway
+
+  LatticeEgressIgnoredIpCsv:
+    Type: String
+    Default: 169.254.170.2
+
+Resources:
+
+  ### colorteller.default.svc.cluster.local
+  ColorTellerServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: "colorteller"
+      DnsConfig:
+        NamespaceId:
+          'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceDiscoveryNamespace"
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+
+  ColorTellerService:
+    Type: 'AWS::ECS::Service'
+    Properties:
+      Cluster:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:ECSCluster"
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: 1
+      LaunchType: EC2
+      ServiceRegistries:
+        - RegistryArn:
+            'Fn::GetAtt': ColorTellerServiceDiscoveryRecord.Arn
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceSecurityGroup"
+          Subnets: 
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet1"
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet2"
+      TaskDefinition: { Ref: ColorTellerTaskDefinition }
+
+  ColorTellerTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      ContainerDefinitions:
+        - Name: "app"
+          Image: { Ref: ColorTellerImage }
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-app"
+          PortMappings:
+            - ContainerPort: 9080
+              HostPort: 9080
+              Protocol: "tcp"
+          Environment:
+            - Name: "SERVER_PORT"
+              Value: "9080"
+            - Name: "COLOR"
+              Value: "white"
+        - Name: envoy
+          Image: { Ref: EnvoyImage }
+          Essential: true
+          User: "1337"
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup" 
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-envoy"
+          Environment:
+            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+              Value: "colorteller"
+            - Name: "LATTICE_VIRTUAL_NODE_UID"
+              Value: { Ref: ColorTellerNodeId }
+            - Name: "ENVOY_LOG_LEVEL"
+              Value: { Ref: EnvoyLogLevel }
+            - Name: "AWS_REGION"
+              Value: "us-west-2"
+        - Name: "proxyinit"
+          Image: { Ref: SideCarRouterManagerImage }
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-proxyinit"
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_APP_PORTS"
+              Value: "9080"
+            - Name: "LATTICE_EGRESS_IGNORED_IP"
+              Value: { Ref: LatticeEgressIgnoredIpCsv }
+      ExecutionRoleArn:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
+      NetworkMode: "awsvpc"
+      Memory: 256
+
+  ### colorteller-blue.default.svc.cluster.local
+  ColorTellerBlueServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: "colorteller-blue"
+      DnsConfig:
+        NamespaceId:
+          'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceDiscoveryNamespace"
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+
+  ColorTellerBlueService:
+    Type: 'AWS::ECS::Service'
+    Properties:
+      Cluster:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:ECSCluster"
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: 1
+      LaunchType: EC2
+      ServiceRegistries:
+        - RegistryArn:
+            'Fn::GetAtt': ColorTellerBlueServiceDiscoveryRecord.Arn
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceSecurityGroup"
+          Subnets: 
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet1"
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet2"
+      TaskDefinition: { Ref: ColorTellerBlueTaskDefinition }
+
+  ColorTellerBlueTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      ContainerDefinitions:
+        - Name: "app"
+          Image: { Ref: ColorTellerImage }
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-blue-app"
+          PortMappings:
+            - ContainerPort: 9080
+              HostPort: 9080
+              Protocol: "tcp"
+          Environment:
+            - Name: "SERVER_PORT"
+              Value: "9080"
+            - Name: "COLOR"
+              Value: "blue"
+        - Name: envoy
+          Image: { Ref: EnvoyImage }
+          Essential: true
+          User: "1337"
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-blue-envoy"
+          Environment:
+            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+              Value: "colorteller-blue"
+            - Name: "LATTICE_VIRTUAL_NODE_UID"
+              Value: { Ref: ColorTellerBlueNodeId }
+            - Name: "ENVOY_LOG_LEVEL"
+              Value: { Ref: EnvoyLogLevel }
+            - Name: "AWS_REGION"
+              Value: "us-west-2"
+        - Name: "proxyinit"
+          Image: { Ref: SideCarRouterManagerImage }
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-blue-proxyinit"
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_APP_PORTS"
+              Value: "9080"
+            - Name: "LATTICE_EGRESS_IGNORED_IP"
+              Value: { Ref: LatticeEgressIgnoredIpCsv }
+      ExecutionRoleArn:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
+      NetworkMode: "awsvpc"
+      Memory: 256
+
+  ### colorteller-red.default.svc.cluster.local
+  ColorTellerRedServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: "colorteller-red"
+      DnsConfig:
+        NamespaceId:
+          'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceDiscoveryNamespace"
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+
+  ColorTellerRedService:
+    Type: 'AWS::ECS::Service'
+    Properties:
+      Cluster:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:ECSCluster"
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: 1
+      LaunchType: EC2
+      ServiceRegistries:
+        - RegistryArn:
+            'Fn::GetAtt': ColorTellerRedServiceDiscoveryRecord.Arn
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceSecurityGroup"
+          Subnets: 
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet1"
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet2"
+      TaskDefinition: { Ref: ColorTellerRedTaskDefinition }
+
+  ColorTellerRedTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      ContainerDefinitions:
+        - Name: "app"
+          Image: { Ref: ColorTellerImage }
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-red-app"
+          PortMappings:
+            - ContainerPort: 9080
+              HostPort: 9080
+              Protocol: "tcp"
+          Environment:
+            - Name: "SERVER_PORT"
+              Value: "9080"
+            - Name: "COLOR"
+              Value: "red"
+        - Name: envoy
+          Image: { Ref: EnvoyImage }
+          Essential: true
+          User: "1337"
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-red-envoy"
+          Environment:
+            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+              Value: "colorteller-red"
+            - Name: "LATTICE_VIRTUAL_NODE_UID"
+              Value: { Ref: ColorTellerRedNodeId }
+            - Name: "ENVOY_LOG_LEVEL"
+              Value: { Ref: EnvoyLogLevel }
+            - Name: "AWS_REGION"
+              Value: "us-west-2"
+        - Name: "proxyinit"
+          Image: { Ref: SideCarRouterManagerImage }
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-red-proxyinit"
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_APP_PORTS"
+              Value: "9080"
+            - Name: "LATTICE_EGRESS_IGNORED_IP"
+              Value: { Ref: LatticeEgressIgnoredIpCsv }
+      ExecutionRoleArn:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
+      NetworkMode: "awsvpc"
+      Memory: 256
+
+  ### colorteller-black.default.svc.cluster.local
+  ColorTellerBlackServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: "colorteller-black"
+      DnsConfig:
+        NamespaceId:
+          'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceDiscoveryNamespace"
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+
+  ColorTellerBlackService:
+    Type: 'AWS::ECS::Service'
+    Properties:
+      Cluster:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:ECSCluster"
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: 1
+      LaunchType: EC2
+      ServiceRegistries:
+        - RegistryArn:
+            'Fn::GetAtt': ColorTellerBlackServiceDiscoveryRecord.Arn
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceSecurityGroup"
+          Subnets: 
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet1"
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet2"
+      TaskDefinition: { Ref: ColorTellerBlackTaskDefinition }
+
+  ColorTellerBlackTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      ContainerDefinitions:
+        - Name: "app"
+          Image: { Ref: ColorTellerImage }
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-black-app"
+          PortMappings:
+            - ContainerPort: 9080
+              HostPort: 9080
+              Protocol: "tcp"
+          Environment:
+            - Name: "SERVER_PORT"
+              Value: "9080"
+            - Name: "COLOR"
+              Value: "black"
+        - Name: envoy
+          Image: { Ref: EnvoyImage }
+          Essential: true
+          User: "1337"
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-black-envoy"
+          Environment:
+            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+              Value: "colorteller-black"
+            - Name: "LATTICE_VIRTUAL_NODE_UID"
+              Value: { Ref: ColorTellerBlackNodeId }
+            - Name: "ENVOY_LOG_LEVEL"
+              Value: { Ref: EnvoyLogLevel }
+            - Name: "AWS_REGION"
+              Value: "us-west-2"
+        - Name: "proxyinit"
+          Image: { Ref: SideCarRouterManagerImage }
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorteller-black-proxyinit"
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_APP_PORTS"
+              Value: "9080"
+            - Name: "LATTICE_EGRESS_IGNORED_IP"
+              Value: { Ref: LatticeEgressIgnoredIpCsv }
+      ExecutionRoleArn:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
+      NetworkMode: "awsvpc"
+      Memory: 256
+
+  ### colorgateway.default.svc.cluster.local
+  ColorGatewayServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: "colorgateway"
+      DnsConfig:
+        NamespaceId:
+          'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceDiscoveryNamespace"
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+
+  ColorGatewayService:
+    Type: 'AWS::ECS::Service'
+    Properties:
+      Cluster:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:ECSCluster"
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: 1
+      LaunchType: EC2
+      ServiceRegistries:
+        - RegistryArn:
+            'Fn::GetAtt': ColorGatewayServiceDiscoveryRecord.Arn
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceSecurityGroup"
+          Subnets: 
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet1"
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet2"
+      TaskDefinition: { Ref: ColorGatewayTaskDefinition }
+
+  ColorGatewayTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      ContainerDefinitions:
+        - Name: "app"
+          Image: { Ref: ColorGatewayImage }
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorgateway-app"
+          PortMappings:
+            - ContainerPort: 9080
+              HostPort: 9080
+              Protocol: "tcp"
+          Environment:
+            - Name: "SERVER_PORT"
+              Value: "9080"
+            - Name: "COLOR_TELLER_ENDPOINT"
+              Value: "colorteller.default.svc.cluster.local:9080"
+        - Name: envoy
+          Image: { Ref: EnvoyImage }
+          Essential: true
+          User: "1337"
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorgateway-envoy"
+          Environment:
+            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+              Value: "colorgateway"
+            - Name: "LATTICE_VIRTUAL_NODE_UID"
+              Value: { Ref: ColorGatewayNodeId }
+            - Name: "ENVOY_LOG_LEVEL"
+              Value: { Ref: EnvoyLogLevel }
+            - Name: "AWS_REGION"
+              Value: "us-west-2"
+        - Name: "proxyinit"
+          Image: { Ref: SideCarRouterManagerImage }
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "colorgateway-proxyinit"
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_APP_PORTS"
+              Value: "9080"
+            - Name: "LATTICE_EGRESS_IGNORED_IP"
+              Value: { Ref: LatticeEgressIgnoredIpCsv }
+      ExecutionRoleArn:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
+      NetworkMode: "awsvpc"
+      Memory: 256
