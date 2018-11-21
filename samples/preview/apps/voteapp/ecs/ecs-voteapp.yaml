@@ -39,6 +39,13 @@ Parameters:
   LatticeEgressIgnoredIpCsv:
     Type: String
     Default: 169.254.170.2
+  
+  Path:
+    Type: String
+    Default: "*"
+    Description: A path on the public load balancer that this service
+                 should be connected to. Use * to send all load balancer
+                 traffic to this service.
 
 Resources:
 
@@ -168,6 +175,7 @@ Resources:
 
   WebService:
     Type: 'AWS::ECS::Service'
+    DependsOn: LoadBalancerRule
     Properties:
       Cluster:
         'Fn::ImportValue': !Sub "${EnvironmentName}:ECSCluster"
@@ -188,6 +196,10 @@ Resources:
             - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet1"
             - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet2"
       TaskDefinition: { Ref: WebTaskDefinition }
+      LoadBalancers:
+        - ContainerName: app
+          ContainerPort: 9080
+          TargetGroupArn: !Ref 'WebTargetGroup'
 
   WebTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -208,6 +220,8 @@ Resources:
               Value: "9080"
             - Name: "REPORTS_URI"
               Value: "http://reports.default.svc.cluster.local:9080"
+          PortMappings:
+            - ContainerPort: 9080
         - Name: envoy
           Image: { Ref: EnvoyImage }
           Essential: true
@@ -261,3 +275,88 @@ Resources:
         'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
       NetworkMode: "awsvpc"
       Memory: 256
+
+  # Load balancer for getting traffic to containers.
+  # A public facing load balancer, this is used for accepting traffic from the public
+  # internet and directing it to public facing microservices
+  WebPublicLoadBalancerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to the public facing load balancer
+      VpcId:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:VPC"
+      SecurityGroupIngress:
+          # Allow access to ALB from anywhere on the internet
+          - CidrIp: 0.0.0.0/0
+            IpProtocol: -1
+  ECSInstancesSecurityGroupIngressFromPublicALB:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Ingress from the public ALB
+      GroupId: 
+        'Fn::ImportValue': !Sub "${EnvironmentName}:ECSInstancesSecurityGroup"
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref 'WebPublicLoadBalancerSG'
+      
+  WebPublicLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '30'
+      Subnets:
+        # The load balancer is placed into the public subnets, so that traffic
+        # from the internet can reach the load balancer directly via the internet gateway
+        - 'Fn::ImportValue': !Sub "${EnvironmentName}:PublicSubnet1"
+        - 'Fn::ImportValue': !Sub "${EnvironmentName}:PublicSubnet2"
+      SecurityGroups: [!Ref 'WebPublicLoadBalancerSG']
+  WebTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 6
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      TargetType: ip
+      Name: !Join ['-', [!Ref 'EnvironmentName', 'drop-1']]
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 2
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 30
+      VpcId:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:VPC"
+  WebLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn:
+      - WebPublicLoadBalancer
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref 'WebTargetGroup'
+          Type: 'forward'
+      LoadBalancerArn: !Ref 'WebPublicLoadBalancer'
+      Port: 80
+      Protocol: HTTP
+
+  # Create a rule on the load balancer for routing traffic to the target group
+  LoadBalancerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - TargetGroupArn: !Ref 'WebTargetGroup'
+          Type: 'forward'
+      Conditions:
+        - Field: path-pattern
+          Values: [!Ref 'Path']
+      ListenerArn: !Ref 'WebLoadBalancerListener'
+      Priority: 1
+
+Outputs:
+  ExternalUrl:
+    Description: The url of the external load balancer
+    Value: !Join ['', ['http://', !GetAtt 'WebPublicLoadBalancer.DNSName']]
+    Export:
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ExternalUrl' ] ]
