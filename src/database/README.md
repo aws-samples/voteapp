@@ -88,26 +88,63 @@ const config = {
 };
 ```
 
-There is a Database helper static method that will create the configuration that can be overridden by
-environment variables:
+There is a Database helper static method that will create a configuration object that can be
+overridden by process environment variables and explicit caller-supplied configuration options:
 
 ```js
-let defaults = {};
-// explicit defaults will override environment variables, environment overrides internal defaults
-let config = Database.createStdConfig(defaults);
-let db = new Database(config);
-await db.connect();
+let config = {
+    uri: 'mongodb://database:27017/voting',
+};
+// or
+let config = {
+    host: 'database',
+    port: '27017',
+    db: 'voting'
+};
+
+// Any explicit config values will override environment variables, which override internal package defaults
+// note: supplied config can be undefined or null or empty
+let c = Database.createStdConfig(config);
+let db = new Database(c);
+await db.connect(options);
 ```
 
-If any of the following environment variables are defined, then the values will override
-the default values. Any values explicitly supplied in the config object will override the
-environment.
+#### Overriding default connection values with environment variables
 
-    DATABASE_URI - valid mongo connection URI
-    otherwise:
-      DATABASE_HOST - hostname for the mongo server
-      DATABASE_PORT - port that mongo is listening on
-    DATABASE_NAME
+If any of the following environment variables are defined in the consumer process creating the connection
+using `Database.createStdConfig(options)`, then the values will override the internal package default values.
+Any values explicitly supplied in the config object will override environment variables.
+If `DATABASE_URI` is specified, it takes precedence over any components specified individually.
+
+    DATABASE_URI - valid mongo connection URI (default: `mongodb://database:27017/voting`)
+    If not specified, can override individual URI components:
+      DATABASE_HOST - mongo server hostname (default: `database`)
+      DATABASE_PORT - mongo connection port (default: `27017`)
+      DATABASE_NAME - mongo database name (default: `voting`)
+
+#### Exponential backoff connection strategy
+
+The default connection strategy uses exponential backoff with random jitter. The algorithim is:
+
+    (( 2 ^ count) + jitter) * factor
+
+where
+    `count` is the iteration count of the connection attempt (default: 1..(max-1))
+    `jitter` is a small random amount (less than 1 second) added to make the timing slightly variable
+    `factor` is the number of milliseconds to multiply (default: 1000)
+
+Because of jitter, the following are minimum intervals between each connection attempt
+(based on default values):
+
+Attempt 0: immediate
+Attempt 1: after 2 second pause
+Attempt 2: after 4 second pause
+Attempt 3: after 8 second pause
+Attempt 4: after 16 second pause
+Attempt 5: after 32 second pause
+
+Total attempts: 6  
+Total time elapsed until default max retries are exhausted: slightly more than 1 minute
 
 ### Storing votes
 
@@ -136,4 +173,3 @@ You should close the database connection when finished.
 ```js
 await db.close()
 ```
-

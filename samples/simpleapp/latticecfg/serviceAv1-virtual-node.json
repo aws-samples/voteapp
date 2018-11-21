@@ -1,0 +1,26 @@
+{
+  "clientToken": "serviceAv1.1",
+  
+  "spec": {
+      "backends": [
+        "serviceB.simpleapp.local",
+        "serviceC.simpleapp.local",
+        "serviceD.simpleapp.local"
+      ],
+      "listeners": [
+          {
+              "portMapping": {
+                  "name": "http-8080",
+                  "port": 8080,
+                  "protocol": "http"
+              }
+          }
+      ],
+      "serviceDiscovery": {
+          "dns": {
+              "serviceName": "serviceA.simpleapp.local"
+          }
+      }
+  },
+  "virtualNodeName": "serviceAv1"
+}

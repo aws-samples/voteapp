@@ -1,0 +1,105 @@
+[
+    {
+        "Id": "sha256:21f428121235546bc3cbd61b8c031cf9c1f51bebd25d2ea3797bc227d3a1074d",
+        "RepoTags": [
+            "088845923532.dkr.ecr.us-west-2.amazonaws.com/simplewebapp:latest"
+        ],
+        "RepoDigests": [
+            "088845923532.dkr.ecr.us-west-2.amazonaws.com/simplewebapp@sha256:0ac50e68cef3890d8145d3c2b7d2e07235d8a2ea642b07f1c14362e656b00c86"
+        ],
+        "Parent": "",
+        "Comment": "",
+        "Created": "2018-11-18T04:58:25.980812Z",
+        "Container": "4703ade79db39792536a225a552f01cf842c408a7705e0336611c71879e415a1",
+        "ContainerConfig": {
+            "Hostname": "4703ade79db3",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "GOLANG_VERSION=1.11.2",
+                "GOPATH=/go"
+            ],
+            "Cmd": [
+                "/bin/sh",
+                "-c",
+                "#(nop) ",
+                "CMD [\"/simplewebapp/main\"]"
+            ],
+            "ArgsEscaped": true,
+            "Image": "sha256:2f0701db2be13129e56a7020d6e04fea61367380c7f3140f6f6485daafb58e92",
+            "Volumes": null,
+            "WorkingDir": "/simplewebapp",
+            "Entrypoint": null,
+            "OnBuild": [],
+            "Labels": {}
+        },
+        "DockerVersion": "18.06.1-ce",
+        "Author": "",
+        "Config": {
+            "Hostname": "",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "GOLANG_VERSION=1.11.2",
+                "GOPATH=/go"
+            ],
+            "Cmd": [
+                "/simplewebapp/main"
+            ],
+            "ArgsEscaped": true,
+            "Image": "sha256:2f0701db2be13129e56a7020d6e04fea61367380c7f3140f6f6485daafb58e92",
+            "Volumes": null,
+            "WorkingDir": "/simplewebapp",
+            "Entrypoint": null,
+            "OnBuild": [],
+            "Labels": null
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 787903173,
+        "VirtualSize": 787903173,
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/554907dccfcc3f603bdf74175fa8f7482f66ca104e81f7f9bbcf8d0a51c0822e/diff:/var/lib/docker/overlay2/c708dc46788458a1ec9e7017ad4d5957d195a3233a11b85f51b762ac653054c0/diff:/var/lib/docker/overlay2/88931e31b27e84742a58eec5e4d525f1de5be7a21e4bf0564979a8214e30a9bc/diff:/var/lib/docker/overlay2/21b9bf50cdb992b47dc6b25878a309834c25963df239fbe8d7c93e8312b3e99c/diff:/var/lib/docker/overlay2/f264ace25ca331d62e920d0afea93b7c8c452f86dd5eb317de8af989aaf47ab0/diff:/var/lib/docker/overlay2/4e04a766b9fd427a215208f0f01e670464eb273ffb66885522d1a93b4582af5e/diff:/var/lib/docker/overlay2/c490e6846fbacc2ea077cf7103d9c6aec9287dff22bd35f5ca833f94854a392f/diff:/var/lib/docker/overlay2/d8c14ddac9231d2129a650c1a80dd813593101986acdd1374bcc9ddd0b7ad973/diff:/var/lib/docker/overlay2/9fa3b4b2a06c7bd794074d6ba2ce974c8a4f2f5ecada678cab32b1e40dc9354e/diff:/var/lib/docker/overlay2/ae4e6c9db3a9beba9479eebaac54340c2866a0c9cf4948f71a907db9d6c5c4a9/diff:/var/lib/docker/overlay2/519b98a2b2dbb90a12834d50afe6baf1a34193ae4845deb5b5f704cc91210b7c/diff",
+                "MergedDir": "/var/lib/docker/overlay2/3a1c03ce6ecd5fe9297c1c0181e92431f38c391e1dc33ae228adad70314f63c9/merged",
+                "UpperDir": "/var/lib/docker/overlay2/3a1c03ce6ecd5fe9297c1c0181e92431f38c391e1dc33ae228adad70314f63c9/diff",
+                "WorkDir": "/var/lib/docker/overlay2/3a1c03ce6ecd5fe9297c1c0181e92431f38c391e1dc33ae228adad70314f63c9/work"
+            },
+            "Name": "overlay2"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:f715ed19c28b66943ac8bc12dbfb828e8394de2530bbaf1ecce906e748e4fdff",
+                "sha256:8bb25f9cdc41e7d085033af15a522973b44086d6eedd24c11cc61c9232324f77",
+                "sha256:08a01612ffca33483a1847c909836610610ce523fb7e1aca880140ee84df23e9",
+                "sha256:1191b3f5862aa9231858809b7ac8b91c0b727ce85c9b3279932f0baacc92967d",
+                "sha256:52da4d4dcf59a2a01a4c4928516bf922944775862547dad6142bc477bbbdfa47",
+                "sha256:8efa819f049ca8d7f0c8e41f77a05a97cdd388c6b00d23e89bf8ac62d350ee66",
+                "sha256:aa2bb1d487249e60e0d026718fe1925ce0eed4862902a1c026004f50c9f623b3",
+                "sha256:baef27a6b724fb545d0b253f40b75372eff1618753f0cd3b82a8f0da076e70d0",
+                "sha256:7c6467238589e56654a617ee58c3b2d6ede6d77031b7ee32b0e4e721f02fefc4",
+                "sha256:fd7892b2ffe657d4633d931c6c15be357459d523f4acd679721990fefbd1da90",
+                "sha256:2f8beadffe7fae167be6d3fd2915f90d5769762cc51184e1f81e73e7de2706da",
+                "sha256:83b4a1a77e9a69bef27c2d7d49fc7a5e44015cba9919cde2573c5ca31ca6326b"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "0001-01-01T00:00:00Z"
+        }
+    }
+]

@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Voting App vote service
+Description: Voting App web service
 Parameters:
   LatticeVirtualNodeUID:
     Description: Lattice virtual node UID (required)
@@ -11,17 +11,18 @@ Parameters:
                  Used to locate other resources in the same environment.
   ServiceName:
     Type: String
-    Default: voteapi
-    Description: A name for the service
+    Default: web
+    Description: The web (frontend) service name
   ImageUrl:
     Type: String
-    Default: subfuzion/vote-web:1.0.4
+    Default: subfuzion/vote-web:1.0.12
     Description: The url of a docker image that contains the application process that
                  will handle the traffic for this service
   ContainerPort:
     Type: Number
-    Default: 3000
+    Default: 8010
     Description: What port number the application inside the docker container is binding to
+
   XRayImageUrl:
     Type: String
     Default: subfuzion/vote-xray:1
@@ -49,7 +50,7 @@ Parameters:
                  assigned to different paths on the load balancer.
   DesiredCount:
     Type: Number
-    Default: 2
+    Default: 1
     Description: How many copies of the service task to run
   Role:
     Type: String
@@ -89,32 +90,32 @@ Resources:
           Memory: 440
           Image: !Ref 'ImageUrl'
           Environment:
-            - Name: VOTES_API_URI
-              Value:
-                Fn::ImportValue:
-                  !Join [':', [!Ref 'EnvironmentName', 'VotesURI']]
-            - Name: REPORTS_API_URI
-              Value:
-                Fn::ImportValue:
-                  !Join [':', [!Ref 'EnvironmentName', 'ReportsURI']]
+            - Name: PORT
+              Value: !Ref 'ContainerPort'
+            - Name: REPORTS_URI
+              Value: http://reports.votemesh.local:8030
           PortMappings:
             - ContainerPort: !Ref 'ContainerPort'
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
-              awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
+              awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
         - Name: "envoy"
-          Image: "subfuzion/lettuce"
+          Image: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-lattice-envoy:v1.8.0.1-beta"
           Essential: true
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: { Ref: LogGroup }
-              awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "envoy"]]
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'envoy'
           Environment:
+            - Name: ENVOY_CONFIG_FILE
+              Value: /tmp/envoy.yaml
+            - Name: ENVOY_ADMIN_ACCESS_LOG_FILE
+              Value: /tmp/admin_access.log
             - Name: "LATTICE_VIRTUAL_NODE_UID"
               Value: { Ref: LatticeVirtualNodeUID }
             - Name: "EC2_REGION"
@@ -135,21 +136,21 @@ Resources:
           VolumesFrom:
             - SourceContainer: !Ref 'ServiceName'
         - Name: "proxyinit"
-          Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x"
+          Image: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyroutemanager:1.0.3.0"
           Essential: false
           LogConfiguration:
             LogDriver: "awslogs"
             Options:
-              awslogs-group: { Ref: LogGroup }
-              awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: !Join ['-', [!Ref 'EnvironmentName', !Ref 'ServiceName', "router"]]
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'router'
           LinuxParameters:
             Capabilities:
               Add:
                 - "NET_ADMIN"
           Environment:
             - Name: "LATTICE_APP_PORTS"
-              Value: "8020"
+              Value: "8010"
             - Name: "LATTICE_ENVOY_EGRESS_PORT"
               Value: "15001"
             - Name: "LATTICE_ENVOY_INGRESS_PORT"
@@ -171,7 +172,7 @@ Resources:
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
-              awslogs-group: !Join ['-', [!Ref 'EnvironmentName', 'service', !Ref 'ServiceName']]
+              awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: 'xray'
 
@@ -181,14 +182,15 @@ Resources:
   Service:
     Type: AWS::ECS::Service
     DependsOn: LoadBalancerRule
-    ServiceRegistries:
-      - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
     Properties:
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ServiceDiscoveryRecord.Arn
       ServiceName: !Ref 'ServiceName'
       Cluster:
         Fn::ImportValue:
           !Join [':', [!Ref 'EnvironmentName', 'ClusterName']]
       LaunchType: EC2
+      HealthCheckGracePeriodSeconds: 30
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 75
@@ -201,9 +203,9 @@ Resources:
                 !Join [':', [!Ref 'EnvironmentName', 'ContainerSecurityGroup']]
           Subnets:
             - Fn::ImportValue:
-                !Join [':', [!Ref 'EnvironmentName', 'PublicSubnetOne']]
+                !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetOne']]
             - Fn::ImportValue:
-                !Join [':', [!Ref 'EnvironmentName', 'PublicSubnetTwo']]
+                !Join [':', [!Ref 'EnvironmentName', 'PrivateSubnetTwo']]
       TaskDefinition: !Ref 'TaskDefinition'
       LoadBalancers:
         - ContainerName: !Ref 'ServiceName'
@@ -243,8 +245,6 @@ Resources:
       Protocol: HTTP
       UnhealthyThresholdCount: 2
       TargetGroupAttributes:
-        - Key: stickiness.enabled
-          Value: true
         - Key: deregistration_delay.timeout_seconds
           Value: 30
       VpcId:
@@ -279,8 +279,8 @@ Resources:
           - - service
             - Fn::ImportValue: !Join [':', [!Ref 'EnvironmentName', 'ClusterName']]
             - !Ref 'ServiceName'
-      MinCapacity: 2
-      MaxCapacity: 10
+      MinCapacity: 1
+      MaxCapacity: 1
       RoleARN:
         Fn::ImportValue:
           !Join [':', [!Ref 'EnvironmentName', 'AutoscalingRole']]

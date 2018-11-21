@@ -1,0 +1,10 @@
+{
+  "clientToken": "web-vr.1",
+  "meshName": "votemesh",
+  "spec": {
+    "serviceNames": [
+      "web.votemesh.local"
+    ]
+  },
+  "virtualRouterName": "web-vr"
+}

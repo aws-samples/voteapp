@@ -17,7 +17,7 @@ where CMD is either `vote` or `results` (missing command will print help).
 If you need to specify the host and port for the Voting App, then omit the
 `--network` option and specify environment variables like this:
 
-    $ docker run -it --rm -e WEB_URI=<host>:<port> subfuzion/vote CMD
+    $ docker run -it --rm -e WEB_URI=http://<host>:<port> subfuzion/vote CMD
 
 or
 

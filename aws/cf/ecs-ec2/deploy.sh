@@ -5,13 +5,13 @@
 : ${AWS_DEFAULT_REGION:=us-west-2}
 
 stacks=(
-    "voteapp"
-    "database"
-    "queue"
-    "worker"
-    "reports"
-    "votes"
-    "web"
+     "voteapp"
+#     "database"
+#     "queue"
+#     "worker"
+     "reports"
+#     "votes"
+     "web"
 )
 
 print() {
@@ -34,8 +34,8 @@ sanity_check() {
 
 deploy_node() {
     node=$1
+    uid=$(aws --endpoint-url $LATTICE_FRONTEND lattice describe-virtual-node --mesh-name votemesh --virtual-node-name ${node}-vn --query virtualNode.metadata.uid --output text)
     print "deploy node: $node ($uid)"
-    uid=$(aws --endpoint-url $LATTICE_FRONTEND lattice describe-virtual-node --mesh-name votemesh --virtual-node-name ${node}_node --query virtualNode.metadata.uid --output text)
     aws cloudformation deploy --stack-name=voteapp-$node --template-file=$node.yml --parameter-overrides LatticeVirtualNodeUID=$uid
 }
 
@@ -47,7 +47,7 @@ setup() {
         ((i++))
         printf "\nDeploying $i of $total: $s.yml\n"
         if [ "$s" == "voteapp" ]; then
-            aws cloudformation deploy --stack-name=voteapp --template-file=$s.yml --capabilities=CAPABILITY_IAM
+            aws cloudformation deploy --stack-name=voteapp --template-file=$s.yml --capabilities=CAPABILITY_IAM --parameter-overrides KeyName=$KEY_PAIR_NAME,EnvironmentName=$ENVIRONMENT_NAME
         else
             deploy_node $s
         fi
@@ -68,8 +68,8 @@ printinfo() {
         --query 'Stacks[0].Outputs[?OutputKey==ExternalUrl].OutputValue' --output text)
     printf "\nSuccess: voteapp deployed, public endpoint:\n%s\n" "$ep"
 
-    printf "\nTo vote, run:\n%s\n" "docker run -it --rm -e VOTE_API_URI=\"${ep}\" subfuzion/voter vote"
-    printf "\nTo get vote results, run:\n%s\n" "docker run -it --rm -e VOTE_API_URI=\"${ep}\" subfuzion/voter results"
+    printf "\nTo vote, run:\n%s\n" "docker run -it --rm -e WEB_URI=\"${ep}\" subfuzion/vote vote"
+    printf "\nTo get vote results, run:\n%s\n" "docker run -it --rm -e WEB_URI=\"${ep}\" subfuzion/vote results"
 }
 
 # deploy stacks and print results

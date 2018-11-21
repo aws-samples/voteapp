@@ -1,6 +1,6 @@
 // Exponential backoff implementation
 
-const DefaultRetries = 6;
+const DefaultRetries = 5; // total of 6 connection attempts (slightly more than 1 minute total)
 const DefaultTimeFactor = 1000; // ms
 const DefaultStrategy = exponentialStrategy;
 
@@ -36,6 +36,7 @@ class Backoff {
     let options = this.options;
     while (true) {
       try {
+        // 0..retries, inclusive
         return await promise();
       } catch (err) {
         if (options.retryIf && !options.retryIf(err)) {
@@ -57,10 +58,10 @@ module.exports = Backoff;
 
 /**
  * 
- * @param {int} counter is the retry attempt, from 0 up to maxRetries (exclusive)
- * @param {int} maxRetries is the total number of attempts to try
- * @param {int} factor is the unit multiplier (ex: 100 ms)
- * @return {int} the incremented counter, or -1 when counter exceeds maxRetries
+ * @param {int} counter is the connection attempt, from initial (0) to maxRetries, inclusive
+ * @param {int} maxRetries is the total number of retry attempts to try after initial
+ * @param {int} factor is the time unit multiplier (ex: 1000 ms)
+ * @return {int} the computed amount of time to pause, or -1 if retry attempts are exhausted
  */
 function exponentialStrategy(counter, maxRetries, factor) {
   if (counter < 0) {
@@ -72,7 +73,6 @@ function exponentialStrategy(counter, maxRetries, factor) {
   let jitter = Math.random();
   return ((2 ** counter) + jitter) * factor;
 }
-
 
 /**
  * Wait for the specified pause.
