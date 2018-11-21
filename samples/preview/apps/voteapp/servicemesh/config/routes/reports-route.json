@@ -1,5 +1,4 @@
 {
-    "clientToken": "reports-vr.1",
     "routeName": "reports-route",
     "spec": {
         "httpRoute": {

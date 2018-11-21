@@ -1,5 +1,4 @@
 {
-    "clientToken": "reports-vr.1",
     "spec": {
         "serviceNames": [
             "reports.default.svc.cluster.local"
