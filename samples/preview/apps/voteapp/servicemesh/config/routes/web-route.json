@@ -1,5 +1,5 @@
 {
-    "clientToken": "web.route.1",
+    "clientToken": "web-vr.1",
     "routeName": "web-route",
     "spec": {
         "httpRoute": {
