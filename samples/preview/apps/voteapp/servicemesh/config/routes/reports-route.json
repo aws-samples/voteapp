@@ -6,7 +6,7 @@
             "action": {
                 "weightedTargets": [
                     {
-                        "virtualNode": "web-vn",
+                        "virtualNode": "reports-vn",
                         "weight": 100
                     }
                 ]

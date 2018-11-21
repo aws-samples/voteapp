@@ -16,7 +16,7 @@
             }
         },
         "backends": [
-            "colorteller.default.svc.cluster.local"
+            "reports.default.svc.cluster.local"
         ]
     },
     "virtualNodeName": "web-vn"
