@@ -1,0 +1,20 @@
+{
+    "clientToken": "serviceA.1",
+    "routeName": "serviceA-route",
+    "spec": {
+        "httpRoute": {
+            "action": {
+                "weightedTargets": [
+                    {
+                        "virtualNode": "serviceAv1",
+                        "weight": 100
+                    }
+                ]
+            },
+            "match": {
+                "prefix": "/"
+            }
+        }
+    },
+    "virtualRouterName": "serviceA"
+}

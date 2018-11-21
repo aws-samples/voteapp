@@ -1,0 +1,10 @@
+{
+  "clientToken": "serviceB.1",
+  
+  "spec": {
+      "serviceNames": [
+          "serviceb.simpleapp.local"
+      ]
+  },
+  "virtualRouterName": "serviceB"
+}
