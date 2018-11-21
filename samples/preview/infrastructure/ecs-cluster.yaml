@@ -430,6 +430,12 @@ Outputs:
     Value: !Ref ECSServiceSecurityGroup
     Export:
       Name: !Sub "${EnvironmentName}:ECSServiceSecurityGroup"
+  
+  ECSInstancesSecurityGroup:
+    Description: Security group to be used by all ECS instance in the cluster
+    Value: !Ref ECSInstancesSecurityGroup
+    Export:
+      Name: !Sub "${EnvironmentName}:ECSInstancesSecurityGroup"
 
   TaskExecutionIamRoleArn:
     Description: Task Executin IAM role used by ECS tasks
