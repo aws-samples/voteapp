@@ -8,9 +8,6 @@ if [ -f meshvars.sh ]; then
     source meshvars.sh
 fi
 
-# Only us-west-2 is supported right now.
-: ${AWS_DEFAULT_REGION:=us-west-2}
-
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 print() {
@@ -26,7 +23,7 @@ err() {
 
 sanity_check() {
     if [ "$AWS_DEFAULT_REGION" != "us-west-2" ]; then
-        err "Only us-west-2 is supported at this time.  (Current default region: $AWS_DEFAULT_REGION)"
+        err "Only us-west-2 is supported at this time. Ensure the AWS_DEFAULT_REGION environment variable is set to 'us-west-2' and try again. (Current default region: $AWS_DEFAULT_REGION)"
     fi
 }
 

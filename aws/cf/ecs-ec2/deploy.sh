@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 # vim:syn=sh:ts=4:sw=4:et:ai
 
-# Only us-west-2 is supported right now.
-: ${AWS_DEFAULT_REGION:=us-west-2}
-
 stacks=(
      "voteapp"
 #     "database"
