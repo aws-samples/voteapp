@@ -10,7 +10,7 @@ The following environment variables must be declared:
 | Variable                  | Description                                                                                          |
 | ------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `DOWNSTREAM_SERVICE_NAME` | The downstream (local) service name.  Used for setting the `DownstreamServiceName` metric dimension. |
-| `ENVOY_ADMIN_HOST`        | The IP and port of Envoy's admin service, for example, `localhost:8001`                              |
+| `ENVOY_ADMIN_HOST`        | The IP and port of Envoy's admin service, for example, `localhost:9901`                              |
 
 Optional configuration
 ----------------------
