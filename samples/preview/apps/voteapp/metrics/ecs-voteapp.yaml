@@ -1,0 +1,496 @@
+---
+Parameters:
+  EnvironmentName:
+    Type: String
+    Description: Environment name that joins all the stacks
+
+  SideCarRouterManagerImage:
+    Type: String
+    Description: Sidecar router manager that sets up networking for transparent proxy
+    Default: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyroutemanager:1.0.3.0"
+
+  EnvoyImage:
+    Type: String
+    Description: Envoy image to use
+    Default: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-lattice-envoy:v1.8.0.2-beta"
+
+  EnvoyLogLevel:
+    Type: String
+    Default: debug
+
+  ReportsImage:
+    Type: String
+    Description: Vote App Reports image
+    Default: "subfuzion/vote-reports:1.0.12"
+
+  VoteWebImage:
+    Type: String
+    Description: Vote App Web image
+    Default: "subfuzion/vote-web:1.0.12"
+
+  PrometheusWebImage:
+    Type: String
+    Description: Prometheus Web image
+    Default: "986516506659.dkr.ecr.us-west-2.amazonaws.com/prometheusrepo:latest"
+
+  StatsExporterWebImage:
+    Type: String
+    Description: StatsExporter Web image
+    Default: "986516506659.dkr.ecr.us-west-2.amazonaws.com/statsexporterrepo:latest"
+
+  GrafanaWebImage:
+    Type: String
+    Description: Grafana Web image
+    Default: "grafana/grafana:latest"
+
+  VoteReportsNodeId:
+    Type: String
+    Description: VirtualNode id of the reports service
+
+  VoteWebNodeId:
+    Type: String
+    Description: VirtualNode id of the web service
+
+  LatticeEgressIgnoredIpCsv:
+    Type: String
+    Default: 169.254.170.2
+
+  Path:
+    Type: String
+    Default: "*"
+    Description: A path on the public load balancer that this service
+                 should be connected to. Use * to send all load balancer
+                 traffic to this service.
+
+Resources:
+
+  ### reports.default.svc.cluster.local
+  ReportsServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: "reports"
+      DnsConfig:
+        NamespaceId:
+          'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceDiscoveryNamespace"
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+
+  ReportsService:
+    Type: 'AWS::ECS::Service'
+    Properties:
+      Cluster:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:ECSCluster"
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: 1
+      LaunchType: EC2
+      ServiceRegistries:
+        - RegistryArn:
+            'Fn::GetAtt': ReportsServiceDiscoveryRecord.Arn
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceSecurityGroup"
+          Subnets:
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet1"
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet2"
+      TaskDefinition: { Ref: ReportsTaskDefinition }
+
+  ReportsTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      ContainerDefinitions:
+        - Name: "app"
+          Image: { Ref: ReportsImage }
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "reports-app"
+          Environment:
+            - Name: "PORT"
+              Value: "9080"
+        - Name: envoy
+          Image: { Ref: EnvoyImage }
+          Essential: true
+          User: "1337"
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "reports-envoy"
+          Environment:
+            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+              Value: "reports-vn"
+            - Name: "LATTICE_VIRTUAL_NODE_UID"
+              Value: { Ref: VoteReportsNodeId }
+            - Name: "ENVOY_LOG_LEVEL"
+              Value: { Ref: EnvoyLogLevel }
+            - Name: "AWS_REGION"
+              Value: "us-west-2"
+        - Name: "proxyinit"
+          Image: { Ref: SideCarRouterManagerImage }
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "reports-proxyinit"
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_APP_PORTS"
+              Value: "9080"
+            - Name: "LATTICE_EGRESS_IGNORED_IP"
+              Value: { Ref: LatticeEgressIgnoredIpCsv }
+      ExecutionRoleArn:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
+      NetworkMode: "awsvpc"
+      Memory: 256
+
+
+
+  ### web.default.svc.cluster.local
+  WebServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: "web"
+      DnsConfig:
+        NamespaceId:
+          'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceDiscoveryNamespace"
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+
+  WebService:
+    Type: 'AWS::ECS::Service'
+    DependsOn:
+      - LoadBalancerRule
+      - PrometheusLoadBalancerRule
+      - GrafanaLoadBalancerRule
+    Properties:
+      Cluster:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:ECSCluster"
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: 1
+      LaunchType: EC2
+      ServiceRegistries:
+        - RegistryArn:
+            'Fn::GetAtt': WebServiceDiscoveryRecord.Arn
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceSecurityGroup"
+          Subnets:
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet1"
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet2"
+      TaskDefinition: { Ref: WebTaskDefinition }
+      LoadBalancers:
+        - ContainerName: app
+          ContainerPort: 9080
+          TargetGroupArn: !Ref 'WebTargetGroup'
+
+  WebTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      ContainerDefinitions:
+        - Name: "app"
+          Image: { Ref: VoteWebImage }
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "web-app"
+          Environment:
+            - Name: "PORT"
+              Value: "9080"
+            - Name: "REPORTS_URI"
+              Value: "http://reports.default.svc.cluster.local:9080"
+          PortMappings:
+            - ContainerPort: 9080
+        - Name: envoy
+          Image: { Ref: EnvoyImage }
+          Essential: true
+          User: "1337"
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "web-envoy"
+          Environment:
+            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+              Value: "web-vn"
+            - Name: "LATTICE_VIRTUAL_NODE_UID"
+              Value: { Ref: VoteWebNodeId }
+            - Name: "ENVOY_LOG_LEVEL"
+              Value: { Ref: EnvoyLogLevel }
+            - Name: "AWS_REGION"
+              Value: "us-west-2"
+        - Name: "proxyinit"
+          Image: { Ref: SideCarRouterManagerImage }
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "web-proxyinit"
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "LATTICE_START_ENABLED"
+              Value: "1"
+            - Name: "LATTICE_USE_TPROXY"
+              Value: "0"
+            - Name: "LATTICE_IGNORE_UID"
+              Value: "1337"
+            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "LATTICE_APP_PORTS"
+              Value: "9080"
+            - Name: "LATTICE_EGRESS_IGNORED_IP"
+              Value: { Ref: LatticeEgressIgnoredIpCsv }
+        - Name: "prometheus"
+          Image: { Ref: PrometheusWebImage }
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "web-prometheus"
+          PortMappings:
+            - ContainerPort: 9090
+        - Name: "stats_exporter"
+          Image: { Ref: StatsExporterWebImage }
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "web-statsexporter"
+          PortMappings:
+            - ContainerPort: 9099
+        - Name: "grafana"
+          Image: { Ref: GrafanaWebImage }
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "web-grafana"
+          PortMappings:
+            - ContainerPort: 3000
+      ExecutionRoleArn:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
+      NetworkMode: "awsvpc"
+      Memory: 256
+
+  # Load balancer for getting traffic to containers.
+  # A public facing load balancer, this is used for accepting traffic from the public
+  # internet and directing it to public facing microservices
+  WebPublicLoadBalancerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to the public facing load balancer
+      VpcId:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:VPC"
+      SecurityGroupIngress:
+          # Allow access to ALB from anywhere on the internet
+          - CidrIp: 0.0.0.0/0
+            IpProtocol: -1
+  ECSInstancesSecurityGroupIngressFromPublicALB:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Ingress from the public ALB
+      GroupId:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:ECSInstancesSecurityGroup"
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref 'WebPublicLoadBalancerSG'
+
+  WebPublicLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '30'
+      Subnets:
+        # The load balancer is placed into the public subnets, so that traffic
+        # from the internet can reach the load balancer directly via the internet gateway
+        - 'Fn::ImportValue': !Sub "${EnvironmentName}:PublicSubnet1"
+        - 'Fn::ImportValue': !Sub "${EnvironmentName}:PublicSubnet2"
+      SecurityGroups: [!Ref 'WebPublicLoadBalancerSG']
+  WebTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 6
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      TargetType: ip
+      Name: !Join ['-', [!Ref 'EnvironmentName', 'drop-1']]
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 2
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 30
+      VpcId:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:VPC"
+  PrometheusTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 300
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 10
+      TargetType: ip
+      Name: !Join ['-', [!Ref 'EnvironmentName', 'prometheus-1']]
+      Port: 9090
+      Protocol: HTTP
+      UnhealthyThresholdCount: 10
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 30
+      VpcId:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:VPC"
+  GrafanaTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 300
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 10
+      TargetType: ip
+      Name: !Join ['-', [!Ref 'EnvironmentName', 'grafana-1']]
+      Port: 3000
+      Protocol: HTTP
+      UnhealthyThresholdCount: 10
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 30
+      VpcId:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:VPC"
+  WebLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn:
+      - WebPublicLoadBalancer
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref 'WebTargetGroup'
+          Type: 'forward'
+      LoadBalancerArn: !Ref 'WebPublicLoadBalancer'
+      Port: 80
+      Protocol: HTTP
+  PrometheusLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn:
+      - WebPublicLoadBalancer
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref 'PrometheusTargetGroup'
+          Type: 'forward'
+      LoadBalancerArn: !Ref 'WebPublicLoadBalancer'
+      Port: 9090
+      Protocol: HTTP
+  GrafanaLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn:
+      - WebPublicLoadBalancer
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref 'GrafanaTargetGroup'
+          Type: 'forward'
+      LoadBalancerArn: !Ref 'WebPublicLoadBalancer'
+      Port: 3000
+      Protocol: HTTP
+
+  # Create a rule on the load balancer for routing traffic to the target group
+  LoadBalancerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - TargetGroupArn: !Ref 'WebTargetGroup'
+          Type: 'forward'
+      Conditions:
+        - Field: path-pattern
+          Values: [!Ref 'Path']
+      ListenerArn: !Ref 'WebLoadBalancerListener'
+      Priority: 1
+  PrometheusLoadBalancerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - TargetGroupArn: !Ref 'PrometheusTargetGroup'
+          Type: 'forward'
+      Conditions:
+        - Field: path-pattern
+          Values: [!Ref 'Path']
+      ListenerArn: !Ref 'PrometheusLoadBalancerListener'
+      Priority: 1
+  GrafanaLoadBalancerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - TargetGroupArn: !Ref 'GrafanaTargetGroup'
+          Type: 'forward'
+      Conditions:
+        - Field: path-pattern
+          Values: [!Ref 'Path']
+      ListenerArn: !Ref 'GrafanaLoadBalancerListener'
+      Priority: 1
+
+Outputs:
+  ExternalUrl:
+    Description: The url of the external load balancer
+    Value: !Join ['', ['http://', !GetAtt 'WebPublicLoadBalancer.DNSName']]
+    Export:
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', 'ExternalUrl' ] ]
