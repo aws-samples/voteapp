@@ -209,9 +209,9 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "serviceBv1-envoy"
           Environment:
-            - Name: LATTICE_VIRTUAL_NODE_NAME
+            - Name: APPMESH_VIRTUAL_NODE_NAME
               Value: "serviceB.simpleapp.local"
-            - Name: LATTICE_VIRTUAL_NODE_UID 
+            - Name: APPMESH_VIRTUAL_NODE_UID 
               Value: !Ref ServiceAv1ServiceEndpointIdentifier
             - Name: ENVOY_ADMIN_ACCESS_LOG_FILE
               Value: "/tmp/envoy_admin_access.log"
@@ -236,19 +236,19 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "LATTICE_START_ENABLED"
+            - Name: "APPMESH_START_ENABLED"
               Value: "1"
-            - Name: "LATTICE_USE_TPROXY"
+            - Name: "APPMESH_USE_TPROXY"
               Value: "0"
-            - Name: "LATTICE_IGNORE_UID"
+            - Name: "APPMESH_IGNORE_UID"
               Value: "1337"
-            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+            - Name: "APPMESH_ENVOY_INGRESS_PORT"
               Value: "15000"
-            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+            - Name: "APPMESH_ENVOY_EGRESS_PORT"
               Value: "15001"
-            - Name: "LATTICE_APP_PORTS"
+            - Name: "APPMESH_APP_PORTS"
               Value: "8080"
-            - Name: "LATTICE_EGRESS_IGNORED_IP"
+            - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: "LatticeEgressIngoredIpCsv" }
       ExecutionRoleArn: { "Fn::GetAtt": TaskExecutionIamRole.Arn }
       NetworkMode: "awsvpc"
@@ -307,9 +307,9 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "serviceCv1-envoy"
           Environment:
-            - Name: LATTICE_VIRTUAL_NODE_NAME
+            - Name: APPMESH_VIRTUAL_NODE_NAME
               Value: "serviceC.simpleapp.local"
-            - Name: LATTICE_VIRTUAL_NODE_UID 
+            - Name: APPMESH_VIRTUAL_NODE_UID 
               Value: !Ref ServiceAv1ServiceEndpointIdentifier
             - Name: ENVOY_ADMIN_ACCESS_LOG_FILE
               Value: "/tmp/envoy_admin_access.log"
@@ -334,19 +334,19 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "LATTICE_START_ENABLED"
+            - Name: "APPMESH_START_ENABLED"
               Value: "1"
-            - Name: "LATTICE_USE_TPROXY"
+            - Name: "APPMESH_USE_TPROXY"
               Value: "0"
-            - Name: "LATTICE_IGNORE_UID"
+            - Name: "APPMESH_IGNORE_UID"
               Value: "1337"
-            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+            - Name: "APPMESH_ENVOY_INGRESS_PORT"
               Value: "15000"
-            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+            - Name: "APPMESH_ENVOY_EGRESS_PORT"
               Value: "15001"
-            - Name: "LATTICE_APP_PORTS"
+            - Name: "APPMESH_APP_PORTS"
               Value: "8080"
-            - Name: "LATTICE_EGRESS_IGNORED_IP"
+            - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: "LatticeEgressIngoredIpCsv" }
       ExecutionRoleArn: { "Fn::GetAtt": TaskExecutionIamRole.Arn }
       NetworkMode: "awsvpc"
@@ -405,9 +405,9 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "serviceDv1-envoy"
           Environment:
-            - Name: LATTICE_VIRTUAL_NODE_NAME
+            - Name: APPMESH_VIRTUAL_NODE_NAME
               Value: "serviceD.simpleapp.local"
-            - Name: LATTICE_VIRTUAL_NODE_UID 
+            - Name: APPMESH_VIRTUAL_NODE_UID 
               Value: !Ref ServiceAv1ServiceEndpointIdentifier
             - Name: ENVOY_ADMIN_ACCESS_LOG_FILE
               Value: "/tmp/envoy_admin_access.log"
@@ -432,19 +432,19 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "LATTICE_START_ENABLED"
+            - Name: "APPMESH_START_ENABLED"
               Value: "1"
-            - Name: "LATTICE_USE_TPROXY"
+            - Name: "APPMESH_USE_TPROXY"
               Value: "0"
-            - Name: "LATTICE_IGNORE_UID"
+            - Name: "APPMESH_IGNORE_UID"
               Value: "1337"
-            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+            - Name: "APPMESH_ENVOY_INGRESS_PORT"
               Value: "15000"
-            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+            - Name: "APPMESH_ENVOY_EGRESS_PORT"
               Value: "15001"
-            - Name: "LATTICE_APP_PORTS"
+            - Name: "APPMESH_APP_PORTS"
               Value: "8080"
-            - Name: "LATTICE_EGRESS_IGNORED_IP"
+            - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: "LatticeEgressIngoredIpCsv" }
       ExecutionRoleArn: { "Fn::GetAtt": TaskExecutionIamRole.Arn }
       NetworkMode: "awsvpc"
@@ -510,9 +510,9 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "serviceAv1-envoy"
           Environment:
-            - Name: LATTICE_VIRTUAL_NODE_NAME
+            - Name: APPMESH_VIRTUAL_NODE_NAME
               Value: "serviceA.simpleapp.local"
-            - Name: LATTICE_VIRTUAL_NODE_UID 
+            - Name: APPMESH_VIRTUAL_NODE_UID 
               Value: !Ref ServiceAv1ServiceEndpointIdentifier
             - Name: ENVOY_ADMIN_ACCESS_LOG_FILE
               Value: "/tmp/envoy_admin_access.log"
@@ -537,19 +537,19 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "LATTICE_START_ENABLED"
+            - Name: "APPMESH_START_ENABLED"
               Value: "1"
-            - Name: "LATTICE_USE_TPROXY"
+            - Name: "APPMESH_USE_TPROXY"
               Value: "0"
-            - Name: "LATTICE_IGNORE_UID"
+            - Name: "APPMESH_IGNORE_UID"
               Value: "1337"
-            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+            - Name: "APPMESH_ENVOY_INGRESS_PORT"
               Value: "15000"
-            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+            - Name: "APPMESH_ENVOY_EGRESS_PORT"
               Value: "15001"
-            - Name: "LATTICE_APP_PORTS"
+            - Name: "APPMESH_APP_PORTS"
               Value: "8080"
-            - Name: "LATTICE_EGRESS_IGNORED_IP"
+            - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: "LatticeEgressIngoredIpCsv" }
       ExecutionRoleArn: { "Fn::GetAtt": TaskExecutionIamRole.Arn }
       NetworkMode: "awsvpc"

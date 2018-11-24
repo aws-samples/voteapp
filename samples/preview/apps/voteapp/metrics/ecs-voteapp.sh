@@ -15,7 +15,7 @@ err() {
 
 describe_virtual_node() {
     service=$1
-    cmd=( aws --profile ${AWS_PROFILE} --region ${AWS_REGION} --endpoint-url ${LATTICE_FRONTEND} \
+    cmd=( aws --profile ${AWS_PROFILE} --region ${AWS_REGION} --endpoint-url ${APPMESH_FRONTEND} \
                 $MESHCMD describe-virtual-node  \
                 --mesh-name ${MESH_NAME} --virtual-node-name ${service} \
                 --query virtualNode.metadata.uid --output text )

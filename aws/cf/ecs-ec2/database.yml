@@ -122,11 +122,11 @@ Resources:
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: 'envoy'
           Environment:
-            - Name: "LATTICE_VIRTUAL_NODE_UID"
+            - Name: "APPMESH_VIRTUAL_NODE_UID"
               Value: { Ref: LatticeVirtualNodeUID }
             - Name: "EC2_REGION"
               Value: { Ref: "AWS::Region" }
-            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+            - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value:
                   Fn::Join:
                       - '.'
@@ -155,17 +155,17 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "LATTICE_APP_PORTS"
+            - Name: "APPMESH_APP_PORTS"
               Value: "3000"
-            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+            - Name: "APPMESH_ENVOY_EGRESS_PORT"
               Value: "15001"
-            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+            - Name: "APPMESH_ENVOY_INGRESS_PORT"
               Value: "15000"
-            - Name: "LATTICE_IGNORE_UID"
+            - Name: "APPMESH_IGNORE_UID"
               Value: "1337"
-            - Name: "LATTICE_START_ENABLED"
+            - Name: "APPMESH_START_ENABLED"
               Value: "1"
-            - Name: "LATTICE_USE_TPROXY"
+            - Name: "APPMESH_USE_TPROXY"
               Value: "0"
         - Name: xray-daemon
           Essential: false

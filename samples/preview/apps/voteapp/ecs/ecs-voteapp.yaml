@@ -7,12 +7,12 @@ Parameters:
   SideCarRouterManagerImage:
     Type: String
     Description: Sidecar router manager that sets up networking for transparent proxy
-    Default: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyroutemanager:1.0.3.0"
+    Default: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-proxy-route-manager"
 
   EnvoyImage:
     Type: String
     Description: Envoy image to use
-    Default: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-lattice-envoy:v1.8.0.2-beta"
+    Default: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy"
 
   EnvoyLogLevel:
     Type: String
@@ -115,9 +115,9 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "reports-envoy"
           Environment:
-            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+            - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: "reports-vn"
-            - Name: "LATTICE_VIRTUAL_NODE_UID"
+            - Name: "APPMESH_VIRTUAL_NODE_UID"
               Value: { Ref: VoteReportsNodeId }
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
@@ -138,19 +138,19 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "LATTICE_START_ENABLED"
+            - Name: "APPMESH_START_ENABLED"
               Value: "1"
-            - Name: "LATTICE_USE_TPROXY"
+            - Name: "APPMESH_USE_TPROXY"
               Value: "0"
-            - Name: "LATTICE_IGNORE_UID"
+            - Name: "APPMESH_IGNORE_UID"
               Value: "1337"
-            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+            - Name: "APPMESH_ENVOY_INGRESS_PORT"
               Value: "15000"
-            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+            - Name: "APPMESH_ENVOY_EGRESS_PORT"
               Value: "15001"
-            - Name: "LATTICE_APP_PORTS"
+            - Name: "APPMESH_APP_PORTS"
               Value: "9080"
-            - Name: "LATTICE_EGRESS_IGNORED_IP"
+            - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: LatticeEgressIgnoredIpCsv }
       ExecutionRoleArn:
         'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
@@ -234,9 +234,9 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "web-envoy"
           Environment:
-            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+            - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: "web-vn"
-            - Name: "LATTICE_VIRTUAL_NODE_UID"
+            - Name: "APPMESH_VIRTUAL_NODE_UID"
               Value: { Ref: VoteWebNodeId }
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
@@ -257,19 +257,19 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "LATTICE_START_ENABLED"
+            - Name: "APPMESH_START_ENABLED"
               Value: "1"
-            - Name: "LATTICE_USE_TPROXY"
+            - Name: "APPMESH_USE_TPROXY"
               Value: "0"
-            - Name: "LATTICE_IGNORE_UID"
+            - Name: "APPMESH_IGNORE_UID"
               Value: "1337"
-            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+            - Name: "APPMESH_ENVOY_INGRESS_PORT"
               Value: "15000"
-            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+            - Name: "APPMESH_ENVOY_EGRESS_PORT"
               Value: "15001"
-            - Name: "LATTICE_APP_PORTS"
+            - Name: "APPMESH_APP_PORTS"
               Value: "9080"
-            - Name: "LATTICE_EGRESS_IGNORED_IP"
+            - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: LatticeEgressIgnoredIpCsv }
       ExecutionRoleArn:
         'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
