@@ -15,7 +15,7 @@ echo "Region: $region"
 config_dir=${CONFIG_DIR:-$dir/../config}
 echo "Using config in '$config_dir'"
 
-endpoint_url=${LATTICE_ENDPOINT_URL:-https://frontend.us-west-2.gamma.lattice.aws.a2z.com/}
+endpoint_url=${LATTICE_ENDPOINT_URL:-https://frontend.us-west-2.beta.lattice.aws.a2z.com/}
 aws="aws --profile ${profile} --region ${region}"
 
 echo "Validating $mesh_name-vpc stack"
@@ -46,7 +46,7 @@ echo "$(${aws} cloudformation create-stack \
 echo "Waiting for $mesh_name-ecs stack to complete."
 ${aws} cloudformation wait stack-create-complete --stack-name "$mesh_name-ecs"
 
-cmd="${aws} --endpoint-url ${endpoint_url} lattice"
+cmd="${aws} --endpoint-url ${endpoint_url} appmesh"
 
 ${cmd} create-mesh --client-token ${mesh_name} --mesh-name ${mesh_name}
 

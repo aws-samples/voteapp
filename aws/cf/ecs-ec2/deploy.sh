@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # vim:syn=sh:ts=4:sw=4:et:ai
 
+MESHCMD=appmesh
+
 stacks=(
      "voteapp"
 #     "database"
@@ -31,7 +33,7 @@ sanity_check() {
 
 deploy_node() {
     node=$1
-    uid=$(aws --endpoint-url $LATTICE_FRONTEND lattice describe-virtual-node --mesh-name votemesh --virtual-node-name ${node}-vn --query virtualNode.metadata.uid --output text)
+    uid=$(aws --endpoint-url $LATTICE_FRONTEND $MESHCMD describe-virtual-node --mesh-name votemesh --virtual-node-name ${node}-vn --query virtualNode.metadata.uid --output text)
     print "deploy node: $node ($uid)"
     aws cloudformation deploy --stack-name=voteapp-$node --template-file=$node.yml --parameter-overrides LatticeVirtualNodeUID=$uid
 }

@@ -7,7 +7,7 @@ Voting App
 Following steps assume you have a functional VPC, ECS-Cluster and Mesh. If not follow the steps under ***infrastructure***. And have the following environment variables set
 
 ```
-export LATTICE_FRONTEND=https://frontend.us-west-2.gamma.lattice.aws.a2z.com/
+export LATTICE_FRONTEND=https://frontend.us-west-2.beta.lattice.aws.a2z.com/
 export AWS_PROFILE=<...>
 export AWS_REGION=<...>
 export ENVIRONMENT_NAME=<...>

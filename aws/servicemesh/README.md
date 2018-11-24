@@ -5,7 +5,7 @@
 If you haven't updated your AWS CLI for the latest service mesh model, run the following
 command from this directory:
 
-    $ aws configure add-model --service-name lattice --service-model file://aws-cli-model.json
+    $ aws configure add-model --service-name appmesh --service-model file://aws-cli-model.json
 
 ### Update environment
 
@@ -22,7 +22,7 @@ export AWS_PROFILE="your-aws-profile"
 export AWS_ACCOUNT_ID="your-aws-account-id"
 
 # Lattice
-export LATTICE_FRONTEND="https://frontend.us-west-2.gamma.lattice.aws.a2z.com/"
+export LATTICE_FRONTEND="https://frontend.us-west-2.beta.lattice.aws.a2z.com/"
 export EMS_HOST="AWSLa-LoadB-IJ2ARZX9B4CO-ae2e9ff7acb5328c.elb.us-west-2.amazonaws.com"
 export EMS_PORT=80
 

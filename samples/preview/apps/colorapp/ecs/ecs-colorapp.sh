@@ -4,6 +4,7 @@ set -ex
 
 ACTION=${1:-"create-stack"}
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+MESHCMD=appmesh
 
 err() {
     msg="Error: $1"
@@ -15,7 +16,7 @@ err() {
 describe_virtual_node() {
     service=$1
     cmd=( aws --profile ${AWS_PROFILE} --region ${AWS_REGION} --endpoint-url ${LATTICE_FRONTEND} \
-                lattice describe-virtual-node  \
+                $MESHCMD describe-virtual-node  \
                 --mesh-name ${MESH_NAME} --virtual-node-name ${service} \
                 --query virtualNode.metadata.uid --output text )
     node_id=$("${cmd[@]}") || err "Unable to describe node ${service}" "$?"
