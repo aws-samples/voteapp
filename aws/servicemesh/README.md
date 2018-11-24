@@ -12,7 +12,7 @@ command from this directory:
 You will need environment variables to be set. It is recommended that you create a shell script
 to export the following variables and then source it into your shell:
 
-It is recommended that you use the `gamma` environment for the `LATTICE_FRONTEND` for now.
+It is recommended that you use the `gamma` environment for the `APPMESH_FRONTEND` for now.
 
 *meshvars.sh*
 
@@ -22,9 +22,8 @@ export AWS_PROFILE="your-aws-profile"
 export AWS_ACCOUNT_ID="your-aws-account-id"
 
 # Lattice
-export LATTICE_FRONTEND="https://frontend.us-west-2.beta.lattice.aws.a2z.com/"
-export EMS_HOST="AWSLa-LoadB-IJ2ARZX9B4CO-ae2e9ff7acb5328c.elb.us-west-2.amazonaws.com"
-export EMS_PORT=80
+export APPMESH_FRONTEND="https://frontend.us-west-2.beta.lattice.aws.a2z.com/"
+export APPMESH_XDS_ENDPOINT=envoy-management.us-west-2.beta.lattice.aws.a2z.com:443
 
 # App
 export MESH_NAME="voting-app"

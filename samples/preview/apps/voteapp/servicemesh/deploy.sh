@@ -34,15 +34,15 @@ sanity_check() {
         err "MESH_NAME is not set"
     fi
 
-    if [ -z ${LATTICE_FRONTEND} ]; then
-        err "LATTICE_FRONTEND is not set"
+    if [ -z ${APPMESH_FRONTEND} ]; then
+        err "APPMESH_FRONTEND is not set"
     fi
 }
 
 create_mesh() {
     print "Creating service mesh"
     print "====================="
-    cmd=( aws --endpoint-url ${LATTICE_FRONTEND} $MESHCMD create-mesh --mesh-name ${MESH_NAME} --client-token ${MESH_NAME} --query mesh.metadata.arn --output text )
+    cmd=( aws --endpoint-url ${APPMESH_FRONTEND} $MESHCMD create-mesh --mesh-name ${MESH_NAME} --client-token ${MESH_NAME} --query mesh.metadata.arn --output text )
     print "${cmd[@]}"
     arn=$("${cmd[@]}") || err "Unable to create service mesh" "$?"
     print "--> $arn"
@@ -50,7 +50,7 @@ create_mesh() {
 
 create_virtual_node() {
     service=$1
-    cmd=( aws --endpoint-url ${LATTICE_FRONTEND} $MESHCMD create-virtual-node --mesh-name ${MESH_NAME} --cli-input-json file:///${DIR}/config/virtualnodes/${service} --query virtualNode.metadata.uid --output text )
+    cmd=( aws --endpoint-url ${APPMESH_FRONTEND} $MESHCMD create-virtual-node --mesh-name ${MESH_NAME} --cli-input-json file:///${DIR}/config/virtualnodes/${service} --query virtualNode.metadata.uid --output text )
     print "${cmd[@]}"
     uid=$("${cmd[@]}") || update_virtual_node ${service}
     print "--> ${uid}"
@@ -58,7 +58,7 @@ create_virtual_node() {
 
 update_virtual_node() {
     service=$1
-    cmd=( aws --endpoint-url ${LATTICE_FRONTEND} $MESHCMD update-virtual-node --mesh-name ${MESH_NAME} --client-token "${service}-${RANDOM}" --cli-input-json file:///${DIR}/config/virtualnodes/${service} --query virtualNode.metadata.uid --output text )
+    cmd=( aws --endpoint-url ${APPMESH_FRONTEND} $MESHCMD update-virtual-node --mesh-name ${MESH_NAME} --client-token "${service}-${RANDOM}" --cli-input-json file:///${DIR}/config/virtualnodes/${service} --query virtualNode.metadata.uid --output text )
     print "${cmd[@]}"
     uid=$("${cmd[@]}") || err "Unable to create/update virtual node" "$?"
     print "--> ${uid}"
@@ -74,7 +74,7 @@ create_virtual_nodes() {
 
 create_virtual_router() {
     service=$1
-    cmd=( aws --endpoint-url ${LATTICE_FRONTEND} $MESHCMD create-virtual-router --mesh-name ${MESH_NAME} --cli-input-json file:///${DIR}/config/virtualrouters/${service} --query virtualRouter.metadata.uid --output text )
+    cmd=( aws --endpoint-url ${APPMESH_FRONTEND} $MESHCMD create-virtual-router --mesh-name ${MESH_NAME} --cli-input-json file:///${DIR}/config/virtualrouters/${service} --query virtualRouter.metadata.uid --output text )
     print "${cmd[@]}"
     uid=$("${cmd[@]}") || update_virtual_router ${service}
     print "--> ${uid}"
@@ -82,7 +82,7 @@ create_virtual_router() {
 
 update_virtual_router() {
     service=$1
-    cmd=( aws --endpoint-url ${LATTICE_FRONTEND} $MESHCMD update-virtual-router --mesh-name ${MESH_NAME} --client-token "${service}-${RANDOM}" --cli-input-json file:///${DIR}/config/virtualrouters/${service} --query virtualRouter.metadata.uid --output text )
+    cmd=( aws --endpoint-url ${APPMESH_FRONTEND} $MESHCMD update-virtual-router --mesh-name ${MESH_NAME} --client-token "${service}-${RANDOM}" --cli-input-json file:///${DIR}/config/virtualrouters/${service} --query virtualRouter.metadata.uid --output text )
     print "${cmd[@]}"
     uid=$("${cmd[@]}") || err "Unable to create/update virtual router" "$?"
     print "--> ${uid}"
@@ -98,7 +98,7 @@ create_virtual_routers() {
 
 create_route() {
     service=$1
-    cmd=( aws --endpoint-url ${LATTICE_FRONTEND} $MESHCMD create-route --mesh-name ${MESH_NAME} --cli-input-json file:///${DIR}/config/routes/${service} --query route.metadata.uid --output text )
+    cmd=( aws --endpoint-url ${APPMESH_FRONTEND} $MESHCMD create-route --mesh-name ${MESH_NAME} --cli-input-json file:///${DIR}/config/routes/${service} --query route.metadata.uid --output text )
     print "${cmd[@]}"
     uid=$("${cmd[@]}") || update_route ${service}
     print "--> ${uid}"
@@ -106,7 +106,7 @@ create_route() {
 
 update_route() {
     service=$1
-    cmd=( aws --endpoint-url ${LATTICE_FRONTEND} $MESHCMD update-route --mesh-name ${MESH_NAME} --client-token "${service}-${RANDOM}" --cli-input-json file:///${DIR}/config/routes/${service} --query route.metadata.uid --output text )
+    cmd=( aws --endpoint-url ${APPMESH_FRONTEND} $MESHCMD update-route --mesh-name ${MESH_NAME} --client-token "${service}-${RANDOM}" --cli-input-json file:///${DIR}/config/routes/${service} --query route.metadata.uid --output text )
     print "${cmd[@]}"
     uid=$("${cmd[@]}") || err "Unable to create/update route" "$?"
     print "--> ${uid}"

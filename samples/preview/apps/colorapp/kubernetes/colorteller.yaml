@@ -59,9 +59,9 @@ spec:
           securityContext:
             runAsUser: 1337
           env:
-            - name: "LATTICE_VIRTUAL_NODE_NAME"
+            - name: "APPMESH_VIRTUAL_NODE_NAME"
               value: "colorteller"
-            - name: "LATTICE_VIRTUAL_NODE_UID"
+            - name: "APPMESH_VIRTUAL_NODE_UID"
               valueFrom: 
                 configMapKeyRef:
                   name: "colorapp-conf"
@@ -78,19 +78,19 @@ spec:
               add: 
                 - NET_ADMIN
           env:
-            - name: "LATTICE_START_ENABLED"
+            - name: "APPMESH_START_ENABLED"
               value: "1"
-            - name: "LATTICE_USE_TPROXY"
+            - name: "APPMESH_USE_TPROXY"
               value: "0"
-            - name: "LATTICE_IGNORE_UID"
+            - name: "APPMESH_IGNORE_UID"
               value: "1337"
-            - name: "LATTICE_ENVOY_INGRESS_PORT"
+            - name: "APPMESH_ENVOY_INGRESS_PORT"
               value: "15000"
-            - name: "LATTICE_ENVOY_EGRESS_PORT"
+            - name: "APPMESH_ENVOY_EGRESS_PORT"
               value: "15001"
-            - name: "LATTICE_APP_PORTS"
+            - name: "APPMESH_APP_PORTS"
               value: "9080"
-            - name: "LATTICE_EGRESS_IGNORED_IP"
+            - name: "APPMESH_EGRESS_IGNORED_IP"
               value: "169.254.169.254"
 ---
 
@@ -141,9 +141,9 @@ spec:
           securityContext:
             runAsUser: 1337
           env:
-            - name: "LATTICE_VIRTUAL_NODE_NAME"
+            - name: "APPMESH_VIRTUAL_NODE_NAME"
               value: "colorteller"
-            - name: "LATTICE_VIRTUAL_NODE_UID"
+            - name: "APPMESH_VIRTUAL_NODE_UID"
               valueFrom: 
                 configMapKeyRef:
                   name: "colorapp-conf"
@@ -160,19 +160,19 @@ spec:
               add: 
                 - NET_ADMIN
           env:
-            - name: "LATTICE_START_ENABLED"
+            - name: "APPMESH_START_ENABLED"
               value: "1"
-            - name: "LATTICE_USE_TPROXY"
+            - name: "APPMESH_USE_TPROXY"
               value: "0"
-            - name: "LATTICE_IGNORE_UID"
+            - name: "APPMESH_IGNORE_UID"
               value: "1337"
-            - name: "LATTICE_ENVOY_INGRESS_PORT"
+            - name: "APPMESH_ENVOY_INGRESS_PORT"
               value: "15000"
-            - name: "LATTICE_ENVOY_EGRESS_PORT"
+            - name: "APPMESH_ENVOY_EGRESS_PORT"
               value: "15001"
-            - name: "LATTICE_APP_PORTS"
+            - name: "APPMESH_APP_PORTS"
               value: "9080"
-            - name: "LATTICE_EGRESS_IGNORED_IP"
+            - name: "APPMESH_EGRESS_IGNORED_IP"
               value: "169.254.169.254"
 ---
 
@@ -223,9 +223,9 @@ spec:
           securityContext:
             runAsUser: 1337
           env:
-            - name: "LATTICE_VIRTUAL_NODE_NAME"
+            - name: "APPMESH_VIRTUAL_NODE_NAME"
               value: "colorteller"
-            - name: "LATTICE_VIRTUAL_NODE_UID"
+            - name: "APPMESH_VIRTUAL_NODE_UID"
               valueFrom: 
                 configMapKeyRef:
                   name: "colorapp-conf"
@@ -242,18 +242,18 @@ spec:
               add: 
                 - NET_ADMIN
           env:
-            - name: "LATTICE_START_ENABLED"
+            - name: "APPMESH_START_ENABLED"
               value: "1"
-            - name: "LATTICE_USE_TPROXY"
+            - name: "APPMESH_USE_TPROXY"
               value: "0"
-            - name: "LATTICE_IGNORE_UID"
+            - name: "APPMESH_IGNORE_UID"
               value: "1337"
-            - name: "LATTICE_ENVOY_INGRESS_PORT"
+            - name: "APPMESH_ENVOY_INGRESS_PORT"
               value: "15000"
-            - name: "LATTICE_ENVOY_EGRESS_PORT"
+            - name: "APPMESH_ENVOY_EGRESS_PORT"
               value: "15001"
-            - name: "LATTICE_APP_PORTS"
+            - name: "APPMESH_APP_PORTS"
               value: "9080"
-            - name: "LATTICE_EGRESS_IGNORED_IP"
+            - name: "APPMESH_EGRESS_IGNORED_IP"
               value: "169.254.169.254"
 ---

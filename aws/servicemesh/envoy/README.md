@@ -2,7 +2,7 @@
 
 This is a Docker file based off of Envoy that has an entrypoint that writes out a config for boostrapping Envoy with Lattice Service Mesh. It has some environment variables that are used in the creation of the bootstrap file.
 
-- ```LATTICE_VIRTUAL_NODE_UID``` - _**Required**_ for Envoy to identify itself to the Lattice control plane. If you do not set this value the startup script will exit. **Example**: ```4af36ad7-18c7-41d0-838a-32a0168deb90```
+- ```APPMESH_VIRTUAL_NODE_UID``` - _**Required**_ for Envoy to identify itself to the Lattice control plane. If you do not set this value the startup script will exit. **Example**: ```4af36ad7-18c7-41d0-838a-32a0168deb90```
 
 - ```EC2_REGION``` - _**Required**_ to tell envoy which regional endpoint to talk to when registering. If this is __not__ set it will attempt to read the EC2 metadata service and extract the region from the AZ metadata. Example: ```us-west-2```
 

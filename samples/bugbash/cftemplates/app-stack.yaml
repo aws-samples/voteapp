@@ -172,9 +172,9 @@ Resources:
           Essential: true
           User: "1337"
           Environment:
-            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+            - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: "serviceBv1"
-            - Name: "LATTICE_VIRTUAL_NODE_UID"
+            - Name: "APPMESH_VIRTUAL_NODE_UID"
               Valuee: "b51a9e82-35ad-4ae2-bd4e-7e41000c5ed3"
             - Name: "AWS_REGION"
               Value: "us-west-2"      
@@ -186,19 +186,19 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "LATTICE_START_ENABLED"
+            - Name: "APPMESH_START_ENABLED"
               Value: "1"
-            - Name: "LATTICE_USE_TPROXY"
+            - Name: "APPMESH_USE_TPROXY"
               Value: "0"
-            - Name: "LATTICE_IGNORE_UID"
+            - Name: "APPMESH_IGNORE_UID"
               Value: "1337"
-            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+            - Name: "APPMESH_ENVOY_INGRESS_PORT"
               Value: "15000"
-            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+            - Name: "APPMESH_ENVOY_EGRESS_PORT"
               Value: "15001"
-            - Name: "LATTICE_APP_PORTS"
+            - Name: "APPMESH_APP_PORTS"
               Value: "9080"
-            - Name: "LATTICE_EGRESS_IGNORED_IP"
+            - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: LatticeEgressIgnoredIpCsv }
       ExecutionRoleArn: { "Fn::GetAtt": TaskExecutionIamRole.Arn }
       NetworkMode: "awsvpc"
@@ -259,9 +259,9 @@ Resources:
           Essential: true
           User: "1337"
           Environment:
-            - Name: "LATTICE_VIRTUAL_NODE_NAME"
+            - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: "serviceAv1"
-            - Name: "LATTICE_VIRTUAL_NODE_UID"
+            - Name: "APPMESH_VIRTUAL_NODE_UID"
               Value: "6dd83e80-5563-4a3d-9cf7-c2cee81f9a20"
             - Name: "AWS_REGION"
               Value: "us-west-2"      
@@ -273,19 +273,19 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "LATTICE_START_ENABLED"
+            - Name: "APPMESH_START_ENABLED"
               Value: "1"
-            - Name: "LATTICE_USE_TPROXY"
+            - Name: "APPMESH_USE_TPROXY"
               Value: "0"
-            - Name: "LATTICE_IGNORE_UID"
+            - Name: "APPMESH_IGNORE_UID"
               Value: "1337"
-            - Name: "LATTICE_ENVOY_INGRESS_PORT"
+            - Name: "APPMESH_ENVOY_INGRESS_PORT"
               Value: "15000"
-            - Name: "LATTICE_ENVOY_EGRESS_PORT"
+            - Name: "APPMESH_ENVOY_EGRESS_PORT"
               Value: "15001"
-            - Name: "LATTICE_APP_PORTS"
+            - Name: "APPMESH_APP_PORTS"
               Value: "9080"
-            - Name: "LATTICE_EGRESS_IGNORED_IP"
+            - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: LatticeEgressIgnoredIpCsv }
       ExecutionRoleArn: { "Fn::GetAtt": TaskExecutionIamRole.Arn }
       NetworkMode: "awsvpc"
