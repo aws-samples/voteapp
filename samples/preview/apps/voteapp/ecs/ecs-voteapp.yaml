@@ -27,6 +27,12 @@ Parameters:
     Type: String
     Description: Vote App Web image
     Default: "subfuzion/vote-web:1.0.12"
+  
+  XRayImageUrl:
+    Type: String
+    Default: amazon/aws-xray-daemon
+    Description: The url of a docker image that contains the X-Ray daemon that will
+                 handle the traffic for this service
 
   VoteReportsNodeId:
     Type: String
@@ -103,6 +109,21 @@ Resources:
           Environment:
             - Name: "PORT"
               Value: "9080"
+        - Name: xray-daemon
+          Essential: false
+          Cpu: 32
+          Memory: 64
+          Image: !Ref 'XRayImageUrl'
+          PortMappings:
+            - ContainerPort: 2000
+              Protocol: udp
+          LogConfiguration:
+            LogDriver: 'awslogs'
+            Options:
+              awslogs-group: 
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'xray'
         - Name: envoy
           Image: { Ref: EnvoyImage }
           Essential: true
@@ -222,6 +243,21 @@ Resources:
               Value: "http://reports.default.svc.cluster.local:9080"
           PortMappings:
             - ContainerPort: 9080
+        - Name: xray-daemon
+          Essential: false
+          Cpu: 32
+          Memory: 64
+          Image: !Ref 'XRayImageUrl'
+          PortMappings:
+            - ContainerPort: 2000
+              Protocol: udp
+          LogConfiguration:
+            LogDriver: 'awslogs'
+            Options:
+              awslogs-group: 
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'xray'
         - Name: envoy
           Image: { Ref: EnvoyImage }
           Essential: true
