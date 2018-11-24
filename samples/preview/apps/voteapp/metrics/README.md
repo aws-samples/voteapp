@@ -19,3 +19,16 @@ Steps
         3. Select the prometheus-db source from the dropdown. This as per above example should be 'lattice-prometheus'
         4. Select 'Import' and the envoy-grafana dashboard will be imported
 
+Grafana Screenshots:
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/grafana_setup.jpeg
+
+There are four collapsible panels:
+1. Server Statistics (global)
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/server_statistics.jpeg
+2. Request/Response Summary (can be viewed by Service)
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/requests_response_summary.jpeg
+3. Network Traffic Patterns (Upstream: by service, DownStream: Global)
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/network_traffic_patterns_1.jpeg
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/network_traffic_patterns_2.jpeg 
+4. Network Traffic Details in Bytes ((Upstream: by service, DownStream: Global) 
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/network_traffic_details.jpeg 
