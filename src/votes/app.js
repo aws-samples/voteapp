@@ -40,7 +40,7 @@ app.post('/vote', async (req, res) => {
     // for now, just return the request body as the result
     res.send({ success: true, result: req.body });
   } catch (err) {
-    console.log('ERROR: POST /vote: %j', err);
+    console.log('ERROR: POST /vote:', err);
     res.status(500).send({ success: false, reason: err.message })
   }
 });
