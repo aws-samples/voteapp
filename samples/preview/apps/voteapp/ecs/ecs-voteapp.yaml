@@ -26,13 +26,13 @@ Parameters:
   VoteReportsImage:
     Type: String
     Description: Vote App Reports image
-    Default: "subfuzion/vote-reports:1.0.12"
+    Default: "subfuzion/vote-reports:1.1.0"
 
   VoteWebImage:
     Type: String
     Description: Vote App Web image
-    Default: "subfuzion/vote-web:1.0.12"
-
+    Default: "subfuzion/vote-web:1.1.0"
+  
   XRayImageUrl:
     Type: String
     Default: amazon/aws-xray-daemon
