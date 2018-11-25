@@ -27,18 +27,18 @@ There are four collapsible panels:
 
 1. Server Statistics (global)
 
-![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/server-statistics.jpeg?token=AAJv-gI4ZoOM5LwRR1mzAPqfSJhfx622ks5cBFDXwA%3D%3D)
+![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/server-statistics.jpeg?token=AAJv-hZEfQa4_tiW_MSH8pGzOR9pAUnrks5cBFMvwA%3D%3D)
 
 2. Request/Response Summary (can be viewed by Service)
 
-![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/requests-response-summary.jpeg?token=AAJv-gI4ZoOM5LwRR1mzAPqfSJhfx622ks5cBFDXwA%3D%3D)
+![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/requests-response-summary.jpeg?token=AAJv-tDPSQ0q9_XUHZbHbY3mDIl-WwJAks5cBFMbwA%3D%3D)
 
 3. Network Traffic Patterns (Upstream: by service, DownStream: Global)
 
-![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/network-traffic-patterns-1.jpeg?token=AAJv-gI4ZoOM5LwRR1mzAPqfSJhfx622ks5cBFDXwA%3D%3D)
+![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/network-traffic-patterns-1.jpeg?token=AAJv-qfocMZLaKVYOc8WLk4DeHDPpnJ7ks5cBFLiwA%3D%3D)
 
-![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/network-traffic-patterns-2.jpeg?token=AAJv-gI4ZoOM5LwRR1mzAPqfSJhfx622ks5cBFDXwA%3D%3D)
+![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/network-traffic-patterns-2.jpeg?token=AAJv-hZthTZFv2xOntRlFFUdPjSci8Pwks5cBFMDwA%3D%3D)
 
 4. Network Traffic Details in Bytes ((Upstream: by service, DownStream: Global) 
 
-![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/network-traffic-details.jpeg?token=AAJv-gI4ZoOM5LwRR1mzAPqfSJhfx622ks5cBFDXwA%3D%3D)
+![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/network-traffic-details.jpeg?token=AAJv-ri4prUti-QR5416l2mVduDNV4cbks5cBFKowA%3D%3D)
