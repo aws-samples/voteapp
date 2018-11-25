@@ -145,6 +145,8 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_START_ENABLED"
               Value: "1"
             - Name: "APPMESH_USE_TPROXY"
@@ -266,6 +268,8 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_START_ENABLED"
               Value: "1"
             - Name: "APPMESH_USE_TPROXY"
