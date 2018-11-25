@@ -251,7 +251,6 @@ Resources:
               Value: { Ref: EnvoyLogLevel }
             - Name: "AWS_REGION"
               Value: "us-west-2"
-      initContainers:
         - Name: "proxyinit"
           Image: { Ref: SideCarRouterManagerImage }
           Essential: false
