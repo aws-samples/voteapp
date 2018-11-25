@@ -22,8 +22,8 @@ export AWS_PROFILE="your-aws-profile"
 export AWS_ACCOUNT_ID="your-aws-account-id"
 
 # Lattice
-export APPMESH_FRONTEND="https://frontend.us-west-2.beta.lattice.aws.a2z.com/"
-export APPMESH_XDS_ENDPOINT=envoy-management.us-west-2.beta.lattice.aws.a2z.com:443
+export APPMESH_FRONTEND="https://frontend.us-west-2.gamma.lattice.aws.a2z.com/"
+export APPMESH_XDS_ENDPOINT=envoy-management.us-west-2.gamma.lattice.aws.a2z.com:443
 
 # App
 export MESH_NAME="voting-app"

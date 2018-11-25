@@ -12,15 +12,20 @@ Parameters:
     Type: String
     Default: "088845923532.dkr.ecr.us-west-2.amazonaws.com/simplewebapp:latest"
 
-  EnvoyImage:
-    Description: The image for Envoy. All tasks use the same image.
+  XdsEndpoint:
     Type: String
-    Default: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-lattice-envoy:v1.8.0.0-beta"
+    Description: App Mesh resource (X) discovery XdsEndpoint
+    Default: "envoy-management.us-west-2.gamma.lattice.aws.a2z.com:443"
 
-  ProxyManagerImage:
-    Description: The image for Iptables Proxy Config. All tasks use the same image.
+  SideCarRouterManagerImage:
     Type: String
-    Default: "989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter"
+    Description: Sidecar router manager that sets up networking for transparent proxy
+    Default: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-proxy-route-manager"
+
+  EnvoyImage:
+    Type: String
+    Description: Envoy image to use
+    Default: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy"
 
   ServiceLogGroupRetentionInDays:
     Type: Number
@@ -209,6 +214,8 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "serviceBv1-envoy"
           Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
             - Name: APPMESH_VIRTUAL_NODE_NAME
               Value: "serviceB.simpleapp.local"
             - Name: APPMESH_VIRTUAL_NODE_UID 
@@ -223,7 +230,7 @@ Resources:
             - SourceContainer: "app"
 
         - Name: "proxyinit"
-          Image: !Ref ProxyManagerImage
+          Image: !Ref SideCarRouterManagerImage
           Essential: false
           LogConfiguration:
             LogDriver: "awslogs"
@@ -307,6 +314,8 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "serviceCv1-envoy"
           Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
             - Name: APPMESH_VIRTUAL_NODE_NAME
               Value: "serviceC.simpleapp.local"
             - Name: APPMESH_VIRTUAL_NODE_UID 
@@ -321,7 +330,7 @@ Resources:
             - SourceContainer: "app"
 
         - Name: "proxyinit"
-          Image: !Ref ProxyManagerImage
+          Image: !Ref SideCarRouterManagerImage
           Essential: false
           LogConfiguration:
             LogDriver: "awslogs"
@@ -405,6 +414,8 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "serviceDv1-envoy"
           Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
             - Name: APPMESH_VIRTUAL_NODE_NAME
               Value: "serviceD.simpleapp.local"
             - Name: APPMESH_VIRTUAL_NODE_UID 
@@ -419,7 +430,7 @@ Resources:
             - SourceContainer: "app"
 
         - Name: "proxyinit"
-          Image: !Ref ProxyManagerImage
+          Image: !Ref SideCarRouterManagerImage
           Essential: false
           LogConfiguration:
             LogDriver: "awslogs"
@@ -510,6 +521,8 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "serviceAv1-envoy"
           Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
             - Name: APPMESH_VIRTUAL_NODE_NAME
               Value: "serviceA.simpleapp.local"
             - Name: APPMESH_VIRTUAL_NODE_UID 
@@ -524,7 +537,7 @@ Resources:
             - SourceContainer: "app"
 
         - Name: "proxyinit"
-          Image: !Ref ProxyManagerImage
+          Image: !Ref SideCarRouterManagerImage
           Essential: false
           LogConfiguration:
             LogDriver: "awslogs"

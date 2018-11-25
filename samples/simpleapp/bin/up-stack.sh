@@ -15,7 +15,7 @@ echo "Region: $region"
 config_dir=${CONFIG_DIR:-$dir/../config}
 echo "Using config in '$config_dir'"
 
-endpoint_url=${APPMESH_ENDPOINT_URL:-https://frontend.us-west-2.beta.lattice.aws.a2z.com/}
+endpoint_url=${APPMESH_ENDPOINT_URL:-https://frontend.us-west-2.gamma.lattice.aws.a2z.com/}
 aws="aws --profile ${profile} --region ${region}"
 
 echo "Validating $mesh_name-vpc stack"
