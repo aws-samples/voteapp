@@ -114,6 +114,8 @@ Resources:
   ReportsTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
+      TaskRoleArn: 
+        'Fn::ImportValue': !Sub "${EnvironmentName}:TaskIamRole"
       ContainerDefinitions:
         - Name: "app"
           Image: { Ref: VoteReportsImage }
@@ -136,6 +138,9 @@ Resources:
           PortMappings:
             - ContainerPort: 2000
               Protocol: udp
+          Environment:
+            - Name: "AWS_REGION"
+              Value: !Ref 'AWS::Region'
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
@@ -251,6 +256,8 @@ Resources:
   WebTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
+      TaskRoleArn:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:TaskIamRole"
       ContainerDefinitions:
         - Name: "app"
           Image: { Ref: VoteWebImage }
@@ -277,6 +284,9 @@ Resources:
           PortMappings:
             - ContainerPort: 2000
               Protocol: udp
+          Environment:
+            - Name: "AWS_REGION"
+              Value: !Ref 'AWS::Region'
           LogConfiguration:
             LogDriver: 'awslogs'
             Options:
