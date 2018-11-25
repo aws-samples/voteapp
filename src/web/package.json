@@ -1,6 +1,6 @@
 {
   "name": "@subfuzion/vote-web",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Voting app for Docker Demo",
   "author": "Tony Pujals <tony@subfuzion.com> (https://twitter.com/subfuzion)",
   "license": "Apache-2.0",
