@@ -20,15 +20,15 @@ Steps
         4. Select 'Import' and the envoy-grafana dashboard will be imported
 
 Grafana Screenshots:
-https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/grafana_setup.jpeg
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/grafana-setup.jpeg
 
 There are four collapsible panels:
 1. Server Statistics (global)
-https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/server_statistics.jpeg
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/server-statistics.jpeg
 2. Request/Response Summary (can be viewed by Service)
-https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/requests_response_summary.jpeg
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/requests-response-summary.jpeg
 3. Network Traffic Patterns (Upstream: by service, DownStream: Global)
-https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/network_traffic_patterns_1.jpeg
-https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/network_traffic_patterns_2.jpeg 
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/network-traffic-patterns-1.jpeg
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/network-traffic-patterns-2.jpeg 
 4. Network Traffic Details in Bytes ((Upstream: by service, DownStream: Global) 
-https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana%20dashboard/network_traffic_details.jpeg 
+https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/network-traffic-details.jpeg 
