@@ -25,7 +25,7 @@ Parameters:
   EnvoyImage:
     Type: String
     Description: Envoy image to use
-    Default: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy"
+    Default: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy:1.8.0.2-beta"
 
   ServiceLogGroupRetentionInDays:
     Type: Number

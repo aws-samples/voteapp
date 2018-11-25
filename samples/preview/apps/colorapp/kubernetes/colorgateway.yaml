@@ -38,7 +38,7 @@ spec:
             - name: "COLOR_TELLER_ENDPOINT"
               value: "colorteller.default.svc.cluster.local:9080"
         - name: envoy
-          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy
+          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy:1.8.0.2-beta
           securityContext:
             runAsUser: 1337
           env:

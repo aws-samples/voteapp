@@ -103,7 +103,7 @@ Resources:
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: !Ref 'ServiceName'
         - Name: "envoy"
-          Image: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy"
+          Image: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy:1.8.0.2-beta"
           Essential: true
           LogConfiguration:
             LogDriver: "awslogs"
