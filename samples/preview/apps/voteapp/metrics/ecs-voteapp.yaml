@@ -4,6 +4,11 @@ Parameters:
     Type: String
     Description: Environment name that joins all the stacks
 
+  XdsEndpoint:
+    Type: String
+    Description: App Mesh resource (X) discovery XdsEndpoint
+    Default: "envoy-management.us-west-2.gamma.lattice.aws.a2z.com:443"
+
   SideCarRouterManagerImage:
     Type: String
     Description: Sidecar router manager that sets up networking for transparent proxy
@@ -18,7 +23,7 @@ Parameters:
     Type: String
     Default: debug
 
-  ReportsImage:
+  VoteReportsImage:
     Type: String
     Description: Vote App Reports image
     Default: "subfuzion/vote-reports:1.0.12"
@@ -28,6 +33,11 @@ Parameters:
     Description: Vote App Web image
     Default: "subfuzion/vote-web:1.0.12"
 
+  XRayImageUrl:
+    Type: String
+    Default: amazon/aws-xray-daemon
+    Description: The url of a docker image that contains the X-Ray daemon that will
+                 handle the traffic for this service
   PrometheusWebImage:
     Type: String
     Description: Prometheus Web image
@@ -106,7 +116,7 @@ Resources:
     Properties:
       ContainerDefinitions:
         - Name: "app"
-          Image: { Ref: ReportsImage }
+          Image: { Ref: VoteReportsImage }
           Essential: true
           LogConfiguration:
             LogDriver: "awslogs"
@@ -118,6 +128,21 @@ Resources:
           Environment:
             - Name: "PORT"
               Value: "9080"
+        - Name: xray-daemon
+          Essential: false
+          Cpu: 32
+          Memory: 64
+          Image: !Ref 'XRayImageUrl'
+          PortMappings:
+            - ContainerPort: 2000
+              Protocol: udp
+          LogConfiguration:
+            LogDriver: 'awslogs'
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'xray'
         - Name: envoy
           Image: { Ref: EnvoyImage }
           Essential: true
@@ -130,6 +155,8 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "reports-envoy"
           Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: "reports-vn"
             - Name: "APPMESH_VIRTUAL_NODE_UID"
@@ -153,6 +180,8 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_START_ENABLED"
               Value: "1"
             - Name: "APPMESH_USE_TPROXY"
@@ -240,6 +269,21 @@ Resources:
               Value: "http://reports.default.svc.cluster.local:9080"
           PortMappings:
             - ContainerPort: 9080
+        - Name: xray-daemon
+          Essential: false
+          Cpu: 32
+          Memory: 64
+          Image: !Ref 'XRayImageUrl'
+          PortMappings:
+            - ContainerPort: 2000
+              Protocol: udp
+          LogConfiguration:
+            LogDriver: 'awslogs'
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'xray'
         - Name: envoy
           Image: { Ref: EnvoyImage }
           Essential: true
@@ -252,6 +296,8 @@ Resources:
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "web-envoy"
           Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: "web-vn"
             - Name: "APPMESH_VIRTUAL_NODE_UID"
@@ -275,6 +321,8 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_START_ENABLED"
               Value: "1"
             - Name: "APPMESH_USE_TPROXY"
