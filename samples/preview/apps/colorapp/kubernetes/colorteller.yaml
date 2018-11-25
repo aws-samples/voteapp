@@ -55,7 +55,7 @@ spec:
             - name: "COLOR"
               value: "black"
         - name: envoy
-          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy:1.8.0.2-beta
+          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy:v1.8.0.2-beta
           securityContext:
             runAsUser: 1337
           env:
@@ -139,7 +139,7 @@ spec:
             - name: "COLOR"
               value: "blue"
         - name: envoy
-          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy:1.8.0.2-beta
+          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy:v1.8.0.2-beta
           securityContext:
             runAsUser: 1337
           env:
@@ -223,7 +223,7 @@ spec:
             - name: "COLOR"
               value: "red"
         - name: envoy
-          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy:1.8.0.2-beta
+          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy:v1.8.0.2-beta
           securityContext:
             runAsUser: 1337
           env:
