@@ -15,8 +15,8 @@ $ aws configure add-model --service-name lattice --service-model file://./lattic
 ```
 export AWS_PROFILE=<aws-profile for aws-cli>
 export AWS_REGION=<aws-region for aws-cli>
-export APPMESH_FRONTEND=https://frontend.us-west-2.beta.lattice.aws.a2z.com/
-export APPMESH_XDS_ENDPOINT=envoy-management.us-west-2.beta.lattice.aws.a2z.com:443
+export APPMESH_FRONTEND=https://frontend.us-west-2.gamma.lattice.aws.a2z.com/
+export APPMESH_XDS_ENDPOINT=envoy-management.us-west-2.gamma.lattice.aws.a2z.com:443
 export ENVIRONMENT_NAME=<friendlyname-for-stack e.g. LatticeSample>
 export MESH_NAME=<your-choice-of-mesh-name, e.g. default>
 export KEY_PAIR_NAME=<key-pair to access ec2 instances where apps are running>

@@ -14,7 +14,7 @@ echo "Region: $region"
 config_dir=${CONFIG_DIR:-$dir/../config}
 echo "Using config in '$CONFIG_DIR'"
 
-endpoint_url=${APPMESH_ENDPOINT_URL:-https://frontend.us-west-2.beta.lattice.aws.a2z.com/}
+endpoint_url=${APPMESH_ENDPOINT_URL:-https://frontend.us-west-2.gamma.lattice.aws.a2z.com/}
 aws="aws --profile ${profile} --region ${region}"
 
 

@@ -55,10 +55,12 @@ spec:
             - name: "COLOR"
               value: "black"
         - name: envoy
-          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-lattice-envoy:v1.8.0.X-beta
+          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy
           securityContext:
             runAsUser: 1337
           env:
+            - name: "APPMESH_XDS_ENDPOINT"
+              value: "envoy-management.us-west-2.gamma.lattice.aws.a2z.com:443"
             - name: "APPMESH_VIRTUAL_NODE_NAME"
               value: "colorteller"
             - name: "APPMESH_VIRTUAL_NODE_UID"
@@ -72,7 +74,7 @@ spec:
               value: "us-west-2"
       initContainers:
         - name: proxyinit
-          image: 989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x
+          image: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-proxy-route-manager"
           securityContext:
             capabilities:
               add: 
@@ -137,10 +139,12 @@ spec:
             - name: "COLOR"
               value: "blue"
         - name: envoy
-          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-lattice-envoy:v1.8.0.X-beta
+          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy
           securityContext:
             runAsUser: 1337
           env:
+            - name: "APPMESH_XDS_ENDPOINT"
+              value: "envoy-management.us-west-2.gamma.lattice.aws.a2z.com:443"
             - name: "APPMESH_VIRTUAL_NODE_NAME"
               value: "colorteller"
             - name: "APPMESH_VIRTUAL_NODE_UID"
@@ -154,7 +158,7 @@ spec:
               value: "us-west-2"
       initContainers:
         - name: proxyinit
-          image: 989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x
+          image: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-proxy-route-manager"
           securityContext:
             capabilities:
               add: 
@@ -219,10 +223,12 @@ spec:
             - name: "COLOR"
               value: "red"
         - name: envoy
-          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-lattice-envoy:v1.8.0.X-beta
+          image: 111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy
           securityContext:
             runAsUser: 1337
           env:
+            - name: "APPMESH_XDS_ENDPOINT"
+              value: "envoy-management.us-west-2.gamma.lattice.aws.a2z.com:443"
             - name: "APPMESH_VIRTUAL_NODE_NAME"
               value: "colorteller"
             - name: "APPMESH_VIRTUAL_NODE_UID"
@@ -236,7 +242,7 @@ spec:
               value: "us-west-2"
       initContainers:
         - name: proxyinit
-          image: 989319603630.dkr.ecr.us-west-2.amazonaws.com/awslatticesidecarproxyroutemanager/awslatticesidecarproxyrouter:1.0.x.x
+          image: "111345817488.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-proxy-route-manager"
           securityContext:
             capabilities:
               add: 
