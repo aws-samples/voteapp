@@ -146,7 +146,7 @@ Resources:
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: "reports-vn"
             - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: "mesh/bookinfo/virtualNode/reports-vn"
+              Value: "mesh/default/virtualNode/reports-vn"
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "AWS_REGION"
@@ -284,7 +284,7 @@ Resources:
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: "web-vn"
             - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: "mesh/bookinfo/virtualNode/web-vn"
+              Value: "mesh/default/virtualNode/web-vn"
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "AWS_REGION"
