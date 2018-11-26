@@ -146,17 +146,25 @@ Resources:
             01_add_instance_to_cluster:
               command: !Sub echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
           files:
-            "/etc/envoy/xray-tracing.yaml":
-              mode: 000400
-              owner: root
-              owner: root
+            "/home/ec2-user/xray-tracing.yaml":
               content: !Sub |
+                static_resources:
+                  clusters:
+                  - name: xray
+                    connect_timeout: 5s
+                    type: STRICT_DNS
+                    lb_policy: round_robin
+                    hosts:
+                    - socket_address:
+                        protocol: udp
+                        address: xray
+                        port_value: 2000
                 tracing:
                   http:
                     name: envoy.xray
                     config:
                       collector_cluster: xray
-                      collector_endpoint: "localhost:2000"
+                      collector_endpoint: "127.0.0.1:2000"
 
             "/etc/cfn/cfn-hup.conf":
               mode: 000400
