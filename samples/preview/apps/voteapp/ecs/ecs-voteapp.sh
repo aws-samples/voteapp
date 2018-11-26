@@ -13,18 +13,23 @@ err() {
     exit ${code}
 }
 
-describe_virtual_node() {
-    service=$1
-    cmd=( aws --profile ${AWS_PROFILE} --region ${AWS_REGION} --endpoint-url ${APPMESH_FRONTEND} \
-                $MESHCMD describe-virtual-node  \
-                --mesh-name ${MESH_NAME} --virtual-node-name ${service} \
-                --query virtualNode.metadata.uid --output text )
-    node_id=$("${cmd[@]}") || err "Unable to describe node ${service}" "$?"
-    echo ${node_id}
-}
+# describe_virtual_node() {
+#     service=$1
+#     cmd=( aws --profile ${AWS_PROFILE} --region ${AWS_REGION} --endpoint-url ${APPMESH_FRONTEND} \
+#                 $MESHCMD describe-virtual-node  \
+#                 --mesh-name ${MESH_NAME} --virtual-node-name ${service} \
+#                 --query virtualNode.metadata.uid --output text )
+#     node_id=$("${cmd[@]}") || err "Unable to describe node ${service}" "$?"
+#     echo ${node_id}
+# }
+#
+# VOTE_WEB_NODE_ID=$(describe_virtual_node "web-vn")
+# VOTE_VOTES_NODE_ID=$(describe_virtual_node "votes-vn")
+# VOTE_REPORTS_NODE_ID=$(describe_virtual_node "reports-vn")
 
-VOTE_WEB_NODE_ID=$(describe_virtual_node "web-vn")
-VOTE_REPORTS_NODE_ID=$(describe_virtual_node "reports-vn")
+VOTE_WEB_NODE_ID="web-vn"
+VOTE_VOTES_NODE_ID="votes-vn"
+VOTE_REPORTS_NODE_ID="reports-vn"
 
 aws --profile ${AWS_PROFILE} --region ${AWS_REGION} \
     cloudformation ${ACTION} \
@@ -34,4 +39,5 @@ aws --profile ${AWS_PROFILE} --region ${AWS_REGION} \
     --parameters \
     ParameterKey=EnvironmentName,ParameterValue=${ENVIRONMENT_NAME} \
     ParameterKey=VoteWebNodeId,ParameterValue="${VOTE_WEB_NODE_ID}" \
+    ParameterKey=VoteWebNodeId,ParameterValue="${VOTE_VOTES_NODE_ID}" \
     ParameterKey=VoteReportsNodeId,ParameterValue="${VOTE_REPORTS_NODE_ID}"

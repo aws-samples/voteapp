@@ -6,7 +6,7 @@ packages=(
 #    "database-proxy"
 #    "queue-proxy"
 #    "worker"
-#    "votes"
+    "votes"
     "reports"
     "web"
 #    "vote"
