@@ -116,6 +116,10 @@ Resources:
     Properties:
       TaskRoleArn: 
         'Fn::ImportValue': !Sub "${EnvironmentName}:TaskIamRole"
+      Volumes:
+        - Name: "envoy-xray-tracing-config"
+          Host:
+            SourcePath: "/home/ec2-user/xray-tracing.yaml"
       ContainerDefinitions:
         - Name: "app"
           Image: { Ref: VoteReportsImage }
@@ -159,6 +163,9 @@ Resources:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "reports-envoy"
+          MountPoints:
+            - SourceVolume: "envoy-xray-tracing-config"
+              ContainerPath: "/tmp/xray-tracing.yaml"
           Environment:
             - Name: "APPMESH_XDS_ENDPOINT"
               Value: { Ref: XdsEndpoint }
@@ -168,6 +175,8 @@ Resources:
               Value: "mesh/default/virtualNode/reports-vn"
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
+            - Name: "ENVOY_TRACING_CFG_FILE"
+              Value: "/tmp/xray-tracing.yaml"
             - Name: "AWS_REGION"
               Value: "us-west-2"
         - Name: "proxyinit"
@@ -258,6 +267,10 @@ Resources:
     Properties:
       TaskRoleArn:
         'Fn::ImportValue': !Sub "${EnvironmentName}:TaskIamRole"
+      Volumes:
+        - Name: "envoy-xray-tracing-config"
+          Host: 
+            SourcePath: "/home/ec2-user/xray-tracing.yaml"
       ContainerDefinitions:
         - Name: "app"
           Image: { Ref: VoteWebImage }
@@ -305,6 +318,9 @@ Resources:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
               awslogs-stream-prefix: "web-envoy"
+          MountPoints: 
+            - SourceVolume: "envoy-xray-tracing-config"
+              ContainerPath: "/tmp/xray-tracing.yaml" 
           Environment:
             - Name: "APPMESH_XDS_ENDPOINT"
               Value: { Ref: XdsEndpoint }
@@ -314,6 +330,8 @@ Resources:
               Value: "mesh/default/virtualNode/web-vn"
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
+            - Name: "ENVOY_TRACING_CFG_FILE"
+              Value: "/tmp/xray-tracing.yaml"
             - Name: "AWS_REGION"
               Value: "us-west-2"
         - Name: "proxyinit"
