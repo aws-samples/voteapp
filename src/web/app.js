@@ -25,8 +25,8 @@ let reportsAPI = axios.create({
     baseURL: reportsURI
 });
 
-captureAxios(votesAPI);
-captureAxios(reportsAPI);
+captureAxios(votesAPI, 'votes');
+captureAxios(reportsAPI, 'reports');
 
 // install route logging middleware
 app.use(morgan('dev'));
@@ -90,4 +90,3 @@ app.use(xrayExpress.closeSegment());
     process.exit(1);
   }
 })();
-

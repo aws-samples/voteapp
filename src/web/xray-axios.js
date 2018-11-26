@@ -1,7 +1,7 @@
 const xray = require('aws-xray-sdk-core');
 const segmentUtils = xray.SegmentUtils;
 
-let captureAxios = function(axios) {
+let captureAxios = function(axios, operation) {
 
   //add a request interceptor on POST
   axios.interceptors.request.use(function (config) {
@@ -11,7 +11,10 @@ let captureAxios = function(axios) {
 
     let root = parent.segment ? parent.segment : parent;
     let header = 'Root=' + root.trace_id + ';Parent=' + subsegment.id + ';Sampled=' + (!root.notTraced ? '1' : '0');
-    config.headers.post={ 'x-amzn-trace-id': header };
+    config.headers.post={
+      'x-amzn-trace-id': header,
+      'x-envoy-decorator-operation': operation
+    };
 
     xray.setSegment(subsegment);
 
