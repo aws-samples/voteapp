@@ -23,6 +23,11 @@ Parameters:
     Type: String
     Default: debug
 
+  VoteVotesImage:
+    Type: String
+    Description: Vote App Votes image
+    Default: "subfuzion/vote-votes:1.1.0"
+
   VoteReportsImage:
     Type: String
     Description: Vote App Reports image
@@ -53,6 +58,10 @@ Parameters:
     Description: Grafana Web image
     Default: "grafana/grafana:latest"
 
+  VoteVotesNodeId:
+    Type: String
+    Description: VirtualNode id of the reports service
+
   VoteReportsNodeId:
     Type: String
     Description: VirtualNode id of the reports service
@@ -74,6 +83,154 @@ Parameters:
 
 Resources:
 
+  ### votes.default.svc.cluster.local
+  VotesServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: "votes"
+      DnsConfig:
+        NamespaceId:
+          'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceDiscoveryNamespace"
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+
+  VotesService:
+    Type: 'AWS::ECS::Service'
+    Properties:
+      Cluster:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:ECSCluster"
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: 1
+      LaunchType: EC2
+      ServiceRegistries:
+        - RegistryArn:
+            'Fn::GetAtt': VotesServiceDiscoveryRecord.Arn
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceSecurityGroup"
+          Subnets: 
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet1"
+            - 'Fn::ImportValue': !Sub "${EnvironmentName}:PrivateSubnet2"
+      TaskDefinition: { Ref: VotesTaskDefinition }
+
+  VotesTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      TaskRoleArn: 
+        'Fn::ImportValue': !Sub "${EnvironmentName}:TaskIamRole"
+      Volumes:
+        - Name: "envoy-xray-tracing-config"
+          Host:
+            SourcePath: "/home/ec2-user/xray-tracing.yaml"
+      ContainerDefinitions:
+        - Name: "app"
+          Image: { Ref: VoteVotesImage }
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "votes-app"
+          Environment:
+            - Name: "PORT"
+              Value: "9080"
+        - Name: xray-daemon
+          Essential: false
+          Cpu: 32
+          Memory: 64
+          Image: !Ref 'XRayImageUrl'
+          PortMappings:
+            - ContainerPort: 2000
+              Protocol: udp
+          Environment:
+            - Name: "AWS_REGION"
+              Value: !Ref 'AWS::Region'
+          LogConfiguration:
+            LogDriver: 'awslogs'
+            Options:
+              awslogs-group: 
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: 'xray'
+        - Name: envoy
+          Image: { Ref: EnvoyImage }
+          Essential: true
+          User: "1337"
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup" 
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "votes-envoy"
+          MountPoints:
+            - SourceVolume: "envoy-xray-tracing-config"
+              ContainerPath: "/tmp/xray-tracing.yaml"
+          Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
+            - Name: "APPMESH_VIRTUAL_NODE_NAME"
+              Value: { Ref: VoteVotesNodeId }
+            - Name: "APPMESH_VIRTUAL_NODE_UID"
+              Value: {
+                "Fn::Join": [
+                  "mesh/default/virtualNode/",
+                  { Ref: VoteVotesNodeId }
+                ]
+              }
+            - Name: "ENVOY_LOG_LEVEL"
+              Value: { Ref: EnvoyLogLevel }
+            - Name: "ENVOY_TRACING_CFG_FILE"
+              Value: "/tmp/xray-tracing.yaml"
+            - Name: "AWS_REGION"
+              Value: "us-west-2"
+        - Name: "proxyinit"
+          Image: { Ref: SideCarRouterManagerImage }
+          Essential: false
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: { Ref: "AWS::Region" }
+              awslogs-stream-prefix: "votes-proxyinit"
+          LinuxParameters:
+            Capabilities:
+              Add:
+                - "NET_ADMIN"
+          Environment:
+            - Name: "APPMESH_XDS_ENDPOINT"
+              Value: { Ref: XdsEndpoint }
+            - Name: "APPMESH_START_ENABLED"
+              Value: "1"
+            - Name: "APPMESH_USE_TPROXY"
+              Value: "0"
+            - Name: "APPMESH_IGNORE_UID"
+              Value: "1337"
+            - Name: "APPMESH_ENVOY_INGRESS_PORT"
+              Value: "15000"
+            - Name: "APPMESH_ENVOY_EGRESS_PORT"
+              Value: "15001"
+            - Name: "APPMESH_APP_PORTS"
+              Value: "9080"
+            - Name: "APPMESH_EGRESS_IGNORED_IP"
+              Value: { Ref: LatticeEgressIgnoredIpCsv }
+      ExecutionRoleArn:
+        'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
+      NetworkMode: "awsvpc"
+      Memory: 256
+
+
+  
   ### reports.default.svc.cluster.local
   ReportsServiceDiscoveryRecord:
     Type: 'AWS::ServiceDiscovery::Service'
@@ -170,9 +327,14 @@ Resources:
             - Name: "APPMESH_XDS_ENDPOINT"
               Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
-              Value: "reports-vn"
+              Value: { Ref: VoteReportsNodeId }
             - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: "mesh/default/virtualNode/reports-vn"
+              Value: {
+                "Fn::Join": [
+                  "mesh/default/virtualNode/",
+                  { Ref: VoteReportsNodeId }
+                ]
+              }
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "ENVOY_TRACING_CFG_FILE"
@@ -325,9 +487,14 @@ Resources:
             - Name: "APPMESH_XDS_ENDPOINT"
               Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
-              Value: "web-vn"
+              Value: { Ref: VoteWebNodeId }
             - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: "mesh/default/virtualNode/web-vn"
+              Value: {
+                "Fn::Join": [
+                  "mesh/default/virtualNode/",
+                  { Ref: VoteWebNodeId }
+                ]
+              }
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "ENVOY_TRACING_CFG_FILE"

@@ -35,10 +35,12 @@ app.post('/vote', async (req, res) => {
     console.log('POST /vote: %j', req.body);
     let v = req.body;
 
-    await producer.send(v);
-    console.log('queued :', v);
-    // for now, just return the request body as the result
-    res.send({ success: true, result: req.body });
+    //HACK
+    // await producer.send(v);
+    // console.log('queued :', v);
+    // /HACK
+    // for now, just return the original as the result
+    res.send({ success: true, result: v });
   } catch (err) {
     console.log('ERROR: POST /vote:', err);
     res.status(500).send({ success: false, reason: err.message })
