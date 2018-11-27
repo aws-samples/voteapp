@@ -179,14 +179,9 @@ Resources:
             - Name: "APPMESH_XDS_ENDPOINT"
               Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
-              Value: { Ref: VoteVotesNodeId }
+              Value: !Ref VoteVotesNodeId
             - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: {
-                "Fn::Join": [
-                  "mesh/default/virtualNode/",
-                  { Ref: VoteVotesNodeId }
-                ]
-              }
+              Value: !Sub mesh/default/virtualNode/${VoteVotesNodeId}
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "ENVOY_TRACING_CFG_FILE"
@@ -327,14 +322,9 @@ Resources:
             - Name: "APPMESH_XDS_ENDPOINT"
               Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
-              Value: { Ref: VoteReportsNodeId }
+              Value: !Ref VoteReportsNodeId
             - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: {
-                "Fn::Join": [
-                  "mesh/default/virtualNode/",
-                  { Ref: VoteReportsNodeId }
-                ]
-              }
+              Value: !Sub mesh/default/virtualNode/${VoteReportsNodeId}
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "ENVOY_TRACING_CFG_FILE"
@@ -487,14 +477,9 @@ Resources:
             - Name: "APPMESH_XDS_ENDPOINT"
               Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
-              Value: { Ref: VoteWebNodeId }
+              Value: !Ref VoteWebNodeId
             - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: {
-                "Fn::Join": [
-                  "mesh/default/virtualNode/",
-                  { Ref: VoteWebNodeId }
-                ]
-              }
+              Value: !Sub mesh/default/virtualNode/${VoteWebNodeId}
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "ENVOY_TRACING_CFG_FILE"
