@@ -182,8 +182,6 @@ Resources:
               Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: !Ref VoteVotesNodeId
-            - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: !Sub mesh/default/virtualNode/${VoteVotesNodeId}
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "ENVOY_TRACING_CFG_FILE"
@@ -326,8 +324,6 @@ Resources:
               Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: !Ref VoteReportsNodeId
-            - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: !Sub mesh/default/virtualNode/${VoteReportsNodeId}
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "ENVOY_TRACING_CFG_FILE"
@@ -485,8 +481,6 @@ Resources:
               Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: !Ref VoteWebNodeId
-            - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: !Sub mesh/default/virtualNode/${VoteWebNodeId}
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "ENVOY_TRACING_CFG_FILE"
