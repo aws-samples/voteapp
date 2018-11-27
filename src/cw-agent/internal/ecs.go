@@ -26,7 +26,7 @@ func GetTaskID() (string, error) {
 }
 
 func getTaskIDv3(url string) (string, error) {
-	resp, err := http.Get(url)
+	resp, err := http.Get(url + "/task")
 	if err != nil {
 		return "", err
 	}

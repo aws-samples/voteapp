@@ -58,8 +58,10 @@ func (coll *Collector) collectHistograms(upstreamClusters []string) (HistogramsB
 	}
 	defer resp.Body.Close()
 
+	sanitizedOutput := newVerticalBarReplacer(resp.Body)
+
 	buf := new(bytes.Buffer)
-	if _, err := buf.ReadFrom(resp.Body); err != nil {
+	if _, err := buf.ReadFrom(sanitizedOutput); err != nil {
 		return nil, err
 	}
 
