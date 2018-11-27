@@ -1,0 +1,18 @@
+version: "2.1"
+
+networks:
+  bridge_net:
+    driver: bridge
+
+services:
+  reports:
+    build: reports
+    networks:
+      - bridge_net
+
+  web:
+    build: web
+    networks:
+      - bridge_net
+    ports:
+      - "3000:3000"
