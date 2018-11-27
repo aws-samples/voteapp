@@ -7,8 +7,8 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 
-	"github.com/aws-samples/voting-app/cloudwatch_agent/internal"
-	"github.com/aws-samples/voting-app/cloudwatch_agent/internal/envoy"
+	"github.com/aws-samples/voting-app/src/cw-agent/internal"
+	"github.com/aws-samples/voting-app/src/cw-agent/internal/envoy"
 )
 
 const defaultCollectFrequency = 5 * time.Second
@@ -77,13 +77,15 @@ func (c *config) collect() {
 
 		ctrs, hsts, err := c.collector.Collect()
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			continue
 		}
 
 		log.Printf("Submitting metrics to CloudWatch")
 
 		if err := c.submitter.Submit(ctrs, hsts); err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			continue
 		}
 	}
 }

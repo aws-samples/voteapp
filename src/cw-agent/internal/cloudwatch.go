@@ -4,10 +4,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 
-	"github.com/aws-samples/voting-app/cloudwatch_agent/internal/envoy"
+	"github.com/aws-samples/voting-app/src/cw-agent/internal/envoy"
 )
 
-const cloudwatchMetricNamespace = "Lattice"
+const cloudwatchMetricNamespace = "AWS App Mesh Demo"
 
 type CloudwatchSubmitter struct {
 	Session           client.ConfigProvider

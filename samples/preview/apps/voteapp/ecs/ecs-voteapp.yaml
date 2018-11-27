@@ -38,6 +38,11 @@ Parameters:
     Description: Vote App Web image
     Default: "subfuzion/vote-web:1.1.1"
   
+  CloudWatchAgentImage:
+    Type: String
+    Description: CloudWatch Agent image
+    Default: "subfuzion/vote-cw-agent:1.0.0"
+
   XRayImageUrl:
     Type: String
     Default: amazon/aws-xray-daemon
@@ -215,6 +220,25 @@ Resources:
               Value: "9080"
             - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: LatticeEgressIgnoredIpCsv }
+        - Name: cloudwatch_agent
+          Image: !Ref CloudWatchAgentImage
+          Essential: false
+          Cpu: 100
+          Memory: 128
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: cloudwatch-agent
+          Environment:
+            - Name: DOWNSTREAM_SERVICE_NAME
+              Value: votes
+            - Name: ENVOY_ADMIN_HOST
+              Value: "localhost:9901"
+            - Name: AWS_REGION
+              Value: !Ref "AWS::Region"
       ExecutionRoleArn:
         'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
       NetworkMode: "awsvpc"
@@ -353,6 +377,25 @@ Resources:
               Value: "9080"
             - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: LatticeEgressIgnoredIpCsv }
+        - Name: cloudwatch_agent
+          Image: !Ref CloudWatchAgentImage
+          Essential: false
+          Cpu: 100
+          Memory: 128
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: cloudwatch-agent
+          Environment:
+            - Name: DOWNSTREAM_SERVICE_NAME
+              Value: reports
+            - Name: ENVOY_ADMIN_HOST
+              Value: "localhost:9901"
+            - Name: AWS_REGION
+              Value: !Ref "AWS::Region"
       ExecutionRoleArn:
         'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
       NetworkMode: "awsvpc"
@@ -542,11 +585,30 @@ Resources:
               awslogs-stream-prefix: "web-grafana"
           PortMappings:
             - ContainerPort: 3000
+        - Name: cloudwatch_agent
+          Image: !Ref CloudWatchAgentImage
+          Essential: false
+          Cpu: 100
+          Memory: 128
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: cloudwatch-agent
+          Environment:
+            - Name: DOWNSTREAM_SERVICE_NAME
+              Value: web
+            - Name: ENVOY_ADMIN_HOST
+              Value: "localhost:9901"
+            - Name: AWS_REGION
+              Value: !Ref "AWS::Region"
       ExecutionRoleArn:
         'Fn::ImportValue': !Sub "${EnvironmentName}:TaskExecutionIamRoleArn"
       NetworkMode: "awsvpc"
       Memory: 256
-  
+
   # Web load balancer resources
   WebTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup

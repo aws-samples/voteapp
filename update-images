@@ -6,9 +6,10 @@ packages=(
 #    "database-proxy"
 #    "queue-proxy"
 #    "worker"
-    "votes"
+#    "votes"
     "reports"
     "web"
+    "cw-agent"
 #    "vote"
 )
 
@@ -28,10 +29,7 @@ for pkg in ${packages[@]}; do
 
     docker tag $image $image:$TAG
     printf "Successfully tagged $image:$TAG\n"
-    
+
     docker push $image
     docker push $image:$TAG
-
-    printf "Successfully pushed $image:latest\n"
-    printf "Successfully pushed $image:$TAG\n"
 done

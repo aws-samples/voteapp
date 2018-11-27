@@ -30,8 +30,10 @@ func (coll *Collector) collectCounters() (CountersByUpstream, error) {
 	}
 	defer resp.Body.Close()
 
+	sanitizedOutput := newVerticalBarReplacer(resp.Body)
+
 	parser := new(expfmt.TextParser)
-	metrics, err := parser.TextToMetricFamilies(resp.Body)
+	metrics, err := parser.TextToMetricFamilies(sanitizedOutput)
 	if err != nil {
 		return nil, err
 	}

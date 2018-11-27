@@ -1,5 +1,7 @@
 package envoy
 
+import "io"
+
 func (coll *Collector) Collect() (CountersByUpstream, HistogramsByUpstream, error) {
 	var (
 		err        error
@@ -23,4 +25,25 @@ func (coll *Collector) Collect() (CountersByUpstream, HistogramsByUpstream, erro
 	}
 
 	return counters, histograms, nil
+}
+
+// This is a io.Reader wrapper that replaces all '|' characters in
+// its output with '_' characters.  It's needed to prevent the
+// upstream Prometheus text format parser from crashing on invalid input.
+type verticalBarReplacer struct {
+	raw io.Reader
+}
+
+func newVerticalBarReplacer(r io.Reader) *verticalBarReplacer {
+	return &verticalBarReplacer{raw: r}
+}
+
+func (s *verticalBarReplacer) Read(p []byte) (n int, err error) {
+	n, err = s.raw.Read(p)
+	for i := range p {
+		if p[i] == '|' {
+			p[i] = '_'
+		}
+	}
+	return
 }

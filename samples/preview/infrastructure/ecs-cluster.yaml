@@ -407,6 +407,13 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
         - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+      Policies:
+        - PolicyName: AllowPutMetricData
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: [ "cloudwatch:PutMetricData" ]
+                Resource: [ "*" ]
 
   ECSServiceLogGroup:
     Type: 'AWS::Logs::LogGroup'
