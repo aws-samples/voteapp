@@ -1,6 +1,5 @@
 #!/bin/bash
-yum -y install java-1.8.0-openjdk
-curl front-envoy:8001/stats/prometheus -o file.out
+curl web.default.svc.cluster.local:9901/stats/prometheus -o file.out
 sed -e 's/|/_/g' file.out > front.out
 #sed -e 's/_/|/g' file.out > front.out
 java -jar prom-stats.jar &
@@ -8,7 +7,7 @@ trap "exit" INT
 while true
 do
   echo "call curl"
-  curl front-envoy:8001/stats/prometheus -o file.out
+  curl web.default.svc.cluster.local:9901/stats/prometheus -o file.out
   sed -e 's/|/_/g' file.out > front.out
   #sed -e 's/_/|/g' file.out > front.out
   echo "called curl"
