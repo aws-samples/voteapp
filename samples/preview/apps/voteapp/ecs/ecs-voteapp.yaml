@@ -178,8 +178,6 @@ Resources:
             - SourceVolume: "envoy-xray-tracing-config"
               ContainerPath: "/tmp/xray-tracing.yaml"
           Environment:
-            - Name: "APPMESH_XDS_ENDPOINT"
-              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: !Ref VoteVotesNodeId
             - Name: "ENVOY_LOG_LEVEL"
@@ -203,8 +201,6 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "APPMESH_XDS_ENDPOINT"
-              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_START_ENABLED"
               Value: "1"
             - Name: "APPMESH_USE_TPROXY"
@@ -320,8 +316,6 @@ Resources:
             - SourceVolume: "envoy-xray-tracing-config"
               ContainerPath: "/tmp/xray-tracing.yaml"
           Environment:
-            - Name: "APPMESH_XDS_ENDPOINT"
-              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: !Ref VoteReportsNodeId
             - Name: "ENVOY_LOG_LEVEL"
@@ -345,8 +339,6 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "APPMESH_XDS_ENDPOINT"
-              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_START_ENABLED"
               Value: "1"
             - Name: "APPMESH_USE_TPROXY"
@@ -477,8 +469,6 @@ Resources:
             - SourceVolume: "envoy-xray-tracing-config"
               ContainerPath: "/tmp/xray-tracing.yaml" 
           Environment:
-            - Name: "APPMESH_XDS_ENDPOINT"
-              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
               Value: !Ref VoteWebNodeId
             - Name: "ENVOY_LOG_LEVEL"
@@ -502,8 +492,6 @@ Resources:
               Add:
                 - "NET_ADMIN"
           Environment:
-            - Name: "APPMESH_XDS_ENDPOINT"
-              Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_START_ENABLED"
               Value: "1"
             - Name: "APPMESH_USE_TPROXY"
