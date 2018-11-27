@@ -25,10 +25,31 @@ There are four collapsible panels:
 1. Server Statistics (global)
 
 ![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/server-statistics.jpeg?token=AAJv-hZEfQa4_tiW_MSH8pGzOR9pAUnrks5cBFMvwA%3D%3D)
+Server related information can be obtained from a combination of metrics specific to either 'envoy_cluster_membership_xx' or 'envoy_server_xx'
+
+1. **Live Servers**: sum(envoy_server_live)
+2. **Cluster State**: (sum(envoy_cluster_membership_total)-sum(envoy_cluster_membership_healthy)) == bool 0
+3. **Unhealthy Clusters**: (sum(envoy_cluster_membership_healthy) - sum(envoy_cluster_membership_total))
+4. **Avg uptime per node**: avg(envoy_server_uptime)
+5. **Allocated Memory**: sum(envoy_server_memory_allocated)
+6. **Heap Size**: sum(envoy_server_memory_heap_size)
+
+
 
 2. Request/Response Summary (can be viewed by Service)
 
 ![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/requests-response-summary.jpeg?token=AAJv-tDPSQ0q9_XUHZbHbY3mDIl-WwJAks5cBFMbwA%3D%3D)
+
+Metrics under this section take envoy_cluster_name input and host from grafana template variables - which are named as service and host
+
+1. **Total Requests**: sum(envoy_cluster_external_upstream_rq_completed{envoy_cluster_name=~"$cluster",host=~"$hosts"})
+2. **Response - 2xx**: sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~"$cluster",host=~"$hosts",envoy_response_code="200"})
+3. **Success Rate (non 5xx)**: 1 - (1 - (sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~"$cluster",host=~"$hosts",envoy_response_code="200"})/sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~"$cluster",host=~"$hosts",envoy_response_code=~".*"})))
+4. **Response - 3xx**:  sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~"$cluster",host=~"$hosts",envoy_response_code=~"3.*"})
+5. **Response - 4xx**: sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~"$cluster",host=~"$hosts",envoy_response_code=~"4.*"})
+6. **Response - 5xx**: sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~"$cluster",host=~"$hosts",envoy_response_code=~"5.*"})
+
+
 
 3. Network Traffic Patterns (Upstream: by service, DownStream: Global)
 
@@ -36,6 +57,27 @@ There are four collapsible panels:
 
 ![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/network-traffic-patterns-2.jpeg?token=AAJv-hZthTZFv2xOntRlFFUdPjSci8Pwks5cBFMDwA%3D%3D)
 
+1. **Egress CPS/RPS** - The graph depicts information related to total upstream connection sent vs total upstream connections received vs total upstream pending connections vs cluster lb health. The four specific metrics used are:
+    1. **egress CPS**: sum(rate(envoy_cluster_upstream_cx_total{envoy_cluster_name=~"$cluster"}[10s]))
+    2. **egress RPS**: sum(rate(envoy_cluster_upstream_rq_total{envoy_cluster_name=~"$cluster"}[10s]))
+    3. **pending req to**: sum(rate(envoy_cluster_upstream_rq_pending_total{envoy_cluster_name=~"$cluster"}[10s]))
+    4. **lb healthy panic RPS**:  sum(rate(envoy_cluster_lb_healthy_panic{envoy_cluster_name=~"$cluster"}[10s]))
+
+2. **Upstream Received Requests (rate/10s)**: rate(envoy_cluster_upstream_rq_total{envoy_cluster_name=~"$cluster",host=~"$hosts"}[10s])
+3. **Upstream Connection Summary**: sum(envoy_cluster_upstream_cx_active{envoy_cluster_name=~"$cluster"})
+4. **Global Downstream Requests**: sum(rate(envoy_http_downstream_rq_total[10s]))
+
 4. Network Traffic Details in Bytes ((Upstream: by service, DownStream: Global) 
 
 ![](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/grafana-dashboard/network-traffic-details.jpeg?token=AAJv-ri4prUti-QR5416l2mVduDNV4cbks5cBFKowA%3D%3D)
+
+1. **Upstream -Sent**: sum(envoy_cluster_upstream_cx_tx_bytes_total{envoy_cluster_name=~"$cluster"})
+2. **Upstream - Sent Buffered**: sum(envoy_cluster_upstream_cx_tx_bytes_buffered{envoy_cluster_name=~"$cluster"})
+3. **Upstream - Received**: sum(envoy_cluster_upstream_cx_rx_bytes_total{envoy_cluster_name=~"$cluster"})
+4. **Upstream - Received Buffered**: sum(envoy_cluster_upstream_cx_rx_bytes_buffered{envoy_cluster_name=~"$cluster"})
+5. **Downstream Global - Sent**: sum(envoy_http_downstream_cx_tx_bytes_total)
+6. **Downstream Global - Sent Buffered**: sum(envoy_http_downstream_cx_tx_bytes_buffered)
+7. **Downstream Global - Received**: sum(envoy_http_downstream_cx_rx_bytes_total)
+8. **Downstream Global - Received Buffered**: sum(envoy_http_downstream_cx_rx_bytes_buffered)
+9. **Upstream Network Traffic (bytes)**: Represents the upstream network traffic at 10s rate based on - irate(envoy_cluster_upstream_cx_rx_bytes_total{envoy_cluster_name=~"$cluster",host=~"$hosts"}[10s])
+10. **Downstream Network Traffic (bytes)**: Represents the downstream network traffic at 10s rate based on -irate(envoy_http_downstream_cx_rx_bytes_total{}[10s])
