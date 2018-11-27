@@ -20,6 +20,7 @@ It is recommended that you use the `gamma` environment for the `APPMESH_FRONTEND
 # User
 export AWS_PROFILE="your-aws-profile"
 export AWS_ACCOUNT_ID="your-aws-account-id"
+export AWS_REGION="us-west-2"
 
 # App
 export MESH_NAME="voting-app"
