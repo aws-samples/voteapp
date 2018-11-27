@@ -37,8 +37,8 @@ app.post('/vote', async (req, res) => {
 
     //HACK
     // await producer.send(v);
-    // console.log('queued :', v);
     // /HACK
+    console.log('queued :', v);
     // for now, just return the original as the result
     res.send({ success: true, result: v });
   } catch (err) {
@@ -55,30 +55,38 @@ const server = http.createServer(app);
 (async () => {
   try {
     // initialize queue producer client for sending votes to the queue
-    producer = new Producer('queue', queueConfig);
-    producer.on('error', err => {
-      console.log('queue error: ', err);
-    });
-    producer.on('connect', () => {
-      console.log(`connected to queue (${queueConfig.host}:${queueConfig.port})`);
-    });
-    producer.on('close', () => {
-      console.log(`queue connection closed (${queueConfig.host}:${queueConfig.port})`);
-    });
-    producer.on('reconnecting', () => {
-      console.log(`reconnecting to queue (${queueConfig.host}:${queueConfig.port})`);
-    });
-    producer.on('end', () => {
-      console.log(`queue connection end (${queueConfig.host}:${queueConfig.port})`);
-    });
+    // producer = new Producer('queue', queueConfig);
+    // producer.on('error', err => {
+    //   console.log('queue error: ', err);
+    // });
+    // producer.on('connect', () => {
+    //   console.log(`connected to queue (${queueConfig.host}:${queueConfig.port})`);
+    // });
+    // producer.on('close', () => {
+    //   console.log(`queue connection closed (${queueConfig.host}:${queueConfig.port})`);
+    // });
+    // producer.on('reconnecting', () => {
+    //   console.log(`reconnecting to queue (${queueConfig.host}:${queueConfig.port})`);
+    // });
+    // producer.on('end', () => {
+    //   console.log(`queue connection end (${queueConfig.host}:${queueConfig.port})`);
+    // });
+
+    // await new Promise(resolve => {
+    //   producer.on('ready', async() => {
+    //     console.log(`queue connection ready (${queueConfig.host}:${queueConfig.port})`);
+    //     server.listen(port, () => console.log(`listening on port ${port}`));
+    //     resolve();
+    //   });
+    // });
 
     await new Promise(resolve => {
-      producer.on('ready', async() => {
-        console.log(`queue connection ready (${queueConfig.host}:${queueConfig.port})`);
-        server.listen(port, () => console.log(`listening on port ${port}`));
+      server.listen(port, () => {
+        console.log(`listening on port ${port}`);
         resolve();
       });
     });
+
 
   } catch (err) {
     console.log(err);

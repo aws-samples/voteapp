@@ -26,17 +26,17 @@ Parameters:
   VoteVotesImage:
     Type: String
     Description: Vote App Votes image
-    Default: "subfuzion/vote-votes:1.1.0"
+    Default: "subfuzion/vote-votes:1.1.1"
 
   VoteReportsImage:
     Type: String
     Description: Vote App Reports image
-    Default: "subfuzion/vote-reports:1.1.0"
+    Default: "subfuzion/vote-reports:1.1.1"
 
   VoteWebImage:
     Type: String
     Description: Vote App Web image
-    Default: "subfuzion/vote-web:1.1.0"
+    Default: "subfuzion/vote-web:1.1.1"
   
   XRayImageUrl:
     Type: String
@@ -83,7 +83,9 @@ Parameters:
 
 Resources:
 
+  ### =================================
   ### votes.default.svc.cluster.local
+  ### =================================
   VotesServiceDiscoveryRecord:
     Type: 'AWS::ServiceDiscovery::Service'
     Properties:
@@ -179,14 +181,9 @@ Resources:
             - Name: "APPMESH_XDS_ENDPOINT"
               Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
-              Value: { Ref: VoteVotesNodeId }
+              Value: !Ref VoteVotesNodeId
             - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: {
-                "Fn::Join": [
-                  "mesh/default/virtualNode/",
-                  { Ref: VoteVotesNodeId }
-                ]
-              }
+              Value: !Sub mesh/default/virtualNode/${VoteVotesNodeId}
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "ENVOY_TRACING_CFG_FILE"
@@ -230,8 +227,9 @@ Resources:
       Memory: 256
 
 
-  
+  ### =================================
   ### reports.default.svc.cluster.local
+  ### =================================
   ReportsServiceDiscoveryRecord:
     Type: 'AWS::ServiceDiscovery::Service'
     Properties:
@@ -327,14 +325,9 @@ Resources:
             - Name: "APPMESH_XDS_ENDPOINT"
               Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
-              Value: { Ref: VoteReportsNodeId }
+              Value: !Ref VoteReportsNodeId
             - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: {
-                "Fn::Join": [
-                  "mesh/default/virtualNode/",
-                  { Ref: VoteReportsNodeId }
-                ]
-              }
+              Value: !Sub mesh/default/virtualNode/${VoteReportsNodeId}
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "ENVOY_TRACING_CFG_FILE"
@@ -379,7 +372,9 @@ Resources:
 
 
 
+  ### =================================
   ### web.default.svc.cluster.local
+  ### =================================
   WebServiceDiscoveryRecord:
     Type: 'AWS::ServiceDiscovery::Service'
     Properties:
@@ -447,6 +442,8 @@ Resources:
           Environment:
             - Name: "PORT"
               Value: "9080"
+            - Name: "VOTES_URI"
+              Value: "http://votes.default.svc.cluster.local:9080"
             - Name: "REPORTS_URI"
               Value: "http://reports.default.svc.cluster.local:9080"
           PortMappings:
@@ -487,14 +484,9 @@ Resources:
             - Name: "APPMESH_XDS_ENDPOINT"
               Value: { Ref: XdsEndpoint }
             - Name: "APPMESH_VIRTUAL_NODE_NAME"
-              Value: { Ref: VoteWebNodeId }
+              Value: !Ref VoteWebNodeId
             - Name: "APPMESH_VIRTUAL_NODE_UID"
-              Value: {
-                "Fn::Join": [
-                  "mesh/default/virtualNode/",
-                  { Ref: VoteWebNodeId }
-                ]
-              }
+              Value: !Sub mesh/default/virtualNode/${VoteWebNodeId}
             - Name: "ENVOY_LOG_LEVEL"
               Value: { Ref: EnvoyLogLevel }
             - Name: "ENVOY_TRACING_CFG_FILE"

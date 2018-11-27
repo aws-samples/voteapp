@@ -31,4 +31,7 @@ for pkg in ${packages[@]}; do
     
     docker push $image
     docker push $image:$TAG
+
+    printf "Successfully pushed $image:latest\n"
+    printf "Successfully pushed $image:$TAG\n"
 done
