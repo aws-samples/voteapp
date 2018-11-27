@@ -3,7 +3,7 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": null,
+        "datasource": "-- Grafana --",
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -16,8 +16,8 @@
   "editable": true,
   "gnetId": 6693,
   "graphTooltip": 0,
-  "id": 9,
-  "iteration": 1543084824302,
+  "id": 5,
+  "iteration": 1543212049646,
   "links": [],
   "panels": [
     {
@@ -627,11 +627,11 @@
     {
       "cacheTimeout": null,
       "colorBackground": false,
-      "colorValue": false,
+      "colorValue": true,
       "colors": [
-        "#299c46",
+        "#d44a3a",
         "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
+        "#299c46"
       ],
       "datasource": null,
       "format": "none",
@@ -685,15 +685,15 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(envoy_cluster_external_upstream_rq_completed{envoy_cluster_name=~\"$cluster\",host=~\"$hosts\"})",
+          "expr": "sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~\"$cluster\",host=~\"$hosts\",envoy_response_code=\"200\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "thresholds": "",
-      "title": "Total Requests",
+      "thresholds": "-1,0",
+      "title": "Response - 2xx",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -1027,7 +1027,7 @@
           "value": "null"
         }
       ],
-      "valueName": "avg"
+      "valueName": "current"
     },
     {
       "collapsed": false,
@@ -1190,7 +1190,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(envoy_cluster_upstream_rq_total{envoy_cluster_name=~\"$cluster\",host=~\"$hosts\"}[15s])",
+          "expr": "rate(envoy_cluster_upstream_rq_total{envoy_cluster_name=~\"$cluster\",host=~\"$hosts\"}[30s])",
           "format": "time_series",
           "instant": false,
           "interval": "15s",
@@ -1203,7 +1203,7 @@
       "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Upstream Requests (rate/10s)",
+      "title": "Upstream Requests (rate/30s)",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -1831,7 +1831,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "envoy_http_downstream_cx_tx_bytes_total",
+          "expr": "sum(envoy_http_downstream_cx_tx_bytes_total)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
@@ -1912,7 +1912,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "envoy_http_downstream_cx_tx_bytes_buffered",
+          "expr": "sum(envoy_http_downstream_cx_tx_bytes_buffered)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
@@ -1993,7 +1993,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "envoy_http_downstream_cx_rx_bytes_total",
+          "expr": "sum(envoy_http_downstream_cx_rx_bytes_total)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
@@ -2074,7 +2074,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "envoy_http_downstream_cx_rx_bytes_buffered",
+          "expr": "sum(envoy_http_downstream_cx_rx_bytes_buffered)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
@@ -2335,7 +2335,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -2366,5 +2366,5 @@
   "timezone": "",
   "title": "Lattice-Grafana",
   "uid": "FtAFIVYmk",
-  "version": 1
+  "version": 13
 }
