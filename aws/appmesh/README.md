@@ -21,13 +21,8 @@ It is recommended that you use the `gamma` environment for the `APPMESH_FRONTEND
 export AWS_PROFILE="your-aws-profile"
 export AWS_ACCOUNT_ID="your-aws-account-id"
 
-# Lattice
-export APPMESH_FRONTEND="https://frontend.us-west-2.gamma.lattice.aws.a2z.com/"
-export APPMESH_XDS_ENDPOINT=envoy-management.us-west-2.gamma.lattice.aws.a2z.com:443
-
 # App
 export MESH_NAME="voting-app"
-export MESH_ROLE="voting-app-role"
 export CLIENT_TOKEN="voting-app-token"
 ```
 
