@@ -39,5 +39,5 @@ aws --profile ${AWS_PROFILE} --region ${AWS_REGION} \
     --parameters \
     ParameterKey=EnvironmentName,ParameterValue=${ENVIRONMENT_NAME} \
     ParameterKey=VoteWebNodeId,ParameterValue="${VOTE_WEB_NODE_ID}" \
-    ParameterKey=VoteWebNodeId,ParameterValue="${VOTE_VOTES_NODE_ID}" \
+    ParameterKey=VoteVotesNodeId,ParameterValue="${VOTE_VOTES_NODE_ID}" \
     ParameterKey=VoteReportsNodeId,ParameterValue="${VOTE_REPORTS_NODE_ID}"
