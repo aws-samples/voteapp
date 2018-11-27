@@ -3,7 +3,6 @@
         "listeners": [
             {
                 "portMapping": {
-                    "name": "http-9080",
                     "port": 9080,
                     "protocol": "http"
                 }
