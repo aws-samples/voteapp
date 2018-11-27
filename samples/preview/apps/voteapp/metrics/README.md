@@ -1,11 +1,8 @@
 ## Steps
 
-1. Navigate to `voting-app/samples/preview/apps/voteapp/metrics`
-2. Run `./ecs-voteapp.sh`. This will trigger an update to cloudformation stack - `{environment_name}-ecs-voteapp`
-3. Once the stack is updated, run `./update-targetgroups.sh`
-4. Prometheus runs on port: `9090`, Access promotheus using this url:  http://<load-balancer-dns-name>:9090/targets
-5. Grafana runs on port: `3000` to access grafana.use this url - http://<load-balancer-dns-name>:3000/?orgId=1
-6. Grafana first time setup:
+1. Prometheus runs on port: `9090`, Access promotheus using this url:  http://<load-balancer-dns-name>:9090/targets
+2. Grafana runs on port: `3000` to access grafana.use this url - http://<load-balancer-dns-name>:3000/?orgId=1
+3. Grafana first time setup:
     1. Login using `admin`/`admin` or you can alternatively click on **skip**
     2. Create DataSource as follows:
         1. **Name** - Enter a name that represents the prometheus data source. Example - `lattice-prometheus`
