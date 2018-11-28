@@ -332,6 +332,8 @@ Resources:
           Environment:
             - Name: "PORT"
               Value: "9080"
+            - Name: "DATABASE_PROXY_URI"
+              Value: "http://database.default.svc.cluster.local:9080"
         - Name: xray-daemon
           Essential: false
           Cpu: 32
@@ -489,6 +491,8 @@ Resources:
           Environment:
             - Name: "PORT"
               Value: "9080"
+            - Name: "DATABASE_PROXY_URI"
+              Value: "http://database.default.svc.cluster.local:9080"
         - Name: xray-daemon
           Essential: false
           Cpu: 32
