@@ -11,6 +11,7 @@ let captureAxios = function(axios) {
 
     let root = parent.segment ? parent.segment : parent;
     let header = 'Root=' + root.trace_id + ';Parent=' + subsegment.id + ';Sampled=' + (!root.notTraced ? '1' : '0');
+    config.headers.get={ 'x-amzn-trace-id': header };
     config.headers.post={ 'x-amzn-trace-id': header };
 
     xray.setSegment(subsegment);
