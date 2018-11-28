@@ -27,7 +27,7 @@ $ ./servicemesh/deploy.sh
 $ ./ecs/ecs-voteapp.sh
 ```
 
-* Verify by doing a curl on color-gateway
+* Verify by doing a curl on the web service
 
 ```
 <ec2-bastion-host>$ curl -s http://web.default.svc.cluster.local:9080/results
