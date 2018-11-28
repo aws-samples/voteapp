@@ -1,7 +1,10 @@
 Envoy-CloudWatch Agent
 ======================
 This directory contains code for a simple agent that retrieves metrics from the
-Envoy traffic proxy and forwards them to CloudWatch.
+Envoy traffic proxy and posts them to CloudWatch as custom metrics.  The Envoy-
+CloudWatch Agent container runs as another sidecar container in your ECS task.
+The Docker [image](https://hub.docker.com/r/subfuzion/vote-cw-agent/) for this 
+agent can be pulled from Docker Hub or you can build it from the source. 
 
 Prerequisites
 -------------
@@ -10,7 +13,9 @@ The following environment variables must be declared:
 | Variable                  | Description                                                                                          |
 | ------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `DOWNSTREAM_SERVICE_NAME` | The downstream (local) service name.  Used for setting the `DownstreamServiceName` metric dimension. |
-| `ENVOY_ADMIN_HOST`        | The IP and port of Envoy's admin service, for example, `localhost:9901`                              |
+| `ENVOY_ADMIN_HOST`        | The IP and port of Envoy's admin service, for example, `localhost:9901` |
+| `AWS_REGION`              | The region where the container is running, currently us-west-2 |
+
 
 Optional configuration
 ----------------------
