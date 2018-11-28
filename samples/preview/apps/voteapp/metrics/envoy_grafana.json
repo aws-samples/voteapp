@@ -16,8 +16,8 @@
   "editable": true,
   "gnetId": 6693,
   "graphTooltip": 0,
-  "id": 1,
-  "iteration": 1543370789940,
+  "id": 2,
+  "iteration": 1543372090751,
   "links": [],
   "panels": [
     {
@@ -350,6 +350,7 @@
         {
           "expr": "avg(envoy_server_uptime)",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -431,6 +432,7 @@
         {
           "expr": "SUM(envoy_server_memory_allocated)",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -512,6 +514,7 @@
         {
           "expr": "SUM(envoy_server_memory_heap_size)",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -606,6 +609,7 @@
         {
           "expr": "sum(envoy_cluster_external_upstream_rq_completed{envoy_cluster_name=~\"$cluster\",host=~\"$hosts\"})",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -618,7 +622,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -687,6 +691,7 @@
         {
           "expr": "sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~\"$cluster\",host=~\"$hosts\",envoy_response_code=\"200\"})",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -699,7 +704,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -768,6 +773,7 @@
         {
           "expr": "1 - (1 - (sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~\"$cluster\",host=~\"$hosts\",envoy_response_code=\"200\"})/sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~\"$cluster\",host=~\"$hosts\",envoy_response_code=~\".*\"})))",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -780,7 +786,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -849,6 +855,7 @@
         {
           "expr": "sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~\"$cluster\",host=~\"$hosts\",envoy_response_code=~\"3.*\"})",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -930,6 +937,7 @@
         {
           "expr": "sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~\"$cluster\",host=~\"$hosts\",envoy_response_code=~\"4.*\"})",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -1011,6 +1019,7 @@
         {
           "expr": "sum(envoy_cluster_external_upstream_rq{envoy_cluster_name=~\"$cluster\",host=~\"$hosts\",envoy_response_code=~\"5.*\"})",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -1084,6 +1093,7 @@
         {
           "expr": "sum(rate(envoy_cluster_upstream_cx_total{envoy_cluster_name=~\"$cluster\"}[10s]))",
           "format": "time_series",
+          "instant": false,
           "intervalFactor": 2,
           "legendFormat": "egress CPS",
           "refId": "A"
@@ -1091,6 +1101,7 @@
         {
           "expr": "sum(rate(envoy_cluster_upstream_rq_total{envoy_cluster_name=~\"$cluster\"}[10s]))",
           "format": "time_series",
+          "instant": false,
           "intervalFactor": 2,
           "legendFormat": "egress RPS",
           "refId": "B"
@@ -1509,6 +1520,7 @@
         {
           "expr": "sum(envoy_cluster_upstream_cx_tx_bytes_total{envoy_cluster_name=~\"$cluster\"})",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -1521,7 +1533,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -1590,6 +1602,7 @@
         {
           "expr": "sum(envoy_cluster_upstream_cx_tx_bytes_buffered{envoy_cluster_name=~\"$cluster\"})",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -1602,7 +1615,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -1671,6 +1684,7 @@
         {
           "expr": "sum(envoy_cluster_upstream_cx_rx_bytes_total{envoy_cluster_name=~\"$cluster\"})",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -1683,7 +1697,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -1752,6 +1766,7 @@
         {
           "expr": "sum(envoy_cluster_upstream_cx_rx_bytes_buffered{envoy_cluster_name=~\"$cluster\"})",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -1764,7 +1779,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -1833,6 +1848,7 @@
         {
           "expr": "sum(envoy_http_downstream_cx_tx_bytes_total)",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -1845,7 +1861,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -1914,6 +1930,7 @@
         {
           "expr": "sum(envoy_http_downstream_cx_tx_bytes_buffered)",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -1926,7 +1943,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -1995,6 +2012,7 @@
         {
           "expr": "sum(envoy_http_downstream_cx_rx_bytes_total)",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -2007,7 +2025,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -2076,6 +2094,7 @@
         {
           "expr": "sum(envoy_http_downstream_cx_rx_bytes_buffered)",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -2088,7 +2107,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -2287,6 +2306,7 @@
       {
         "allValue": null,
         "current": {
+          "tags": [],
           "text": "All",
           "value": "$__all"
         },
@@ -2335,7 +2355,7 @@
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -2366,5 +2386,5 @@
   "timezone": "",
   "title": "Lattice-Grafana",
   "uid": "FtAFIVYmk",
-  "version": 1
+  "version": 3
 }
