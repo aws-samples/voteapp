@@ -28,7 +28,10 @@ app.post('/vote', async (req, res) => {
     let v = req.body;
     let result = await db.updateVote(v);
     console.log('stored :', result);
-    res.send({ success: true, result: result });
+    res.send({ success: true, result: {
+      voter_id: result.voter_id,
+      vote: result.vote
+    }});
   } catch (err) {
     console.log('ERROR: POST /vote: %j', err);
     res.send(500, { success: false, reason: err.message });
@@ -53,6 +56,7 @@ app.get('/results', async (req, res) => {
   try {
     // initialize database client for querying vote results
     db = new Database(databaseConfig);
+    console.log(`connecting to database at (${db.connectionURL})`);
     await db.connect();
     console.log(`connected to database (${db.connectionURL})`);
     server.listen(port, () => console.log(`listening on port ${port}`));

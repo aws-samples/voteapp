@@ -4,15 +4,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 
-	"github.com/aws-samples/voting-app/cloudwatch_agent/internal/envoy"
+	"github.com/aws-samples/voting-app/src/cw-agent/internal/envoy"
 )
 
-const cloudwatchMetricNamespace = "Lattice"
+const cloudwatchMetricNamespace = "AWS App Mesh Demo"
 
 type CloudwatchSubmitter struct {
 	Session           client.ConfigProvider
 	DownstreamService string
-	TaskID            string
 }
 
 func (c *CloudwatchSubmitter) Submit(counters envoy.CountersByUpstream, histograms envoy.HistogramsByUpstream) error {
@@ -26,9 +25,6 @@ func (c *CloudwatchSubmitter) Submit(counters envoy.CountersByUpstream, histogra
 			new(cloudwatch.Dimension).
 				SetName("UpstreamService").
 				SetValue(upstreamCluster),
-			new(cloudwatch.Dimension).
-				SetName("TaskId").
-				SetValue(c.TaskID),
 		}
 		data := []*cloudwatch.MetricDatum{
 			new(cloudwatch.MetricDatum).
@@ -70,9 +66,6 @@ func (c *CloudwatchSubmitter) Submit(counters envoy.CountersByUpstream, histogra
 			new(cloudwatch.Dimension).
 				SetName("UpstreamService").
 				SetValue(upstreamCluster),
-			new(cloudwatch.Dimension).
-				SetName("TaskId").
-				SetValue(c.TaskID),
 		}
 
 		var data []*cloudwatch.MetricDatum

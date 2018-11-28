@@ -3,12 +3,13 @@
 TAG=$(git describe --abbrev=0 --tags)
 
 packages=(
-#    "database-proxy"
+    "cw-agent"
+    "database-proxy"
+    "reports"
+    "votes"
+    "web"
 #    "queue-proxy"
 #    "worker"
-    "votes"
-    "reports"
-    "web"
 #    "vote"
 )
 
@@ -24,14 +25,11 @@ for pkg in ${packages[@]}; do
         image=$image-$pkg
     fi
     printf "\nBuilding image $i of $total: $image ...\n"
-    docker build -t $image src/$pkg
+    docker build -t $image:latest src/$pkg
 
     docker tag $image $image:$TAG
     printf "Successfully tagged $image:$TAG\n"
-    
-    docker push $image
-    docker push $image:$TAG
 
-    printf "Successfully pushed $image:latest\n"
-    printf "Successfully pushed $image:$TAG\n"
+    docker push $image:latest
+    docker push $image:$TAG
 done
