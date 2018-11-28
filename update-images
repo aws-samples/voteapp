@@ -13,13 +13,14 @@ packages=(
 #    "vote"
 )
 
-if [ $1 = "v2" ]; then
-    tag="$TAG-2"
-    img=subfuzion/vote-reports:$tag
-    docker build --build-arg VERSION=$tag -t $img src/reports
-    docker push $img
-    exit
-fi
+# always build v2 version of reports
+version="${TAG}-2"
+img=subfuzion/vote-reports:$version
+docker build --build-arg VERSION=$version -t $img src/reports
+docker push $img
+
+# exit if only v2 option was passed
+[ $1 = "v2" ] && exit
 
 i=0
 total=${#packages[@]}
