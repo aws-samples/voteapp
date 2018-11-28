@@ -16,8 +16,8 @@
   "editable": true,
   "gnetId": 6693,
   "graphTooltip": 0,
-  "id": 5,
-  "iteration": 1543212049646,
+  "id": 1,
+  "iteration": 1543370789940,
   "links": [],
   "panels": [
     {
@@ -1023,7 +1023,7 @@
       "valueMaps": [
         {
           "op": "=",
-          "text": "N/A",
+          "text": "0",
           "value": "null"
         }
       ],
@@ -2366,5 +2366,5 @@
   "timezone": "",
   "title": "Lattice-Grafana",
   "uid": "FtAFIVYmk",
-  "version": 13
+  "version": 1
 }
