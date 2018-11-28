@@ -3,11 +3,10 @@
 
 required_env=(
     AWS_REGION
-    APPMESH_FRONTEND
 )
 
 shopt -s expand_aliases
-alias mesh="aws --region $AWS_REGION --endpoint-url $APPMESH_FRONTEND appmesh"
+alias mesh="aws --region $AWS_REGION appmesh"
 
 print() {
     printf "[MESH] %s\n" "$*"
