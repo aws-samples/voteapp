@@ -42,6 +42,11 @@ Parameters:
     Type: String
     Description: Vote App Reports image
     Default: "subfuzion/vote-reports:1.0.16"
+  
+  VoteReportsV2Image:
+    Type: String
+    Description: Vote App Reports v2 image
+    Default: "subfuzion/vote-reports:1.0.16-2"
 
   VoteWebImage:
     Type: String
@@ -84,6 +89,10 @@ Parameters:
   VoteReportsNodeId:
     Type: String
     Description: VirtualNode id of the reports service
+
+  VoteReportsV2NodeId:
+    Type: String
+    Description: VirtualNode id of the reports v2 service
 
   VoteWebNodeId:
     Type: String
