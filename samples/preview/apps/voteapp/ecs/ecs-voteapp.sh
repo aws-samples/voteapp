@@ -13,23 +13,10 @@ err() {
     exit ${code}
 }
 
-# describe_virtual_node() {
-#     service=$1
-#     cmd=( aws --profile ${AWS_PROFILE} --region ${AWS_REGION} --endpoint-url ${APPMESH_FRONTEND} \
-#                 $MESHCMD describe-virtual-node  \
-#                 --mesh-name ${MESH_NAME} --virtual-node-name ${service} \
-#                 --query virtualNode.metadata.uid --output text )
-#     node_id=$("${cmd[@]}") || err "Unable to describe node ${service}" "$?"
-#     echo ${node_id}
-# }
-#
-# VOTE_WEB_NODE_ID=$(describe_virtual_node "web-vn")
-# VOTE_VOTES_NODE_ID=$(describe_virtual_node "votes-vn")
-# VOTE_REPORTS_NODE_ID=$(describe_virtual_node "reports-vn")
-
 VOTE_WEB_NODE_ID="mesh/${MESH_NAME}/virtualNode/web-vn"
 VOTE_VOTES_NODE_ID="mesh/${MESH_NAME}/virtualNode/votes-vn"
 VOTE_REPORTS_NODE_ID="mesh/${MESH_NAME}/virtualNode/reports-vn"
+VOTE_REPORTS_V2_NODE_ID="mesh/${MESH_NAME}/virtualNode/reports-vn-v2"
 VOTE_DATABASE_NODE_ID="mesh/${MESH_NAME}/virtualNode/database-vn"
 
 aws --profile ${AWS_PROFILE} --region ${AWS_REGION} \
@@ -42,4 +29,5 @@ aws --profile ${AWS_PROFILE} --region ${AWS_REGION} \
     ParameterKey=VoteWebNodeId,ParameterValue="${VOTE_WEB_NODE_ID}" \
     ParameterKey=VoteVotesNodeId,ParameterValue="${VOTE_VOTES_NODE_ID}" \
     ParameterKey=VoteReportsNodeId,ParameterValue="${VOTE_REPORTS_NODE_ID}" \
+    ParameterKey=VoteReportsV2NodeId,ParameterValue="${VOTE_REPORTS_V2_NODE_ID}" \
     ParameterKey=VoteDatabaseNodeId,ParameterValue="${VOTE_DATABASE_NODE_ID}"
