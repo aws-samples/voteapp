@@ -32,3 +32,21 @@ $ ./ecs/ecs-voteapp.sh
 ```
 <ec2-bastion-host>$ curl -s http://web.default.svc.cluster.local:9080/results
 ```
+
+* Configure Grafana (optional)
+
+If you want to use Grafana to visualize metrics from Envoy run
+
+```
+$ ./ecs/update-targetgroups.sh 
+```
+
+This will register the IP address of the task running Grafana and Prometheus 
+with their respective target groups.  When finished, you should be able to access 
+Grafana from http://<load_balancer_dns_name>:3000.  To configure Grafana, follow 
+the instructions in the [README](./metrics/README.md).
+
+* Use X-Ray to trace requests between services (optional)
+
+For further information about how to use X-Ray to trace requests as they are routed 
+between different services, see the [README](../../../../observability/x-ray.md).
