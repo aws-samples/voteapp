@@ -10,6 +10,8 @@ COPY . /usr/src/app
 FROM mhart/alpine-node:base-9
 ARG NODE_ENV
 ENV NODE_ENV ${NODE_ENV:-development}
+ARG VERSION
+ENV VERSION ${VERSION}
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app .
 EXPOSE 3000

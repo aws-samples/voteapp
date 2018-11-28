@@ -37,8 +37,15 @@ app.get('/results', async (_, res) => {
     console.log('GET /results');
     let result = await ax.get('/results');
     let data = result.data;
+    // { success: true, result: { a: X, b: X } }
     console.log('data: ', data);
-    // Expect an object with vote count: { success: true, result: { a: X, b: X } }
+
+    // append version 2 extra field
+    if (process.env.VERSION && process.env.VERSION.endsWith("-2")) {
+      r = data.result;
+      r.result.totalVotes = r.a + r.b;
+    }
+
     res.send(data);
   } catch (err) {
     console.log('ERROR: GET /results: %s', err.message || err.response || err);

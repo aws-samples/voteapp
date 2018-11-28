@@ -13,6 +13,14 @@ packages=(
 #    "vote"
 )
 
+if [ $1 = "v2" ]; then
+    tag="$TAG-2"
+    img=subfuzion/vote-reports:$tag
+    docker build --build-arg VERSION=$tag -t $img src/reports
+    docker push $img
+    exit
+fi
+
 i=0
 total=${#packages[@]}
 for pkg in ${packages[@]}; do
