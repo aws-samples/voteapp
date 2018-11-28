@@ -37,7 +37,7 @@ app.get('/results', async (_, res) => {
     console.log('GET /results');
     let result = await ax.get('/results');
     let data = result.data;
-    console.log('resp: %j', data);
+    console.log('data: ', data);
     // Expect an object with vote count: { success: true, result: { a: X, b: X } }
     res.send(data);
   } catch (err) {

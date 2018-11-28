@@ -36,10 +36,12 @@ app.post('/vote', async (req, res) => {
   try {
     console.log('POST /vote: %j', req.body);
     let v = req.body;
-    let result = await ax.post('/vote', vote);
+    let result = await ax.post('/vote', v);
     let data = result.data;
-    console.log('vote saved:', data);
-    res.send({ success: true, result: data });
+    // result.data contains an object
+    // { success: <bool>, result: { voter_id: , vote: } }
+    console.log('data: ', data);
+    res.send(data);
   } catch (err) {
     console.log('ERROR: POST /vote:', err);
     res.status(500).send({ success: false, reason: err.message })

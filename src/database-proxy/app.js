@@ -28,7 +28,10 @@ app.post('/vote', async (req, res) => {
     let v = req.body;
     let result = await db.updateVote(v);
     console.log('stored :', result);
-    res.send({ success: true, result: result });
+    res.send({ success: true, result: {
+      voter_id: result.voter_id,
+      vote: result.vote
+    }});
   } catch (err) {
     console.log('ERROR: POST /vote: %j', err);
     res.send(500, { success: false, reason: err.message });
