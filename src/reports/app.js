@@ -1,7 +1,6 @@
 process.env.AWS_XRAY_DEBUG_MODE=1;
 
 const axios = require('axios');
-const Database = require('@subfuzion/database').Database;
 const express= require('express');
 const http = require('http');
 const morgan = require('morgan');
@@ -52,12 +51,6 @@ app.use(xrayExpress.closeSegment());
 // initialize and start running
 (async () => {
   try {
-    let dbConfig = Database.createStdConfig();
-    let db = new Database(dbConfig);
-    console.log('connecting to database');
-    await db.connect();
-    console.log('connected to database');
-
     await new Promise(resolve => {
       server.listen(port, () => {
         console.log(`listening on port ${port}`);

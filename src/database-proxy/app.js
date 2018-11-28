@@ -53,6 +53,7 @@ app.get('/results', async (req, res) => {
   try {
     // initialize database client for querying vote results
     db = new Database(databaseConfig);
+    console.log(`connecting to database at (${db.connectionURL})`);
     await db.connect();
     console.log(`connected to database (${db.connectionURL})`);
     server.listen(port, () => console.log(`listening on port ${port}`));
