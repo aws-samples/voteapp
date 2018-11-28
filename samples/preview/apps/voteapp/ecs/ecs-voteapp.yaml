@@ -26,7 +26,7 @@ Parameters:
   VoteDatabaseHttpProxyImage:
     Type: String
     Description: Vote App Database HTTP Proxy image
-    Default: "subfuzion/vote-database-proxy:1.0.15"
+    Default: "subfuzion/vote-database-proxy:1.0.16"
 
   VoteDatabaseImage:
     Type: String
@@ -36,22 +36,22 @@ Parameters:
   VoteVotesImage:
     Type: String
     Description: Vote App Votes image
-    Default: "subfuzion/vote-votes:1.0.15"
+    Default: "subfuzion/vote-votes:1.0.16"
 
   VoteReportsImage:
     Type: String
     Description: Vote App Reports image
-    Default: "subfuzion/vote-reports:1.0.15"
+    Default: "subfuzion/vote-reports:1.0.16"
 
   VoteWebImage:
     Type: String
     Description: Vote App Web image
-    Default: "subfuzion/vote-web:1.0.15"
+    Default: "subfuzion/vote-web:1.0.16"
   
   CloudWatchAgentImage:
     Type: String
     Description: CloudWatch Agent image
-    Default: "subfuzion/vote-cw-agent:1.0.15"
+    Default: "subfuzion/vote-cw-agent:1.0.16"
 
   XRayImageUrl:
     Type: String
