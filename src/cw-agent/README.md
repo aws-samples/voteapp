@@ -41,6 +41,10 @@ The metrics have the following dimensions:
 | UpstreamService   | Upstream (remote) service name  |
 
 
+Screenshots
+-----------
+![CloudWatch screenshot](../../images/cloudwatch-sample.png?raw=true)
+
 Build instructions
 ------------------
 
