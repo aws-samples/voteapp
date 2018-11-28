@@ -151,7 +151,7 @@ Resources:
           Host:
             SourcePath: "/home/ec2-user/xray-tracing.yaml"
       ContainerDefinitions:
-        - Name: "app"
+        - Name: app
           Image: { Ref: VoteDatabaseHttpProxyImage }
           Essential: true
           LogConfiguration:
@@ -160,15 +160,13 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "database-http-proxy-app"
+              awslogs-stream-prefix: database
           Environment:
             - Name: "PORT"
               Value: "9080"
             - Name: "DATABASE_URI"
               Value: "mongodb://localhost:27017/voting"
-        - Name: database
-          Cpu: 440
-          Memory: 440
+        - Name: mongo
           Image: !Ref 'VoteDatabaseImage'
           LogConfiguration:
             LogDriver: 'awslogs'
@@ -176,7 +174,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "mongo"
+              awslogs-stream-prefix: database
         - Name: xray-daemon
           Essential: false
           Cpu: 32
@@ -194,7 +192,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: !Ref 'AWS::Region'
-              awslogs-stream-prefix: 'xray'
+              awslogs-stream-prefix: database
         - Name: envoy
           Image: { Ref: EnvoyImage }
           Essential: true
@@ -205,7 +203,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "database-envoy"
+              awslogs-stream-prefix: database
           MountPoints:
             - SourceVolume: "envoy-xray-tracing-config"
               ContainerPath: "/tmp/xray-tracing.yaml"
@@ -218,7 +216,7 @@ Resources:
               Value: "/tmp/xray-tracing.yaml"
             - Name: "AWS_REGION"
               Value: "us-west-2"
-        - Name: "proxyinit"
+        - Name: proxyinit
           Image: { Ref: SideCarRouterManagerImage }
           Essential: false
           LogConfiguration:
@@ -227,7 +225,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "database-proxyinit"
+              awslogs-stream-prefix: database
           LinuxParameters:
             Capabilities:
               Add:
@@ -247,7 +245,7 @@ Resources:
               Value: "9080"
             - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: LatticeEgressIgnoredIpCsv }
-        - Name: cloudwatch_agent
+        - Name: cloudwatch-agent
           Image: !Ref CloudWatchAgentImage
           Essential: false
           Cpu: 100
@@ -258,7 +256,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: !Ref 'AWS::Region'
-              awslogs-stream-prefix: cloudwatch-agent
+              awslogs-stream-prefix: database
           Environment:
             - Name: DOWNSTREAM_SERVICE_NAME
               Value: database
@@ -321,7 +319,7 @@ Resources:
           Host:
             SourcePath: "/home/ec2-user/xray-tracing.yaml"
       ContainerDefinitions:
-        - Name: "app"
+        - Name: app
           Image: { Ref: VoteVotesImage }
           Essential: true
           LogConfiguration:
@@ -330,7 +328,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "votes-app"
+              awslogs-stream-prefix: votes
           Environment:
             - Name: "PORT"
               Value: "9080"
@@ -351,7 +349,7 @@ Resources:
               awslogs-group: 
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: !Ref 'AWS::Region'
-              awslogs-stream-prefix: 'xray'
+              awslogs-stream-prefix: votes
         - Name: envoy
           Image: { Ref: EnvoyImage }
           Essential: true
@@ -362,7 +360,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup" 
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "votes-envoy"
+              awslogs-stream-prefix: votes
           MountPoints:
             - SourceVolume: "envoy-xray-tracing-config"
               ContainerPath: "/tmp/xray-tracing.yaml"
@@ -375,7 +373,7 @@ Resources:
               Value: "/tmp/xray-tracing.yaml"
             - Name: "AWS_REGION"
               Value: "us-west-2"
-        - Name: "proxyinit"
+        - Name: proxyinit
           Image: { Ref: SideCarRouterManagerImage }
           Essential: false
           LogConfiguration:
@@ -384,7 +382,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "votes-proxyinit"
+              awslogs-stream-prefix: votes
           LinuxParameters:
             Capabilities:
               Add:
@@ -404,7 +402,7 @@ Resources:
               Value: "9080"
             - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: LatticeEgressIgnoredIpCsv }
-        - Name: cloudwatch_agent
+        - Name: cloudwatch-agent
           Image: !Ref CloudWatchAgentImage
           Essential: false
           Cpu: 100
@@ -415,7 +413,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: !Ref 'AWS::Region'
-              awslogs-stream-prefix: cloudwatch-agent
+              awslogs-stream-prefix: votes
           Environment:
             - Name: DOWNSTREAM_SERVICE_NAME
               Value: votes
@@ -478,7 +476,7 @@ Resources:
           Host:
             SourcePath: "/home/ec2-user/xray-tracing.yaml"
       ContainerDefinitions:
-        - Name: "app"
+        - Name: app
           Image: { Ref: VoteReportsImage }
           Essential: true
           LogConfiguration:
@@ -487,7 +485,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "reports-app"
+              awslogs-stream-prefix: reports
           Environment:
             - Name: "PORT"
               Value: "9080"
@@ -508,7 +506,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: !Ref 'AWS::Region'
-              awslogs-stream-prefix: 'xray'
+              awslogs-stream-prefix: reports
         - Name: envoy
           Image: { Ref: EnvoyImage }
           Essential: true
@@ -519,7 +517,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "reports-envoy"
+              awslogs-stream-prefix: reports
           MountPoints:
             - SourceVolume: "envoy-xray-tracing-config"
               ContainerPath: "/tmp/xray-tracing.yaml"
@@ -532,7 +530,7 @@ Resources:
               Value: "/tmp/xray-tracing.yaml"
             - Name: "AWS_REGION"
               Value: "us-west-2"
-        - Name: "proxyinit"
+        - Name: proxyinit
           Image: { Ref: SideCarRouterManagerImage }
           Essential: false
           LogConfiguration:
@@ -541,7 +539,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "reports-proxyinit"
+              awslogs-stream-prefix: reports
           LinuxParameters:
             Capabilities:
               Add:
@@ -561,7 +559,7 @@ Resources:
               Value: "9080"
             - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: LatticeEgressIgnoredIpCsv }
-        - Name: cloudwatch_agent
+        - Name: cloudwatch-agent
           Image: !Ref CloudWatchAgentImage
           Essential: false
           Cpu: 100
@@ -572,7 +570,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: !Ref 'AWS::Region'
-              awslogs-stream-prefix: cloudwatch-agent
+              awslogs-stream-prefix: reports
           Environment:
             - Name: DOWNSTREAM_SERVICE_NAME
               Value: reports
@@ -643,7 +641,7 @@ Resources:
           Host: 
             SourcePath: "/home/ec2-user/xray-tracing.yaml"
       ContainerDefinitions:
-        - Name: "app"
+        - Name: app
           Image: { Ref: VoteWebImage }
           Essential: true
           LogConfiguration:
@@ -652,7 +650,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "web-app"
+              awslogs-stream-prefix: web
           Environment:
             - Name: "PORT"
               Value: "9080"
@@ -679,7 +677,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: !Ref 'AWS::Region'
-              awslogs-stream-prefix: 'xray'
+              awslogs-stream-prefix: web
         - Name: envoy
           Image: { Ref: EnvoyImage }
           Essential: true
@@ -690,7 +688,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "web-envoy"
+              awslogs-stream-prefix: web
           MountPoints: 
             - SourceVolume: "envoy-xray-tracing-config"
               ContainerPath: "/tmp/xray-tracing.yaml" 
@@ -703,7 +701,7 @@ Resources:
               Value: "/tmp/xray-tracing.yaml"
             - Name: "AWS_REGION"
               Value: "us-west-2"
-        - Name: "proxyinit"
+        - Name: proxyinit
           Image: { Ref: SideCarRouterManagerImage }
           Essential: false
           LogConfiguration:
@@ -712,7 +710,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "web-proxyinit"
+              awslogs-stream-prefix: web
           LinuxParameters:
             Capabilities:
               Add:
@@ -732,7 +730,7 @@ Resources:
               Value: "9080"
             - Name: "APPMESH_EGRESS_IGNORED_IP"
               Value: { Ref: LatticeEgressIgnoredIpCsv }
-        - Name: "prometheus"
+        - Name: prometheus
           Image: { Ref: PrometheusWebImage }
           Essential: true
           LogConfiguration:
@@ -741,10 +739,10 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "web-prometheus"
+              awslogs-stream-prefix: web
           PortMappings:
             - ContainerPort: 9090
-        - Name: "stats_exporter"
+        - Name: stats-exporter
           Image: { Ref: StatsExporterWebImage }
           Essential: true
           LogConfiguration:
@@ -753,10 +751,10 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "web-statsexporter"
+              awslogs-stream-prefix: web
           PortMappings:
             - ContainerPort: 9099
-        - Name: "grafana"
+        - Name: grafana
           Image: { Ref: GrafanaWebImage }
           Essential: true
           LogConfiguration:
@@ -765,10 +763,10 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: { Ref: "AWS::Region" }
-              awslogs-stream-prefix: "web-grafana"
+              awslogs-stream-prefix: web
           PortMappings:
             - ContainerPort: 3000
-        - Name: cloudwatch_agent
+        - Name: cloudwatch-agent
           Image: !Ref CloudWatchAgentImage
           Essential: false
           Cpu: 100
@@ -779,7 +777,7 @@ Resources:
               awslogs-group:
                 'Fn::ImportValue': !Sub "${EnvironmentName}:ECSServiceLogGroup"
               awslogs-region: !Ref 'AWS::Region'
-              awslogs-stream-prefix: cloudwatch-agent
+              awslogs-stream-prefix: web
           Environment:
             - Name: DOWNSTREAM_SERVICE_NAME
               Value: web
