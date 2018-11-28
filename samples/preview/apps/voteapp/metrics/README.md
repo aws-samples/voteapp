@@ -15,6 +15,18 @@
         2. Select the option **Upload .json File**. Select the file - `envoy_grafana.json` from the path `voting-app/samples/preview/apps/voteapp/metrics/`
         3. Select the prometheus-db source from the dropdown. This as per above example should be `lattice-prometheus`
         4. Select **Import** and the envoy-grafana dashboard will be imported
+    4. Scripts to generate traffic ( voting-app/samples/preview/apps/voteapp/metrics/traffic/):
+        Run results-cron.sh will ping /results service every 3 seconds
+        Run vote-cron.sh to will trigger /vote service
+    
+ **Stats Exporter**
+ 1. Stats_Exporter has been implemented as a workaround to transform "|" separators that the Envoy/AppMesh emits into "_" .
+ 2. This is important because Prometheus can parse metrics that have only "_".
+ 3. Stats_Exporter is a spring boot application and added as a side-car to the votes-webapp. 
+ 4. It captures the metrics from /stats/prometheus and has a cron-run.sh to curl envoy port at 9901/stats/Prometheus, transforms and writes to a static file.
+ 5. The statis file is then made available for the scrape job in Prometheus at port 9099 to capture the transformed metrics.
+ 6. These metrics are then used for Prometheus and Grafana to build dashboards.
+
 
 ## Grafana Screenshots
 
