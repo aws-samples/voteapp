@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@subfuzion/database": "1.2.4",
+    "aws-xray-sdk-core": "git+http://git@github.com/awssandra/aws-xray-node-sdk-core-experimental",
+    "aws-xray-sdk-express": "git+http://git@github.com/awssandra/aws-xray-node-sdk-express-experimental",
     "body-parser": "~1.18.3",
     "debug": "~4.1.0",
     "express": "~4.16.4",
