@@ -3,6 +3,10 @@ const express= require('express');
 const http = require('http');
 const morgan = require('morgan');
 
+const xray = require('aws-xray-sdk-core');
+const xrayExpress = require('aws-xray-sdk-express');
+xray.middleware.disableCentralizedSampling();
+
 const port = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
@@ -15,6 +19,9 @@ app.use(morgan('dev'));
 
 // install json body parsing middleware
 app.use(express.json());
+
+// install x-ray tracing
+app.use(xrayExpress.openSegment('database-proxy.app'));
 
 // root route handler
 app.get('/', (_, res) => {
@@ -50,6 +57,8 @@ app.get('/results', async (req, res) => {
     res.send(500, { success: false, reason: err.message });
   }
 });
+
+app.use(xrayExpress.closeSegment());
 
 // initialize and start running
 (async () => {
