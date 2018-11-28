@@ -13,6 +13,8 @@ const xray = require('aws-xray-sdk-core');
 const xrayExpress = require('aws-xray-sdk-express');
 xray.middleware.disableCentralizedSampling();
 
+const captureAxios = require('./xray-axios');
+
 let ax = axios.create({
     baseURL: process.env.DATABASE_PROXY_URI || 'http://database-proxy:3000/'
 });
