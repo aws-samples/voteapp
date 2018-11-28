@@ -17,6 +17,8 @@ let ax = axios.create({
     baseURL: process.env.DATABASE_PROXY_URI || 'http://database-proxy:3000/'
 });
 
+captureAxios(ax);
+
 // route logging middleware
 app.use(morgan('dev'));
 
