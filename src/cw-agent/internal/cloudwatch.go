@@ -12,7 +12,6 @@ const cloudwatchMetricNamespace = "AWS App Mesh Demo"
 type CloudwatchSubmitter struct {
 	Session           client.ConfigProvider
 	DownstreamService string
-	TaskID            string
 }
 
 func (c *CloudwatchSubmitter) Submit(counters envoy.CountersByUpstream, histograms envoy.HistogramsByUpstream) error {
@@ -26,9 +25,6 @@ func (c *CloudwatchSubmitter) Submit(counters envoy.CountersByUpstream, histogra
 			new(cloudwatch.Dimension).
 				SetName("UpstreamService").
 				SetValue(upstreamCluster),
-			new(cloudwatch.Dimension).
-				SetName("TaskId").
-				SetValue(c.TaskID),
 		}
 		data := []*cloudwatch.MetricDatum{
 			new(cloudwatch.MetricDatum).
@@ -70,9 +66,6 @@ func (c *CloudwatchSubmitter) Submit(counters envoy.CountersByUpstream, histogra
 			new(cloudwatch.Dimension).
 				SetName("UpstreamService").
 				SetValue(upstreamCluster),
-			new(cloudwatch.Dimension).
-				SetName("TaskId").
-				SetValue(c.TaskID),
 		}
 
 		var data []*cloudwatch.MetricDatum

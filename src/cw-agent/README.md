@@ -19,7 +19,6 @@ The following environment variables can be used for debugging or tuning:
 | Variable            | Description                                                                                                                                                          |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `COLLECT_FREQUENCY` | Adjust the collection frequency (default: `5s`).  Don't increase the frequency to a value higher than Envoy's configured stats flush frequency (normally 5 seconds). |
-| `ECS_TASK_ID`       | Debug use only.  Manually override the ECS task ID used for setting the `TaskId` metric dimension.                                                                   |
 
 
 Published metrics
@@ -40,7 +39,6 @@ The metrics have the following dimensions:
 | ----------------- | ------------------------------- |
 | DownstreamService | Downstream (local) service name |
 | UpstreamService   | Upstream (remote) service name  |
-| TaskId            | ECS task ARN                    |
 
 
 Build instructions

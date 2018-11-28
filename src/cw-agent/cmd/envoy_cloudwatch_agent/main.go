@@ -44,11 +44,6 @@ func main() {
 		}
 	}
 
-	taskID, err := internal.GetTaskID()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	c.collector = envoy.Collector{
 		AdminHost: envoyAdminHost,
 	}
@@ -56,7 +51,6 @@ func main() {
 	c.submitter = internal.CloudwatchSubmitter{
 		Session:           session.Must(session.NewSession()),
 		DownstreamService: downstreamService,
-		TaskID:            taskID,
 	}
 
 	c.collect()

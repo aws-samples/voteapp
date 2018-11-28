@@ -41,7 +41,7 @@ Parameters:
   CloudWatchAgentImage:
     Type: String
     Description: CloudWatch Agent image
-    Default: "subfuzion/vote-cw-agent:1.0.0"
+    Default: "subfuzion/vote-cw-agent:1.1.0"
 
   XRayImageUrl:
     Type: String
