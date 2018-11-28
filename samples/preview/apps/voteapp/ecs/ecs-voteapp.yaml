@@ -26,17 +26,17 @@ Parameters:
   VoteVotesImage:
     Type: String
     Description: Vote App Votes image
-    Default: "subfuzion/vote-votes:1.1.1"
+    Default: "subfuzion/vote-votes:1.0.15"
 
   VoteReportsImage:
     Type: String
     Description: Vote App Reports image
-    Default: "subfuzion/vote-reports:1.1.1"
+    Default: "subfuzion/vote-reports:1.0.15"
 
   VoteWebImage:
     Type: String
     Description: Vote App Web image
-    Default: "subfuzion/vote-web:1.1.1"
+    Default: "subfuzion/vote-web:1.0.15"
   
   CloudWatchAgentImage:
     Type: String
