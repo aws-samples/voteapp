@@ -41,13 +41,18 @@ app.get('/results', async (_, res) => {
     console.log('GET /results');
     let result = await ax.get('/results');
     let data = result.data;
-    // { success: true, result: { a: X, b: X } }
+    // ex: { success: true, result: { a: X, b: X } }
     console.log('data: ', data);
 
     // append version 2 extra field
-    if (process.env.VERSION && process.env.VERSION.endsWith("-2")) {
-      r = data.result;
-      r.result.totalVotes = r.a + r.b;
+    if (process.env.VERSION && process.env.VERSION.startsWith("2")) {
+      console.log(`version: ${process.env.VERSION}`)
+      let r = data.result; 
+      console.log(`data: ${r}`)
+      r.totalVotes = r.a + r.b;
+      r.version = "2.0"
+    // ex: { success: true, result: { a: X, b: X, totalVotes: X } }
+      console.log(`v2 data: ${r}`)
     }
 
     res.send(data);

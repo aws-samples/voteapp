@@ -115,7 +115,6 @@ configure_routes() {
 
 main() {
     sanity_check
-    create_mesh
     configure_virtual_nodes
     configure_virtual_routers
     configure_routes

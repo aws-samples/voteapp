@@ -10,7 +10,7 @@ packages=(
     "web"
 #    "queue-proxy"
 #    "worker"
-#    "vote"
+    "vote"
 )
 
 # always build v2 version of reports
@@ -20,7 +20,7 @@ docker build --build-arg VERSION=$version -t $img src/reports
 docker push $img
 
 # exit if only v2 option was passed
-[ $1 = "v2" ] && exit
+[ "$1" = "v2" ] && exit
 
 i=0
 total=${#packages[@]}

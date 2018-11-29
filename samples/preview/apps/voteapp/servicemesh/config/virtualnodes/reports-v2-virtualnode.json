@@ -12,7 +12,10 @@
             "dns": {
                 "serviceName": "reports-v2.default.svc.cluster.local"
             }
-        }
+        },
+        "backends": [
+            "database.default.svc.cluster.local"
+        ]
     },
     "virtualNodeName": "reports-vn-v2"
 }
