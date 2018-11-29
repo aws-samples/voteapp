@@ -31,8 +31,7 @@ Run in this directory:
 
     $ docker-compose up
 
-You can test it with the `voter` CLI:
-
+You can test it with the `voter` CLI
 ```
 $ docker run -it --rm --network=host subfuzion/voter vote
 ? What do you like better? (Use arrow keys)
@@ -64,7 +63,7 @@ Deploy to [AWS ECS with Fargate](https://read.acloud.guru/deploy-the-voting-app-
 
 ## About the Voting App
 
-![Voting app architecture](https://raw.githubusercontent.com/subfuzion/voting-app/master/images/voting-app-arch-3.png)
+![Voting app architecture](https://raw.githubusercontent.com/aws-samples/voting-app/master/images/voting-app-arch-3.png?token=AAJv-qxh3tUiCw5UmU2TPxx5N7_qopy-ks5cCYsGwA%3D%3D)
 
 This app is based on the original [Docker](https://docker.com) [Example Voting App](https://github.com/dockersamples/example-voting-app).
 
