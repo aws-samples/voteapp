@@ -64,7 +64,7 @@ Deploy to [AWS ECS with Fargate](https://read.acloud.guru/deploy-the-voting-app-
 
 ## About the Voting App
 
-![Voting app architecture](https://raw.githubusercontent.com/subfuzion/voting-app/master/images/voting-app-arch-1.1.png)
+![Voting app architecture](https://raw.githubusercontent.com/subfuzion/voting-app/master/images/voting-app-arch-3.png)
 
 This app is based on the original [Docker](https://docker.com) [Example Voting App](https://github.com/dockersamples/example-voting-app).
 

@@ -107,7 +107,14 @@ function tallyToString(tally) {
   if (!tally) return 'error: empty tally result';
   let a = tally.a, b = tally.b;
   let winner = ( a > b  ? 'CATS WIN!' : ( b > a ? 'DOGS WIN!' : 'IT\'S A TIE!' ) );
-  return `Total votes -> cats: ${a}, dogs: ${b} ... ${winner}`;
+
+  let s = `Cats: ${a}, Dogs: ${b} ... ${winner}`;
+
+  if (tally.version) {
+    s = `[API v${tally.version}] Total votes cast: ${tally.totalVotes}: ${s}`
+  }
+
+  return s;
 }
 
 function main() {
