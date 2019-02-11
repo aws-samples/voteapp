@@ -4,22 +4,6 @@ Example containerized microservices Voting App based on the original Docker vers
 
 For an orientation to this version of the Voting App, see [this presentation](https://docs.google.com/presentation/d/1FLDaRlQOy2cXcudR8322pUjW5s-eJkHkX6w12mDWiiY/edit?usp=sharing).
 
-## Build Status
-
-** NOTE: build status ("repo not found") will go away when the repo is public again **
-
-| Service  | Docker Image           | Build Status |
-|:---------|:-----------------------|:-------------|
-| API      | subfuzion/vote-api     | [![Docker build](https://img.shields.io/docker/build/aws-samples/vote-api.svg)](https://hub.docker.com/r/aws-samples/vote-api/)
-| Worker   | subfuzion/vote-worker  | [![Docker build](https://img.shields.io/docker/build/aws-samples/vote-worker.svg)](https://hub.docker.com/r/aws-samples/vote-worker/)
-| Database | Mongo | [![Docker build](https://img.shields.io/docker/pulls/_/mongo.svg)](https://hub.docker.com/_/mongo/)
-| Queue | Redis | [![Docker build](https://img.shields.io/docker/pulls/_/redis.svg)](https://hub.docker.com/_/redis/)
-
-| Node.js Packages    | npm                    | Build Status |
-|:--------------------|:-----------------------|:------------ |
-| @subfuzion/database | [![npm (scoped)](https://img.shields.io/npm/v/@subfuzion/database.svg)](@subfuzion/database) | [![Travis](https://img.shields.io/travis/subfuzion/voting-app.svg)](https://travis-ci.org/subfuzion/voting-app)
-| @subfuzion/queue    | [![npm (scoped)](https://img.shields.io/npm/v/@subfuzion/queue.svg)](@subfuzion/queue) | [![Travis](https://img.shields.io/travis/subfuzion/voting-app.svg)](https://travis-ci.org/subfuzion/voting-app)
-
 ## Quick Start
 
 Get Docker for free from the [Docker Store](https://www.docker.com/community-edition#/download).
