@@ -48,7 +48,7 @@ The metrics have the following dimensions:
 
 Screenshots
 -----------
-![CloudWatch screenshot](../../images/cloudwatch-sample.png?raw=true)
+![CloudWatch screenshot](../../resources/cloudwatch-sample.png?raw=true)
 
 Build instructions
 ------------------
