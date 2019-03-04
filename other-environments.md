@@ -43,7 +43,7 @@ See [deploy with Fargate].
 ## Running on Amazon EKS with Kubernetes
 
 Kubernetes and Helm chart support has been added to the repo (under the
-`kubernetes`directory).
+`config/kubernetes`directory).
 
 This was working at one point, but has not been maintained or tested recently.
 Contributors to help test and document are welcome.
