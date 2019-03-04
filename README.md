@@ -110,10 +110,10 @@ Grafana from http://<load_balancer_dns_name>:3000.  To configure Grafana, follow
 the instructions in the [README](./config/metrics/README.md).
 
 
-[ATTRIBUTION]:            ../../../ATTRIBUTION
+[ATTRIBUTION]:            ./ATTRIBUTION
 [orientation]:            http://bit.ly/vote-app-orientation
 [AWS CLI]:                https://docs.aws.amazon.com/cli/latest/userguide/installing.html
 [deploy with Fargate]:    https://read.acloud.guru/deploy-the-voting-app-to-aws-ecs-with-fargate-cb75f226408f
 [Vote App architecture]:  ./images/voting-app-arch-3.png
-[LICENSE]:                ../../../LICENSE
+[LICENSE]:                ./LICENSE
 
