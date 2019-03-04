@@ -11,7 +11,7 @@ information to effectively respond to your bug report or contribution.
 
 We welcome you to use the GitHub issue tracker to report bugs or suggest features.
 
-When filing an issue, please check [existing open](https://github.com/aws-samples/voting-app/issues), or [recently closed](https://github.com/aws-samples/voting-app/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aclosed%20), issues to make sure somebody else hasn't already 
+When filing an issue, please check [existing open][1], or [recently closed][2], issues to make sure somebody else hasn't already 
 reported the issue. Please try to include as much information as you can. Details like these are incredibly useful:
 
 * A reproducible test case or series of steps
@@ -37,16 +37,16 @@ To send us a pull request, please:
 6. Pay attention to any automated CI failures reported in the pull request, and stay involved in the conversation.
 
 GitHub provides additional document on [forking a repository](https://help.github.com/articles/fork-a-repo/) and 
-[creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
+[creating a pull request][3].
 
 
 ## Finding contributions to work on
-Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any ['help wanted'](https://github.com/aws-samples/voting-app/labels/help%20wanted) issues is a great place to start. 
+Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any ['help wanted'](https://github.com/awslabs/aws-app-mesh-examples/labels/help%20wanted) issues is a great place to start. 
 
 
 ## Code of Conduct
-This project has adopted the [Amazon Open Source Code of Conduct](https://aws.github.io/code-of-conduct). 
-For more information see the [Code of Conduct FAQ](https://aws.github.io/code-of-conduct-faq) or contact 
+This project has adopted the [Amazon Open Source Code of Conduct][4]. 
+For more information see the [Code of Conduct FAQ][5] or contact 
 opensource-codeofconduct@amazon.com with any additional questions or comments.
 
 
@@ -56,6 +56,17 @@ If you discover a potential security issue in this project we ask that you notif
 
 ## Licensing
 
-See the [LICENSE](https://github.com/aws-samples/voting-app/blob/master/LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
+See the [LICENSE][6] file for our project's licensing. We will ask you to confirm the licensing of your contribution.
 
-We may ask you to sign a [Contributor License Agreement (CLA)](http://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes.
+We may ask you to sign a [Contributor License Agreement (CLA)]() for larger changes.
+
+
+[1]: https://github.com/awslabs/aws-app-mesh-examples/issues/
+[2]: https://github.com/awslabs/aws-app-mesh-examples/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aclosed%20/
+[3]: https://help.github.com/articles/creating-a-pull-request/
+[4]: https://aws.github.io/code-of-conduct/
+[5]: https://aws.github.io/code-of-conduct-faq/
+[6]: https://raw.githubusercontent.com/awslabs/aws-app-mesh-examples/master/examples/apps/voteapp/LICENSE
+[7]: http://en.wikipedia.org/wiki/Contributor_License_Agreement
+
+
