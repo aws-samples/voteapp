@@ -11,35 +11,36 @@ services:
     networks:
       - bridge_net
 
-  queue:
-    image: redis:3.2
-    networks:
-      - bridge_net
-  
-  worker:
-    build: src/worker
+  database-proxy:
+    build: src/database-proxy
     networks:
       - bridge_net
     depends_on:
       - database
-      - queue
-  
+
   reports:
     build: src/reports
+    environment:
+      - DATABASE_PROXY_URI=http://database-proxy:3000
     networks:
       - bridge_net
     depends_on:
-      - database
+      - database-proxy
   
   votes:
     build: src/votes
+    environment:
+      - DATABASE_PROXY_URI=http://database-proxy:3000
     networks:
       - bridge_net
     depends_on:
-      - queue
+      - database-proxy
 
   web:
     build: src/web
+    environment:
+      - VOTES_URI=http://votes:3000
+      - REPORTS_URI=http://reports:3000
     networks:
       - bridge_net
     ports:
