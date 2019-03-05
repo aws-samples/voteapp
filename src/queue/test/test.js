@@ -16,11 +16,11 @@ suite('queue tests', () => {
     // redis client
     let r;
 
-    setup(() => {
+    suiteSetup(() => {
       r = new Redis(config);
     });
 
-    teardown(async () => {
+    suiteTeardown(async () => {
       // make sure to tell redis to close connections or mocha won't exit
       await r.quit();
     });
@@ -51,7 +51,7 @@ suite('queue tests', () => {
     let ctx;
     // save the mocha context before each test
     // note that this can't be done using an arrow function
-    beforeEach(function() {
+    setup(function() {
       ctx = this;
     });
 
