@@ -10,17 +10,19 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "mocha --ui tdd"
+    "test": "mocha --ui tdd",
+    "docker-test": "docker-compose -f ./docker-compose.test.yml build && docker-compose -f ./docker-compose.test.yml run sut"
   },
   "engines": {
     "node": ">=v8.0.0"
   },
   "dependencies": {
     "@subfuzion/database": "1.2.4",
+    "@subfuzion/queue": "git+http://git@github.com/awssandra/subfuzion-queue-xray",
     "aws-xray-sdk-core": "git+http://git@github.com/awssandra/aws-xray-node-sdk-core-experimental",
     "queue": "git+http://git@github.com/awssandra/subfuzion-queue-xray"
   },
   "devDependencies": {
-    "mocha": "^5.2.0"
+    "mocha": "^6.0.2"
   }
 }

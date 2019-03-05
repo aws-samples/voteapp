@@ -14,7 +14,7 @@ suite('queue tests', () => {
   // let db;
 
   // open connections
-  before(async () => {
+  suiteSetup(async () => {
     // connect to db
     db = new Database(dbConfig);
     await db.connect();
@@ -24,7 +24,7 @@ suite('queue tests', () => {
   });
 
   // close connections
-  after(async () => {
+  suiteTeardown(async () => {
     // disconnect from queue
     await producer.quit();
 
@@ -50,7 +50,7 @@ suite('queue tests', () => {
       votes.push({ vote: 'b' });
     }
 
-    before(async function() {
+    suiteSetup(async function() {
       this.timeout(15 * 1000);
 
       votes.forEach(async v => {
