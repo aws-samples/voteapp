@@ -21,7 +21,7 @@ Vote App.
 The following environment variables must be exported before running the
 scripts:
 
-```
+```sh
 # The prefix to use for created stack resources
 export ENVIRONMENT_NAME=mesh-demo
 
@@ -47,8 +47,8 @@ export CLUSTER_SIZE=5
 
 #### 1. Deploy VPC
 
-```
-$ .config/infrastructure/vpc.sh
+```sh
+$ ./config/infrastructure/vpc.sh
 ```
 
 
@@ -61,32 +61,82 @@ To perform this step, you will first need to install the latest version of
 the [AWS CLI].
 
 
-```
-$ .config/appmesh/deploy-mesh.sh 
+```sh
+$ ./config/appmesh/deploy-mesh.sh 
 ```
 
 
 #### 3. Deploy ECS Cluster
 
-```
-$ ./infrastructure/ecs-cluster.sh
+```sh
+$ ./config/infrastructure/ecs-cluster.sh
 ```
 
 
 ### Deploy the Vote App
 
+```sh
+$ ./config/ecs/ecs-voteapp.sh
+...
+Waiting for changeset to be created..
+Waiting for stack create/update to complete
+Successfully created/updated stack - mesh-demo-ecs-voteapp
+[ecs-voteapp.sh] Public endpoints
+[ecs-voteapp.sh] ================
+[ecs-voteapp.sh] voteapp: http://mesh-Publi-142LFAOM1M1V5-2012495322.us-west-2.elb.amazonaws.com
+[ecs-voteapp.sh] prometheus: http://mesh-Publi-142LFAOM1M1V5-2012495322.us-west-2.elb.amazonaws.com:9090/targets
+[ecs-voteapp.sh] grafana: http://mesh-Publi-142LFAOM1M1V5-2012495322.us-west-2.elb.amazonaws.com:3000
+[ecs-voteapp.sh] logs: https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logStream:group=mesh-demo-ecs-cluster-ECSServiceLogGroup-16Q5XXLI1B7UP
+```
+
+For convenience, save the output from the above command in a text file that you can source into your bash shell:
+
+voteapp.env
+```sh
+# vote app
+export EP=http://mesh-Publi-142LFAOM1M1V5-2012495322.us-west-2.elb.amazonaws.com
+alias vote="docker run -it --rm -e WEB_URI=$EP subfuzion/vote vote"
+alias results="docker run -it --rm -e WEB_URI=$EP subfuzion/vote results"
+#
+export PROMETHEUS_EP="$EP:9090/targets"
+alias prometheus="open $PROMETHEUS_EP"
+#
+export GRAFANA_EP="$EP:3000/?orgId=1"
+alias grafana="open $GRAFANA_EP"
 
 ```
-$ .config/ecs/ecs-voteapp.sh
+
+If you saved the above to a file called `voteapp.env`, you can source it in like this:
+
+```sh
+source voteapp.env
 ```
 
-* Verify by doing a curl on the web service
+#### Testing with the Voter client
 
+You can test the app by running the `voter` CLI in your terminal. Set your shell environment
+as shown in the previous section after deploying the app.
+
+```sh
+$ vote
+? What do you like better? (Use arrow keys)
+  (quit)
+❯ cats
+  dogs
 ```
-<ec2-bastion-host>$ curl -s http://web.default.svc.cluster.local:9080/results
+
+You can print voting results:
+
+```sh
+$ results
+Total votes -> cats: 4, dogs: 0 ... CATS WIN!
 ```
+
+### Observability
 
 #### CloudWatch
+
+TODO
 
 #### X-Ray
 
@@ -96,12 +146,12 @@ For further information about how to use X-Ray to trace requests as they are rou
 between different services, see the [README](./observability/x-ray.md).
 
 
-#### Configure Grafana for Prometheus (optional).
+#### Grafana / Prometheus.
 
 If you want to use Grafana to visualize metrics from Envoy run
 
-```
-$ .config/ecs/update-targetgroups.sh 
+```sh
+$ ./config/ecs/update-targetgroups.sh 
 ```
 
 This will register the IP address of the task running Grafana and Prometheus 
