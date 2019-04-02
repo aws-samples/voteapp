@@ -52,12 +52,6 @@ check_args() {
     [ -z "${MESHNAME}" ] && usage "missing argument: meshname"
 }
 
-sanity_check() {
-    if [ "${AWS_REGION}" != "us-west-2" ]; then
-        err "Only us-west-2 is supported at this time.  (Current default region: ${AWS_REGION})"
-    fi
-}
-
 create_mesh() {
     print "Checking service mesh"
     arn=$(aws appmesh list-meshes --output=text --query 'meshes[?meshName==`'$MESHNAME'`]' | cut -f1)
@@ -147,7 +141,6 @@ configure_routes() {
 main() {
     # check_args $@
     check_env
-    sanity_check
     create_mesh
     configure_virtual_nodes
     configure_virtual_routers
