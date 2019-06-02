@@ -1,8 +1,11 @@
 {
     "spec": {
-        "serviceNames": [
-            "reports.default.svc.cluster.local"
-        ]
+        "listeners": [{
+            "portMapping": {
+                "port": 5000,
+                "protocol": "tcp"
+            }
+        }]
     },
     "virtualRouterName": "reports-vr"
 }
