@@ -10,12 +10,14 @@
         ],
         "serviceDiscovery": {
             "dns": {
-                "serviceName": "reports-v2.default.svc.cluster.local"
+                "hostname": "reports-v2.default.svc.cluster.local"
             }
         },
-        "backends": [
-            "database.default.svc.cluster.local"
-        ]
+        "backends": [{
+            "virtualService": {
+                "virtualServiceName": "database.default.svc.cluster.local"
+            }
+        }]
     },
     "virtualNodeName": "reports-vn-v2"
 }

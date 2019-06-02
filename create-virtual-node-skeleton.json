@@ -1,0 +1,49 @@
+{
+    "clientToken": "",
+    "meshName": "",
+    "spec": {
+        "backends": [
+            {
+                "virtualService": {
+                    "virtualServiceName": ""
+                }
+            }
+        ],
+        "listeners": [
+            {
+                "healthCheck": {
+                    "healthyThreshold": 0,
+                    "intervalMillis": 0,
+                    "path": "",
+                    "port": 0,
+                    "protocol": "tcp",
+                    "timeoutMillis": 0,
+                    "unhealthyThreshold": 0
+                },
+                "portMapping": {
+                    "port": 0,
+                    "protocol": "tcp"
+                }
+            }
+        ],
+        "logging": {
+            "accessLog": {
+                "file": {
+                    "path": ""
+                }
+            }
+        },
+        "serviceDiscovery": {
+            "dns": {
+                "hostname": ""
+            }
+        }
+    },
+    "tags": [
+        {
+            "key": "",
+            "value": ""
+        }
+    ],
+    "virtualNodeName": ""
+}
