@@ -10,12 +10,18 @@
         ],
         "serviceDiscovery": {
             "dns": {
-                "serviceName": "web.default.svc.cluster.local"
+                "hostname": "web.default.svc.cluster.local"
             }
         },
         "backends": [
-            "votes.default.svc.cluster.local",
-            "reports.default.svc.cluster.local"
+            {
+                "virtualService": {
+                    "virtualServiceName": "votes.default.svc.cluster.local"
+            }},
+            {
+                "virtualService": {
+                    "virtualServiceName": "reports.default.svc.cluster.local"
+            }}
         ]
     },
     "virtualNodeName": "web-vn"

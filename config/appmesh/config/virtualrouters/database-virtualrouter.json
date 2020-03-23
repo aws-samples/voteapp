@@ -1,8 +1,11 @@
 {
     "spec": {
-        "serviceNames": [
-            "database.default.svc.cluster.local"
-        ]
+        "listeners": [{
+            "portMapping": {
+                "port": 27017,
+                "protocol": "tcp"
+            }
+        }]
     },
     "virtualRouterName": "database-vr"
 }

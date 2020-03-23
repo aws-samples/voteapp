@@ -1,6 +1,8 @@
 {
     "spec": {
+        "backends": [],
         "listeners": [
+        
             {
                 "portMapping": {
                     "port": 9080,
@@ -10,7 +12,7 @@
         ],
         "serviceDiscovery": {
             "dns": {
-                "serviceName": "database.default.svc.cluster.local"
+                "hostname": "database.default.svc.cluster.local"
             }
         }
     },

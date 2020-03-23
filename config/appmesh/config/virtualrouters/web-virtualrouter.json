@@ -1,8 +1,11 @@
 {
     "spec": {
-        "serviceNames": [
-            "web.default.svc.cluster.local"
-        ]
+        "listeners": [{
+            "portMapping": {
+                "port": 80,
+                "protocol": "tcp"
+            }
+        }]
     },
     "virtualRouterName": "web-vr"
 }

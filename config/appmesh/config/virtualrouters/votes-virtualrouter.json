@@ -1,8 +1,11 @@
 {
     "spec": {
-        "serviceNames": [
-            "votes.default.svc.cluster.local"
-        ]
+        "listeners": [{
+            "portMapping": {
+                "port": 3000,
+                "protocol": "tcp"
+            }
+        }]
     },
     "virtualRouterName": "votes-vr"
 }

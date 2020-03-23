@@ -10,12 +10,14 @@
         ],
         "serviceDiscovery": {
             "dns": {
-                "serviceName": "votes.default.svc.cluster.local"
+                "hostname": "votes.default.svc.cluster.local"
             }
         },
-        "backends": [
-            "database.default.svc.cluster.local"
-        ]
+        "backends": [{
+            "virtualService": {
+                "virtualServiceName": "database.default.svc.cluster.local"
+            }
+        }]
     },
     "virtualNodeName": "votes-vn"
 }
