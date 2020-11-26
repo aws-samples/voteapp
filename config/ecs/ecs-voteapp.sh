@@ -79,12 +79,12 @@ register_prometheus_grafana() {
 print_info() {
     print "Public endpoints"
     print "================"
-    url=$(aws cloudformation --region us-west-2 describe-stacks --stack-name ${ENVIRONMENT_NAME}-ecs-cluster --query 'Stacks[0].Outputs[?OutputKey==`ExternalUrl`].OutputValue' --output text)
+    url=$(aws cloudformation --region ${AWS_REGION} describe-stacks --stack-name ${ENVIRONMENT_NAME}-ecs-cluster --query 'Stacks[0].Outputs[?OutputKey==`ExternalUrl`].OutputValue' --output text)
     print "voteapp: $url"
     print "prometheus: $url:9090/targets"
     print "grafana: $url:3000"
     
-    logs=$(aws cloudformation --region us-west-2 describe-stacks --stack-name ${ENVIRONMENT_NAME}-ecs-cluster --query 'Stacks[0].Outputs[?OutputKey==`ECSServiceLogGroup`].OutputValue' --output text)
+    logs=$(aws cloudformation --region ${AWS_REGION} describe-stacks --stack-name ${ENVIRONMENT_NAME}-ecs-cluster --query 'Stacks[0].Outputs[?OutputKey==`ECSServiceLogGroup`].OutputValue' --output text)
     print "logs: https://${AWS_REGION}.console.aws.amazon.com/cloudwatch/home?region=${AWS_REGION}#logStream:group=$logs"
 }
 
