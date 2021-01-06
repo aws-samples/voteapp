@@ -25,7 +25,7 @@
     "morgan": "~1.10.0"
   },
   "devDependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "mocha": "^7.1.1"
   }
 }
