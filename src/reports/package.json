@@ -19,7 +19,7 @@
     "@subfuzion/database": "1.2.4",
     "aws-xray-sdk-core": "git+http://git@github.com/awssandra/aws-xray-node-sdk-core-experimental",
     "aws-xray-sdk-express": "git+http://git@github.com/awssandra/aws-xray-node-sdk-express-experimental",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "body-parser": "~1.19.0",
     "debug": "~4.1.1",
     "express": "~4.17.1",
