@@ -21,7 +21,7 @@
     "inquirer": "^7.1.0"
   },
   "devDependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "mocha": "^7.1.1"
   }
 }
